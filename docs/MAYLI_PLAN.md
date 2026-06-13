@@ -25,34 +25,51 @@
 | **0** | Fundament (settings, AUTH_USER_MODEL, app'lar, RBAC, i18n) | ✅ |
 | **1** | Marketing sayti (til switcher, footer, responsive, SEO) | ✅ |
 | **2** | Boshqaruv paneli (CMS) — sayt + menyu CRUD | ✅ |
-| **3** | **Mijozlar CRM** — Customer modeli + dashboard CRUD + qidiruv/segmentlash | 🔥 |
-| 4 | CRM marketing — kampaniya tizimi (auditoriya, SMS/email/Telegram, jadval) | rejada |
+| **3** | **Mijozlar CRM** — Customer modeli + dashboard CRUD + qidiruv/segmentlash | ✅ |
+| **4** | **Production tozalash** — legacy settings, docs, requirements-dev | ✅ |
+| **5** | **CRM marketing** — kampaniya tizimi (SMS/email/Telegram, Eskiz API) | 🔜 tayyor |
 | — | Delivery & Take away — **alohida katta loyiha** | rejada |
 
 ---
 
-## 4. BOSQICH 3 — Mijozlar CRM (hozirgi ish)
+## 4. BOSQICH 4 — Production tozalash (✅ 2026-06-14)
 
-**Maqsad:** dashboardda mijozlar bilan ishlash uchun to'liq tizim va backend.
+**Maqsad:** loyihani production uchun tayyorlash, legacy fayl va docs tozalash.
 
-- **`Customer` modeli** (yangi `crm` app): ism\*, familiya, telefon\*, tug'ilgan kun, jins
-  (keyin: email, telegram, kanal bo'yicha rozilik). `accounts.User`'ga ixtiyoriy bog'lanadi.
-  Xodim qo'lda qo'shgan, hali ro'yxatdan o'tmagan mijozlarni ham saqlaydi.
-- **Dashboard CRUD:** ro'yxat (qidiruv + filtr/segment: tug'ilgan oy, jins, sana, teg),
-  qo'shish / tahrirlash / o'chirish / batafsil.
-- **Django admin** ro'yxatdan o'tkazish.
-- 🔴 CSS/JS qoidasi: inline `style=""` / `onclick=""` YO'Q.
-- **Mavjud pattern**: `dashboard` app'dagi `CMSBaseMixin`, `SuccessMessageMixin`,
-  `BootstrapModelForm` va News/Dish CRUD namunasidan foydalan.
+- **Legacy `config/settings.py`** (hardcoded SECRET_KEY) o'chirildi — `config/settings/` paketi ishlatiladi.
+- **Docs struktura:** 6 ta `.md` fayl `docs/` papkasiga ko'chirildi (MAYLI_PLAN, MAYLI_CONTEXT, MAYLI_WEBSITE_ADMIN va h.k.).
+- **requirements-dev.txt:** development uchun (pytest-django, black, flake8, django-debug-toolbar, isort).
+- **Git cleanup:** `.env`, `db.sqlite3`, `staticfiles/` allaqachon `.gitignore`'da.
+- **Tekshiruv:** Django check ✅ 0 xato, migrations toza, collectstatic ✅ 427 fayl.
 
 ---
 
-## 5. BOSQICH 4 — CRM marketing (kelajak)
+## 5. BOSQICH 5 — CRM marketing (🔜 tayyor boshlashga)
 
-- **Campaign** modeli + dashboard UI: auditoriya tanlash (segment), kanal (SMS/email/Telegram), matn, jadval.
-- Provider-adapter: **Eskiz.uz** (SMS), email, Telegram (`notifications.telegram`).
-- Yuborish loglari, statistika. (Loyiha serverda ishga tushgach SMS real test qilinadi.)
-- Tug'ilgan kun tabrigi, promo kod, segment bo'yicha avtomatik jo'natmalar.
+**Maqsad:** SMS/email/Telegram orqali mass marketing kampaniyalarini jo'natish tizimi.
+
+**Modellar:**
+- **`Campaign`:** nomi, tavsif, kanal (sms/email/telegram), shablon ({{first_name}} suporta), target tags, status (draft/scheduled/sent), timestamps, counts (success/fail).
+- **`CampaignLog`:** har customer-kanal juftligi uchun; status (pending/sent/failed), error message.
+
+**Dashboard UI:**
+- CampaignListView: janvali (nomi, kanal, holat, sana, natija), filtr (kanal, holat).
+- CampaignCreateView: forma (nomi, tavsif, kanal, shablon, teglar, sxemali vaqt).
+- CampaignDetailView: log jadavali (pagination), success/fail statistika.
+- Send button: holat draft → scheduled.
+
+**Provider adapters (crm/providers/):**
+- **SMSProvider (Eskiz.uz):** API credentials → send(customer, message_text).
+- **EmailProvider:** Django email backend → send(customer, subject, message_text).
+- **TelegramProvider:** `notifications.telegram.send_message` reuse.
+
+**Send logic (ixtiyoriy):**
+- Django management command yoki Celery task: scheduled campaigns → send all customers → log update.
+- Template variable helper ({{first_name}}, {{full_name}}, {{phone}}) suggestion.
+
+**Status:** Reja taqdim qilindi. Keyingi: User Eskiz credentials (email, password, SMS sender name, rate limit) → Campaign model + SMS provider yoziladi.
+
+
 
 ---
 

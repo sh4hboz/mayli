@@ -43,7 +43,7 @@ python manage.py runserver
 | `menu` | Kategoriya + Taom (uz/ru/en, modeltranslation) | ✅ |
 | `notifications` | Telegram outbound bildirishnoma (aloqa/vakansiya; kelajakda CRM marketing) | ✅ |
 | `dashboard` | Boshqaruv paneli (CMS) — sayt + menyu + CRM | ✅ |
-| `crm` | Mijozlar bazasi + marketing (SMS/email/Telegram) | 🔜 quriladi |
+| `crm` | Mijozlar bazasi + marketing (SMS/email/Telegram) | ✅ (Campaign 🔜) |
 
 > Olib tashlangan app'lar: ~~`orders`, `tables`, `payments`, `chat`~~ (delivery/buyurtma keyingi alohida loyiha).
 
@@ -110,8 +110,10 @@ DATABASE_URL=sqlite:///db.sqlite3        # dev
 TELEGRAM_BOT_TOKEN=...
 TELEGRAM_ADMIN_CHAT_ID=...              # guruh yoki kanal ID
 
-ESKIZ_EMAIL=                            # CRM SMS marketing (kelajak)
-ESKIZ_PASSWORD=
+# CRM SMS marketing (FAZA 5)
+ESKIZ_EMAIL=                            # Eskiz.uz akkaunt email
+ESKIZ_PASSWORD=                         # Eskiz.uz akkaunt paroli
+ESKIZ_SMS_FROM=MAYLI                    # SMS yuboruvchi nomi
 ```
 
 ---
@@ -123,8 +125,9 @@ ESKIZ_PASSWORD=
 | **0** | Fundament (settings, app'lar, RBAC, i18n) | ✅ |
 | **1** | Marketing sayti (3 tilda, SEO) | ✅ |
 | **2** | Boshqaruv paneli (CMS) — sayt + menyu | ✅ |
-| **3** | **Mijozlar CRM** — baza + dashboard CRUD + segmentlash | 🔥 hozir |
-| 4 | CRM marketing kampaniyalari (SMS/email/Telegram) | rejada |
+| **3** | **Mijozlar CRM** — baza + dashboard CRUD + segmentlash | ✅ |
+| **4** | **Production tozalash** — legacy settings, docs, requirements-dev | ✅ |
+| **5** | **CRM marketing kampaniyalari** — SMS/email/Telegram (Eskiz API) | 🔜 tayyor |
 | — | Delivery & Take away — **alohida katta loyiha** (keyin) | rejada |
 
 ---
