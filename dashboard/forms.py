@@ -18,6 +18,11 @@ class BootstrapModelForm(forms.ModelForm):
             else:
                 field.widget.attrs['class'] = 'form-control'
 
+            # Add is-invalid class if field has errors
+            if field_name in self.errors:
+                current_class = field.widget.attrs.get('class', '')
+                field.widget.attrs['class'] = f'{current_class} is-invalid'
+
 class SiteSettingsForm(BootstrapModelForm):
     class Meta:
         model = SiteSettings

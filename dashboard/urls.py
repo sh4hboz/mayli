@@ -2,6 +2,7 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
+    path('', views.dashboard_home, name='dashboard_home'),
     path('chat/', views.chat_view, name='dashboard_chat'),
 
     # Sayt sozlamalari
@@ -64,4 +65,8 @@ urlpatterns = [
 
     # Universal AJAX toggle active
     path('toggle-active/<str:app_label>/<str:model_name>/<int:pk>/', views.toggle_active_ajax, name='dashboard_toggle_active'),
+
+    # Lock Screen
+    path('lock/', views.lock_screen, name='dashboard_lock_screen'),
+    path('unlock/', views.unlock_screen, name='dashboard_unlock_screen'),
 ]

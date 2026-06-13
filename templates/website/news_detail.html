@@ -1,0 +1,75 @@
+{% extends 'website/base.html' %}
+{% load static i18n %}
+
+{% block title %}{{ article.title }}{% endblock %}
+{% block meta_description %}{{ article.body|truncatechars:160 }}{% endblock %}
+{% block og_title %}{{ article.title }}{% endblock %}
+{% block og_description %}{{ article.body|truncatechars:160 }}{% endblock %}
+
+{% block content %}
+
+<section class="page-hero">
+  <div class="container">
+    <span class="section-badge">{% trans "Yangiliklar" %}</span>
+    <h1 class="section-title">{% trans "So'nggi yangiliklar" %}</h1>
+    <div class="breadcrumb">
+      <a href="{% url 'website:home' %}">{% trans "Bosh sahifa" %}</a> /
+      <a href="{% url 'website:news_list' %}">{% trans "Yangiliklar" %}</a> /
+      <span>{{ article.title|truncatechars:40 }}</span>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="news-detail-layout">
+
+      <!-- Asosiy kontent -->
+      <article class="news-detail-article">
+        <h1 class="news-detail-title mb-3">{{ article.title }}</h1>
+        <div class="news-date mb-3">{{ article.created_at|date:"d.m.Y" }}</div>
+
+        {% if article.image %}
+        <div class="news-detail-img mb-4">
+          <img src="{{ article.image.url }}" alt="{{ article.title }}" loading="lazy">
+        </div>
+        {% endif %}
+
+        <div class="news-detail-body">
+          {{ article.body|linebreaks }}
+        </div>
+
+        <div class="news-detail-back mt-4">
+          <a href="{% url 'website:news_list' %}" class="btn btn-outline">
+            ← {% trans "Barcha yangiliklar" %}
+          </a>
+        </div>
+      </article>
+
+      <!-- Related yangiliklar -->
+      {% if related %}
+      <aside class="news-detail-related">
+        <h4 class="related-title">{% trans "Boshqa yangiliklar" %}</h4>
+        <div class="related-list">
+          {% for item in related %}
+          <a href="{% url 'website:news_detail' item.slug %}" class="related-item">
+            {% if item.image %}
+            <div class="related-img">
+              <img src="{{ item.image.url }}" alt="{{ item.title }}" loading="lazy">
+            </div>
+            {% endif %}
+            <div class="related-body">
+              <div class="news-date">{{ item.created_at|date:"d.m.Y" }}</div>
+              <p class="related-item-title">{{ item.title|truncatechars:60 }}</p>
+            </div>
+          </a>
+          {% endfor %}
+        </div>
+      </aside>
+      {% endif %}
+
+    </div>
+  </div>
+</section>
+
+{% endblock %}

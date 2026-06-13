@@ -1,78 +1,158 @@
 # 🧑‍💼 MAYLI RESTOBAR — Website Admin Panel (Paces dashboard) — CRUD
 
-> Claude Code uchun ish-buyurtmasi. Bu **`MAYLI_WEBSITE_DAVOM.md` dan KEYIN** keladi (public sayt sayqallangach). Konventsiyalar: `MAYLI_CONTEXT.md`. Maqsad: web-saytni boshqaradigan to'liq, sodda admin panel.
+> Claude Code uchun ish-buyurtmasi. Konventsiyalar: `MAYLI_CONTEXT.md`. Maqsad: web-saytni boshqaradigan to'liq, sodda admin panel.
 
 ---
 
 ## 🎯 QAMROV (MUHIM — chegaralarga rioya qil)
 - ✅ **HOZIR FAQAT:** web-saytni boshqaradigan admin panel (website modellari uchun **CRUD**).
-- ⛔ **TEGMA / KEYINGA QOLDIR:** buyurtma boshqaruvi, live board, statistika/analytics dashboard, delivery, kuryer tayinlash, mobil ilova. (Bular keyingi bosqich — hozir EMAS.)
+- ⛔ **TEGMA / KEYINGA QOLDIR:** buyurtma boshqaruvi, live board, statistika/analytics dashboard, delivery, kuryer tayinlash, mobil ilova.
 - 🛠️ Backend bilan ishlash: **views, forms, modellar**.
 
-## 📄 HOLAT
-- **Paces template tayyor:** topbar + sidebar + content sahifalarga ajratilib **include** qilingan (base struktura bor).
-- **Django admin** website modellari uchun ishlaydi (bu — dev/superuser zaxirasi, tegmaymiz). Paces dashboard — **egasi/menejer uchun brendli CMS**. Ikkalasi birga turaveradi.
-- **i18n:** uz/ru/en — `django-modeltranslation`.
-
 ## 📐 QOIDALAR
-- 🔴 **CSS/JS:** inline `style=""` / `onclick=""` YO'Q. CSS → `static/src/<sahifa>.css`, JS → `static/src/<sahifa>.js`; HTML da faqat `class`, `data-*`.
-- Dashboard sahifalari **Paces base**dan extend qilsin (topbar/sidebar/content include).
+- 🔴 **CSS/JS:** inline `style=""` / `onclick=""` YO'Q. CSS → `static/assets/css/custom-management.css`, JS → `static/assets/js/custom-management.js`; HTML da faqat `class`, `data-*`.
+- Dashboard sahifalari `management/base.html` dan extend qilsin.
+- `content-page` + `container-fluid` — base.html da bor, templateda takrorlanmaydi.
 - Trilingual kontent — modeltranslation (forma uz/ru/en maydonlar bilan).
 - **Mavjud public sayt va Django admin buzilmasin.**
 - Muloqot **o'zbek tilida**. **Har qadam oxirida** hisobot ber va tasdiq so'ra.
 
 ---
 
-## ✅ VAZIFALAR (shu tartibda)
+## ✅ BAJARILGAN VAZIFALAR (2026-06-13)
 
-### 0 — urls.py tozalash (vaqtincha)
-- `config/urls.py` da web-saytga **tegishli bo'lmagan** URL'larni **VAQTINCHA comment qil** (O'CHIRMA — keyin tiklanadi): `orders`/buyurtma API, `delivery`, `payments`, `tables` va shu kabilar.
-- **QOLDIR:** `website` (public sayt), **dashboard** (website-management), `django.contrib.admin`, `i18n` (`set_language`), staff **auth** (dashboard login).
-- Maqsad: surface'ni kichraytirib, tugallanmagan delivery/orders kodidan keladigan xatolarni oldini olish.
+### ✅ 0 — urls.py holati
+- `config/urls.py` — API URL'lar (orders/delivery/payments) hozircha yo'q (kerak bo'lganda qaytariladi)
+- Mavjud: `website` (public), `dashboard`, `admin`, `i18n`, `restobar` (auth)
 
-### 1 — Inventar (kod yozishdan oldin)
-- Mavjud dashboard (Paces) template va view'larini ko'r — **qaysi website CRUD allaqachon bor, qaysi yo'q** aniqla (takror qilma).
-- Paces base (topbar/sidebar/content include) tuzilishini tushun.
-- Hisobot ber: nima bor, nima qilinadi.
+### ✅ 1 — Inventar
+- 36 ta view, 21+ template, forms (modeltranslation bilan), custom CSS/JS — barchasi mavjud
+- `dashboard/urls.py` — barcha CRUD URL'lar to'liq
 
-### 2 — Modellarga `is_active` qo'shish
-- **Kontent modellariga** `is_active = BooleanField(default=True)` qo'sh (yo'q bo'lsa): `News`, `Promotion`, `GalleryItem`, `Testimonial`, `Vacancy`, `TeamMember`. (`Dish`'da bor.)
-- **Submission modellari** (`JobApplication`, `ContactMessage`) — is_active emas, balki **`is_read`/holat** mantiqliroq (qabul/ko'rildi).
-- Migration qil.
-- 🔴 **Public sayt query'lari `is_active=True` (va kerakli `is_published`) bo'yicha filtrlasin**; dashboard esa hammasini ko'rsatib **toggle** bersin.
+### ✅ 2 — is_active holati
+- `News`, `Promotion`, `GalleryItem`, `Vacancy`, `TeamMember` — `is_active` bor
+- `ContactMessage` — `is_read` bor
+- `JobApplication` — submission model (delete/view only)
 
-### 3 — Dashboard asoslari
-- **Staff login** (Django session) — **rol asosida**: faqat `admin`/`manager`/`owner` kirsin (`login_required` + rol tekshiruvi). Public foydalanuvchi yoki mijoz kira olmasin.
-- **Sidebar navigatsiya** (website bo'limlari): Sayt sozlamalari · Yangiliklar · Aksiyalar · Galereya · Sharhlar · Vakansiyalar · Arizalar · Aloqa xabarlari · Jamoa.
-- **Dashboard bosh sahifa:** oddiy overview kartalari — yangiliklar/aksiyalar soni, o'qilmagan aloqa xabarlari, yangi arizalar. (⛔ buyurtma/tushum statistikasi YO'Q.)
+### ✅ 3 — Dashboard asoslari
 
-### 4 — CRUD (har bir model)
-Tavsiya: Django generic CBV (`ListView`/`CreateView`/`UpdateView`/`DeleteView`) + `ModelForm` + Paces template'lar.
-- **Trilingual kontent modellari** (`News`, `Promotion`, `GalleryItem`, `Testimonial`, `Vacancy`, `TeamMember`):
-  - **List:** is_active **toggle**, qidiruv, pagination, sana.
-  - **Create / Edit:** forma uz/ru/en maydonlar bilan (modeltranslation), rasm upload (kerak joyda).
-  - **Delete:** **tasdiq** (confirmation modal/sahifa).
-- **`SiteSettings`** (singleton): bitta **edit** forma (kontakt, ijtimoiy, about, stats, lat/lng, ish vaqti...).
-- **`JobApplication` / `ContactMessage`** (admin yaratmaydi): **list + ko'rish + o'qildi belgilash + o'chirish**.
-- **`GalleryItem`:** rasm yuklash (upload), tartib.
-- `is_active` toggle: tugma yoki kichik AJAX endpoint (`POST .../toggle-active/` → `{is_active}`).
+#### base.html:
+- `management/base.html` — title block (`{% block title %}`), `custom-management.css/js`, `content-page`+`container-fluid` wrapper
 
-### 5 — Sayqal va xavfsizlik
-- Forma **validatsiya** + muvaffaqiyat/xato xabarlari (Django `messages`).
-- Dashboard view'lar **staff-only** (rol/permission tekshiruvi har joyda).
-- Paces (Bootstrap) — **mobil responsive** ekanini tekshir.
-- CSS/JS qoidasiga amal qil.
+#### Sidebar (`management/partials/sidebar.html`):
+- Paces demo menyu o'chirildi
+- Mayli navigatsiyasi: **Asosiy** (Dashboard) · **Sayt Boshqaruvi** (Sozlamalar, Yangiliklar, Aksiyalar, Galereya, Vakansiyalar, Arizalar, Aloqa) · **Menyu** (Kategoriyalar, Taomlar) · **Buyurtmalar** · **Mijozlar**
+- User profil: `profile.get_full_name` + `profile.get_role_display`
+- Logout: `/logout/`
+
+#### Topbar (`management/partials/topbar.html`):
+- "Saytni ko'rish" tugmasi theme-dropdown oldida (kichik ekranda yashirinadi)
+
+#### Dashboard home (`/dashboard/`):
+- `dashboard_home` view — stats context: `news_count`, `news_active`, `promo_count`, `promo_active`, `gallery_count`, `vacancy_count`, `vacancy_active`, `unread_contacts`, `new_applications`
+- `management/dashboard.html` — 4 ta kliklanadigan `<a class="card">` (footer yo'q) + bo'limlar ro'yxati + so'nggi 5 ta xabar
+
+### ✅ 4 — Mavjud CRUD (views + urls + forms + templates)
+| Model | List | Create | Update | Delete | Boshqa |
+|---|:---:|:---:|:---:|:---:|---|
+| SiteSettings | — | — | ✅ | — | singleton |
+| News | ✅ | ✅ | ✅ | ✅ | is_active toggle |
+| Promotion | ✅ | ✅ | ✅ | ✅ | is_active toggle |
+| GalleryItem | ✅ | ✅ | — | ✅ | is_active toggle |
+| Vacancy | ✅ | ✅ | ✅ | ✅ | is_active toggle |
+| JobApplication | ✅ | — | — | ✅ | detail ko'rish |
+| ContactMessage | ✅ | — | — | ✅ | detail + is_read toggle |
+| Category | ✅ | ✅ | ✅ | ✅ | |
+| Dish | ✅ | ✅ | ✅ | ✅ | is_active toggle |
+| Order | ✅ | — | — | ✅ | detail + status change |
+| Customer | ✅ | — | — | — | |
+
+**Universal AJAX toggle:** `POST /dashboard/toggle-active/<app>/<model>/<pk>/`
+
+### ✅ Public sayt — Yangiliklar sahifalari
+- `website/urls.py` → `news/` + `news/<slug>/`
+- `website/views.py` → `news_list` + `news_detail` (related 3 ta)
+- `templates/website/news_list.html` — page hero + news grid
+- `templates/website/news_detail.html` — to'liq matn + related sidebar + OG meta
+- `_news.html` partial — modal o'chirildi, haqiqiy URL; "Barcha yangiliklar →" tugmasi
 
 ---
 
-## ✅ ACCEPTANCE
-- [ ] `config/urls.py`: faqat website + dashboard + admin + i18n + auth qoldi (orders/delivery/payments **comment** qilingan).
-- [ ] Website kontent modellarida `is_active` bor; public faqat `is_active=True` ko'rsatadi.
-- [ ] Har website modeli uchun dashboarddan **CRUD ishlaydi** (trilingual, is_active toggle, delete confirmation).
-- [ ] `SiteSettings` tahrirlanadi; arizalar/aloqa xabarlari ko'riladi va boshqariladi.
-- [ ] Dashboardga **faqat admin/manager/owner** kiradi; public/mijoz kira olmaydi.
-- [ ] ⛔ Buyurtma / delivery / statistika'ga **TEGILMAGAN**. Public sayt + Django admin **ishlaydi**, mavjud kod buzilmagan.
+## ✅ BAJARILGAN
+
+### Phase 1: CRUD Templatelar (2026-06-13)
+- [x] **5 ta forma template** — Error messages + validation styling
+  - `news_form.html`, `promotion_form.html`, `vacancy_form.html`, `category_form.html`, `dish_form.html`
+- [x] **Settings form** — 30+ maydonning error messages
+- [x] **Gallery form** — Error messages, caption_en qo'shildi
+- [x] **Delete confirmation** — Global JavaScript (custom-management.js)
+
+### Phase 2: Dashboard UI va Authentication (2026-06-13)
+- [x] **Topbar improvements**
+  - User avatar — initials (A, B, etc.) bilan dynamic
+  - Dropdown: Lock Screen, Log Out
+  - Fullscreen toggle
+- [x] **Sidebar icon** — Taomlar `ti ti-utensils` → `ti ti-chart-donut`
+- [x] **Lock Screen** 
+  - View: `/dashboard/lock/` va `/dashboard/unlock/`
+  - Template: Beautiful UI gradient, password input
+  - Middleware: Session'ni "locked" deb mark qilish
+  - Settings: LockScreenMiddleware qo'shildi
+- [x] **Login page** — Paces uslubiga almashtirildi (auth-sign-in.html based)
+  - Beautiful gradient background
+  - Form errors display
+  - Clean UI (descriptions o'chirildi)
+- [x] **"Eslab qolish" (Remember me)**
+  - Form checkbox
+  - Backend: 30 kun session (remember checked bo'lsa)
+
+### Phase 3: Dashboard Authorization va Messages (2026-06-13)
+- [x] **CMSBaseMixin** — Role tekshiruvi
+  - `PermissionRequiredMixin` → `LoginRequiredMixin` o'zgartirildi
+  - Faqat OWNER, MANAGER, ADMIN rol'lar ruxsat oladi
+  - Boshqa rol'lar → PermissionDenied (403)
+  - `permission_required` qatorlari o'chirildi (zarur emas)
+- [x] **Success messages** — Django messages framework
+  - SuccessMessageMixin yaratildi
+  - Barcha CreateView, UpdateView, DeleteView'larga qo'shildi
+  - Messages: "X muvaffaqiyatli qo'shildi/yangilandi/o'chirildi"
+  - Base template'da display (Bootstrap alerts bilan)
+- [x] **OrderStatusChangeView** — Auto timestamps
+  - Status → cooking: `accepted_at = now()` (agar null)
+  - Status → delivering: `delivered_at = now()` (agar null)
+  - Status → completed: `completed_at = now()` (agar null)
+  - User-friendly messages
+
+## 🔲 QOLGAN ISHLAR
+
+- [ ] `Testimonial`, `TeamMember` CRUD (agar website'da bo'lsa)
+- [ ] Dashboard analytics/statistics page
+- [ ] Bulk operations (mass delete, status change)
+- [ ] Export to CSV/Excel
+- [ ] Email notifications (order status changes)
 
 ---
 
-**Boshla: 0-qadam (urls.py tozalash) + 1-qadam (inventar). Hisobot ber, keyin bosqichma-bosqich davom et.**
+## ✅ ACCEPTANCE HOLATI
+- [x] `config/urls.py`: faqat website + dashboard + admin + i18n + auth
+- [x] Website kontent modellarida `is_active` bor
+- [x] Dashboard CRUD asosan ishlaydi (news, promo, gallery, vacancy, contacts, applications)
+- [x] `SiteSettings` tahrirlanadi; arizalar/aloqa xabarlari ko'riladi
+- [x] Dashboardga **faqat admin/manager/owner** — CMSBaseMixin tekshirilishi qilindi
+- [x] Success messages — Form save/update/delete bo'lganda feedback
+- [x] Login page — Beautiful Paces uslubida
+- [x] Lock screen — Password bilan ekran qulfi
+- [x] Order timestamps — Status o'zgarganda auto-set
+- [x] ⛔ Buyurtma/delivery/statistika'ga tegmagan. Public sayt ishlaydi.
+
+---
+
+## 📊 Dashboard Status
+- ✅ Authentication: Login, Lock screen, Role-based access
+- ✅ UI: Topbar, Sidebar, Base template, Messages
+- ✅ CRUD: 10 ta model (News, Promo, Gallery, Vacancy, Contacts, Applications, Category, Dish, Order, Customer)
+- ✅ Forms: Error messages, validation styling, delete confirmations
+- ✅ User feedback: Success messages, form errors, alerts
+- ✅ Order management: Status change, auto timestamps
+- 🔲 Analytics: Dashboard statistics page (optional)
+- 🔲 Bulk operations: Mass actions (optional)

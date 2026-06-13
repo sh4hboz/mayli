@@ -18,15 +18,37 @@
         <div class="card">
             <div class="card-header"><h5 class="card-title mb-0">Rasm qo'shish</h5></div>
             <div class="card-body">
-                <form method="post" action="{% url 'dashboard_gallery_create' %}" enctype="multipart/form-data">
+                {% if form.non_field_errors %}<div class="alert alert-danger alert-sm mb-2">{% for e in form.non_field_errors %}{{ e }}{% endfor %}</div>{% endif %}
+                <form method="post" action="{% url 'dashboard_gallery_create' %}" enctype="multipart/form-data" novalidate>
                     {% csrf_token %}
-                    <div class="mb-2"><label class="form-label">{{ form.image.label }}</label>{{ form.image }}</div>
-                    <div class="mb-2"><label class="form-label">{{ form.caption_uz.label }}</label>{{ form.caption_uz }}</div>
-                    <div class="row g-2 mb-2">
-                        <div class="col-6"><label class="form-label">{{ form.caption_ru.label }}</label>{{ form.caption_ru }}</div>
-                        <div class="col-6"><label class="form-label">{{ form.order.label }}</label>{{ form.order }}</div>
+                    <div class="mb-2">
+                        <label class="form-label">{{ form.image.label }}<span class="text-danger">*</span></label>{{ form.image }}
+                        {% if form.image.errors %}<div class="invalid-feedback d-block">{% for e in form.image.errors %}{{ e }}{% endfor %}</div>{% endif %}
                     </div>
-                    <div class="form-check mb-3">{{ form.is_active }}<label class="form-check-label">{{ form.is_active.label }}</label></div>
+                    <div class="mb-2">
+                        <label class="form-label">{{ form.caption_uz.label }}</label>{{ form.caption_uz }}
+                        {% if form.caption_uz.errors %}<div class="invalid-feedback d-block">{% for e in form.caption_uz.errors %}{{ e }}{% endfor %}</div>{% endif %}
+                    </div>
+                    <div class="row g-2 mb-2">
+                        <div class="col-6">
+                            <label class="form-label">{{ form.caption_ru.label }}</label>{{ form.caption_ru }}
+                            {% if form.caption_ru.errors %}<div class="invalid-feedback d-block">{% for e in form.caption_ru.errors %}{{ e }}{% endfor %}</div>{% endif %}
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label">{{ form.order.label }}</label>{{ form.order }}
+                            {% if form.order.errors %}<div class="invalid-feedback d-block">{% for e in form.order.errors %}{{ e }}{% endfor %}</div>{% endif %}
+                        </div>
+                    </div>
+                    {% if form.caption_en %}
+                    <div class="mb-2">
+                        <label class="form-label">{{ form.caption_en.label }}</label>{{ form.caption_en }}
+                        {% if form.caption_en.errors %}<div class="invalid-feedback d-block">{% for e in form.caption_en.errors %}{{ e }}{% endfor %}</div>{% endif %}
+                    </div>
+                    {% endif %}
+                    <div class="form-check mb-3">
+                        {{ form.is_active }}
+                        <label class="form-check-label">{{ form.is_active.label }}</label>
+                    </div>
                     <button type="submit" class="btn btn-primary btn-sm"><i class="ti ti-upload me-1"></i>Yuklash</button>
                 </form>
             </div>
@@ -59,4 +81,10 @@
         </div>
     </div>
 </div>
+
+<style>
+.form-control.is-invalid, .form-select.is-invalid { border-color: #dc3545; }
+.invalid-feedback { color: #dc3545; font-size: 0.875rem; margin-top: 0.25rem; }
+.alert-sm { padding: 0.5rem 0.75rem; font-size: 0.875rem; margin-bottom: 0.5rem; }
+</style>
 {% endblock %}

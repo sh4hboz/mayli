@@ -14,40 +14,118 @@
         </div>
     </div>
 </div>
+
+{% if form.non_field_errors %}
+<div class="row justify-content-center">
+    <div class="col-lg-10">
+        <div class="alert alert-danger alert-dismissible fade show">
+            {% for error in form.non_field_errors %}<div>{{ error }}</div>{% endfor %}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    </div>
+</div>
+{% endif %}
+
 <div class="row justify-content-center">
     <div class="col-lg-10">
         <div class="card">
             <div class="card-header"><h5 class="card-title mb-0">{% if object %}{{ object.name_uz }}{% else %}Yangi taom{% endif %}</h5></div>
             <div class="card-body">
-                <form method="post" enctype="multipart/form-data">
+                <form method="post" enctype="multipart/form-data" novalidate>
                     {% csrf_token %}
-                    {% if form.non_field_errors %}<div class="alert alert-danger">{{ form.non_field_errors }}</div>{% endif %}
-                    <div class="row g-3">
-                        <div class="col-md-6"><label class="form-label">{{ form.category.label }}</label>{{ form.category }}</div>
-                        <div class="col-md-6"><label class="form-label">{{ form.price.label }}</label>{{ form.price }}</div>
-                        <div class="col-md-4"><label class="form-label">{{ form.name_uz.label }}</label>{{ form.name_uz }}</div>
-                        <div class="col-md-4"><label class="form-label">{{ form.name_ru.label }}</label>{{ form.name_ru }}</div>
-                        <div class="col-md-4"><label class="form-label">{{ form.name_en.label }}</label>{{ form.name_en }}</div>
-                        <div class="col-md-4"><label class="form-label">{{ form.description_uz.label }}</label>{{ form.description_uz }}</div>
-                        <div class="col-md-4"><label class="form-label">{{ form.description_ru.label }}</label>{{ form.description_ru }}</div>
-                        <div class="col-md-4"><label class="form-label">{{ form.description_en.label }}</label>{{ form.description_en }}</div>
-                        <div class="col-md-4">
-                            <label class="form-label">{{ form.image.label }}</label>{{ form.image }}
-                            {% if object.image %}<div class="mt-2"><img src="{{ object.image.url }}" class="thumb-img" alt=""></div>{% endif %}
+
+                    <!-- Asosiy maydonlar -->
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-6">
+                            <label class="form-label">{{ form.category.label }}<span class="text-danger">*</span></label>
+                            {{ form.category }}
+                            {% if form.category.errors %}<div class="invalid-feedback d-block">{% for e in form.category.errors %}{{ e }}{% endfor %}</div>{% endif %}
                         </div>
-                        <div class="col-md-4"><label class="form-label">{{ form.prep_time.label }}</label>{{ form.prep_time }}</div>
-                        <div class="col-md-4 d-flex align-items-end gap-3 pb-2">
-                            <div class="form-check">{{ form.is_available }}<label class="form-check-label">{{ form.is_available.label }}</label></div>
-                            <div class="form-check">{{ form.is_active }}<label class="form-check-label">{{ form.is_active.label }}</label></div>
+                        <div class="col-md-6">
+                            <label class="form-label">{{ form.price.label }}<span class="text-danger">*</span></label>
+                            {{ form.price }}
+                            {% if form.price.errors %}<div class="invalid-feedback d-block">{% for e in form.price.errors %}{{ e }}{% endfor %}</div>{% endif %}
                         </div>
                     </div>
+
+                    <!-- Nomlar -->
+                    <div class="row g-3 mb-4">
+                        <h6 class="col-12 text-muted">Taom nomi</h6>
+                        <div class="col-md-4">
+                            <label class="form-label">{{ form.name_uz.label }}<span class="text-danger">*</span></label>
+                            {{ form.name_uz }}
+                            {% if form.name_uz.errors %}<div class="invalid-feedback d-block">{% for e in form.name_uz.errors %}{{ e }}{% endfor %}</div>{% endif %}
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">{{ form.name_ru.label }}<span class="text-danger">*</span></label>
+                            {{ form.name_ru }}
+                            {% if form.name_ru.errors %}<div class="invalid-feedback d-block">{% for e in form.name_ru.errors %}{{ e }}{% endfor %}</div>{% endif %}
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">{{ form.name_en.label }}<span class="text-danger">*</span></label>
+                            {{ form.name_en }}
+                            {% if form.name_en.errors %}<div class="invalid-feedback d-block">{% for e in form.name_en.errors %}{{ e }}{% endfor %}</div>{% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Ta'riflar -->
+                    <div class="row g-3 mb-4">
+                        <h6 class="col-12 text-muted">Ta'rif</h6>
+                        <div class="col-md-4">
+                            <label class="form-label">{{ form.description_uz.label }}</label>
+                            {{ form.description_uz }}
+                            {% if form.description_uz.errors %}<div class="invalid-feedback d-block">{% for e in form.description_uz.errors %}{{ e }}{% endfor %}</div>{% endif %}
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">{{ form.description_ru.label }}</label>
+                            {{ form.description_ru }}
+                            {% if form.description_ru.errors %}<div class="invalid-feedback d-block">{% for e in form.description_ru.errors %}{{ e }}{% endfor %}</div>{% endif %}
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">{{ form.description_en.label }}</label>
+                            {{ form.description_en }}
+                            {% if form.description_en.errors %}<div class="invalid-feedback d-block">{% for e in form.description_en.errors %}{{ e }}{% endfor %}</div>{% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Rasm va boshqa -->
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-6">
+                            <label class="form-label">{{ form.image.label }}</label>
+                            {{ form.image }}
+                            {% if form.image.errors %}<div class="invalid-feedback d-block">{% for e in form.image.errors %}{{ e }}{% endfor %}</div>{% endif %}
+                            {% if object.image %}<div class="mt-2"><img src="{{ object.image.url }}" class="thumb-img" alt=""></div>{% endif %}
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">{{ form.prep_time.label }}</label>
+                            {{ form.prep_time }}
+                            {% if form.prep_time.errors %}<div class="invalid-feedback d-block">{% for e in form.prep_time.errors %}{{ e }}{% endfor %}</div>{% endif %}
+                        </div>
+                        <div class="col-md-3 d-flex align-items-end gap-3 pb-2">
+                            <div class="form-check">
+                                {{ form.is_available }}
+                                <label class="form-check-label">{{ form.is_available.label }}</label>
+                            </div>
+                            <div class="form-check">
+                                {{ form.is_active }}
+                                <label class="form-check-label">{{ form.is_active.label }}</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Buttons -->
                     <div class="d-flex gap-2 mt-4">
-                        <button type="submit" class="btn btn-primary">Saqlash</button>
-                        <a href="{% url 'dashboard_dish_list' %}" class="btn btn-secondary">Orqaga</a>
+                        <button type="submit" class="btn btn-primary"><i class="bx bx-save me-1"></i>Saqlash</button>
+                        <a href="{% url 'dashboard_dish_list' %}" class="btn btn-secondary"><i class="bx bx-arrow-back me-1"></i>Orqaga</a>
                     </div>
                 </form>
             </div>
         </div>
     </div>
 </div>
+
+<style>
+.form-control.is-invalid, .form-select.is-invalid { border-color: #dc3545; }
+.invalid-feedback { color: #dc3545; font-size: 0.875rem; margin-top: 0.25rem; }
+</style>
 {% endblock %}

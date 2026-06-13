@@ -1,75 +1,67 @@
 {% load static %}
 <!doctype html>
-<html lang="en" data-skin="default" data-bs-theme="dark" data-menu-color="dark" data-topbar-color="light" data-layout-width="fluid" dir="ltr" data-sidenav-size="offcanvas" data-layout-position="fixed">
+<html lang="uz" data-skin="default" data-bs-theme="dark" data-menu-color="dark" data-topbar-color="light" data-layout-width="fluid" dir="ltr" data-sidenav-size="offcanvas" data-layout-position="fixed">
 <head>
-        <meta charset="utf-8" />
-        <title>eCommerce Dashboard | Paces - Multipurpose Tailwind CSS & Bootstrap Admin Dashboard Template</title>
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <meta name="description" content="Paces is a modern, responsive admin dashboard available on ThemeForest. Ideal for building CRM, CMS, project management tools, and custom web applications with a clean UI, flexible layouts, and rich features." />
-        <meta name="keywords" content="Paces, admin dashboard, ThemeForest, Bootstrap 5 admin, responsive admin, CRM dashboard, CMS admin, web app UI, admin theme, premium admin template" />
-        <meta name="author" content="Coderthemes" />
+    <meta charset="utf-8" />
+    <title>{% block title %}Admin | Mayli Restobar{% endblock %}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow" />
 
-        <!-- App favicon -->
-        <link rel="shortcut icon" href="{% static 'assets/images/favicon.ico' %}" />
+    <link rel="shortcut icon" href="{% static 'assets/images/favicon.ico' %}" />
 
+    <!-- Theme Config Js -->
+    <script src="{% static 'assets/js/config.js' %}"></script>
 
-        <!-- Vector Maps css -->
-        <link href="{% static 'assets/plugins/jsvectormap/jsvectormap.min.css' %}" rel="stylesheet" type="text/css" />
+    <!-- Vendor css -->
+    <link href="{% static 'assets/css/vendor.min.css' %}" rel="stylesheet" type="text/css" />
 
-        <!-- Theme Config Js -->
-        <script src="{% static 'assets/js/config.js' %}"></script>
+    <!-- App css -->
+    <link id="app-style" href="{% static 'assets/css/app.min.css' %}" rel="stylesheet" type="text/css" />
 
-        <!-- Vendor css -->
-        <link href="{% static 'assets/css/vendor.min.css' %}" rel="stylesheet" type="text/css" />
+    <!-- Custom management css -->
+    <link href="{% static 'assets/css/custom-management.css' %}" rel="stylesheet" type="text/css" />
 
-        <!-- App css -->
-        <link id="app-style" href="{% static 'assets/css/app.min.css' %}" rel="stylesheet" type="text/css" />
+    {% block extra_css %}{% endblock %}
+</head>
 
-    </head>
+<body>
+    <div class="wrapper">
+        {% include 'management/partials/topbar.html' %}
+        {% include 'management/partials/sidebar.html' %}
 
-    <body>
-        <!-- Begin page -->
-        <div class="wrapper">
-            {% include 'management/partials/topbar.html' %}
-            <!-- Topbar End -->
-
-            {% include 'management/partials/sidebar.html' %}
-            <!-- Sidenav Menu End -->
-
-
-            <!-- ============================================================== -->
-            <!-- Start Main Content -->
-            <!-- ============================================================== -->
-
-            {% block content %}
-            {% endblock content %}
-
-            <!-- ============================================================== -->
-            <!-- End of Main Content -->
-            <!-- ============================================================== -->
+        <div class="content-page">
+            <div class="container-fluid">
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="alert alert-{{ message.tags }} alert-dismissible fade show mb-3" role="alert">
+                            {% if message.tags == 'error' %}
+                                <i class="ti ti-alert-circle me-2"></i>
+                            {% elif message.tags == 'success' %}
+                                <i class="ti ti-check me-2"></i>
+                            {% elif message.tags == 'warning' %}
+                                <i class="ti ti-alert-triangle me-2"></i>
+                            {% else %}
+                                <i class="ti ti-info-circle me-2"></i>
+                            {% endif %}
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+                {% block content %}{% endblock %}
+            </div>
         </div>
-        <!-- END wrapper -->
+    </div>
 
-        <!-- Vendor js -->
-        <script src="{% static 'assets/js/vendors.min.js' %}"></script> 
+    <!-- Vendor js -->
+    <script src="{% static 'assets/js/vendors.min.js' %}"></script>
 
-        <!-- App js -->
-        <script src="{% static 'assets/js/app.js' %}"></script>
+    <!-- App js -->
+    <script src="{% static 'assets/js/app.js' %}"></script>
 
+    <!-- Custom management js -->
+    <script src="{% static 'assets/js/custom-management.js' %}"></script>
 
-        <!-- Apex Chart js -->
-        <script src="{% static 'assets/plugins/apexcharts/apexcharts.min.js' %}"></script>
-
-        <!-- Vector Map Js -->
-        <script src="{% static 'assets/plugins/jsvectormap/jsvectormap.min.js' %}"></script>
-        <script src="{% static 'assets/js/maps/world-merc.js' %}"></script>
-        <script src="{% static 'assets/js/maps/world.js' %}"></script>
-
-        <!-- Custom table -->
-        <script src="{% static 'assets/js/pages/custom-table.js' %}"></script>
-
-        <!-- Dashboard js -->
-        <script src="{% static 'assets/js/pages/dashboard-ecommerce.js' %}"></script>
-    </body>
-
+    {% block extra_js %}{% endblock %}
+</body>
 </html>

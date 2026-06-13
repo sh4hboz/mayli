@@ -6,6 +6,8 @@ app_name = 'website'
 urlpatterns = [
     path('', views.home, name='home'),
     path('about/', views.about, name='about'),
+    path('news/', views.news_list, name='news_list'),
+    path('news/<slug:slug>/', views.news_detail, name='news_detail'),
     path('privacy-policy/', views.privacy_policy, name='privacy_policy'),
     path('terms-conditions/', views.terms_conditions, name='terms_conditions'),
 ]

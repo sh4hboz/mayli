@@ -211,6 +211,20 @@ def order_status(request, order_id):
     })
 
 
+def news_list(request):
+    news = News.objects.filter(is_active=True)
+    return render(request, 'website/news_list.html', {'news_list': news})
+
+
+def news_detail(request, slug):
+    article = get_object_or_404(News, slug=slug, is_active=True)
+    related = News.objects.filter(is_active=True).exclude(pk=article.pk)[:3]
+    return render(request, 'website/news_detail.html', {
+        'article': article,
+        'related': related,
+    })
+
+
 def privacy_policy(request):
     return render(request, 'website/privacy_policy.html')
 

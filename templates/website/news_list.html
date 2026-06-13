@@ -1,0 +1,52 @@
+{% extends 'website/base.html' %}
+{% load static i18n %}
+
+{% block title %}{% trans "Yangiliklar" %}{% endblock %}
+{% block meta_description %}{% trans "Mayli Restobar yangiliklari — so'nggi voqealar, aksiyalar va e'lonlar." %}{% endblock %}
+
+{% block content %}
+
+<section class="page-hero">
+  <div class="container">
+    <span class="section-badge">{% trans "Yangiliklar" %}</span>
+    <h1 class="section-title">{% trans "So'nggi yangiliklar" %}</h1>
+    <div class="breadcrumb">
+      <a href="{% url 'website:home' %}">{% trans "Bosh sahifa" %}</a> /
+      <span>{% trans "Yangiliklar" %}</span>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    {% if news_list %}
+    <div class="news-grid">
+      {% for article in news_list %}
+      <div class="news-card reveal">
+        {% if article.image %}
+        <div class="news-card-img">
+          <img src="{{ article.image.url }}" alt="{{ article.title }}" loading="lazy">
+        </div>
+        {% endif %}
+        <div class="news-card-body">
+          <div class="news-date">{{ article.created_at|date:"d.m.Y" }}</div>
+          <div class="news-card-title">
+            <a href="{% url 'website:news_detail' article.slug %}">{{ article.title }}</a>
+          </div>
+          <div class="news-excerpt">{{ article.body|truncatechars:140 }}</div>
+          <a href="{% url 'website:news_detail' article.slug %}" class="btn btn-outline mt-2">
+            {% trans "Batafsil" %} →
+          </a>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="text-center py-5">
+      <p class="text-muted">{% trans "Hozircha yangiliklar yo'q." %}</p>
+    </div>
+    {% endif %}
+  </div>
+</section>
+
+{% endblock %}

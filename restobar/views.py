@@ -156,6 +156,9 @@ def login_view(request):
                 authenticated_user = authenticate(request, username=cleaned_phone, password=password_input)
                 if authenticated_user is not None:
                     login(request, authenticated_user)
+                    remember = request.POST.get('remember') == 'on'
+                    if remember:
+                        request.session.set_expiry(30 * 24 * 60 * 60)
                     redirect_url = '/profile/' if request.session.get('table_number') else '/menu/'
                     if is_ajax:
                         next_url = request.POST.get('next')
@@ -229,6 +232,9 @@ def login_view(request):
                 authenticated_user = authenticate(request, username=username_input, password=password_input)
                 if authenticated_user is not None:
                     login(request, authenticated_user)
+                    remember = request.POST.get('remember') == 'on'
+                    if remember:
+                        request.session.set_expiry(30 * 24 * 60 * 60)
                     return redirect('dashboard')
                 else:
                     return render(request, 'registration/login.html', {

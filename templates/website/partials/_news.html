@@ -19,28 +19,15 @@
         <div class="news-card-body">
           <div class="news-date">{{ article.created_at|date:"d.m.Y" }}</div>
           <div class="news-card-title">
-            <a data-fancybox data-src="#news-modal-{{ article.id }}" href="javascript:;">{{ article.title }}</a>
+            <a href="{% url 'website:news_detail' article.slug %}">{{ article.title }}</a>
           </div>
           <div class="news-excerpt">{{ article.body|truncatechars:120 }}</div>
         </div>
       </div>
-
-      <!-- Fancybox News Detail Modal -->
-      <div id="news-modal-{{ article.id }}" class="news-detail-modal">
-        <div class="news-modal-header">
-          <span class="news-date">{{ article.created_at|date:"d.m.Y" }}</span>
-          <h3 class="news-modal-title">{{ article.title }}</h3>
-        </div>
-        {% if article.image %}
-        <div class="news-modal-image">
-          <img src="{{ article.image.url }}" alt="{{ article.title }}">
-        </div>
-        {% endif %}
-        <div class="news-modal-body">
-          {{ article.body|linebreaks }}
-        </div>
-      </div>
       {% endfor %}
+    </div>
+    <div class="section-footer reveal">
+      <a href="{% url 'website:news_list' %}" class="btn btn-outline">{% trans "Barcha yangiliklar" %} →</a>
     </div>
   </div>
 </section>

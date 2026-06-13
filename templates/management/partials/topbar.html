@@ -44,6 +44,11 @@
         </div>
 
         <div class="d-flex align-items-center gap-2">
+            <a href="/" target="_blank" class="btn btn-sm btn-outline-primary d-none d-sm-inline-flex align-items-center gap-1">
+                <i class="ti ti-world"></i>
+                <span>Saytni ko'rish</span>
+            </a>
+
             <div id="theme-dropdown" class="topbar-item d-sm-flex">
                 <div class="dropdown">
                     <button class="topbar-link" data-bs-toggle="dropdown" type="button" aria-haspopup="false" aria-expanded="false">
@@ -270,24 +275,26 @@
             <div id="user-dropdown-detailed" class="topbar-item nav-user">
                 <div class="dropdown">
                     <a class="topbar-link dropdown-toggle drop-arrow-none px-2" data-bs-toggle="dropdown" href="#!" aria-haspopup="false" aria-expanded="false">
-                        <img src="{% static 'assets/images/users/user-1.jpg' %}" width="32" class="rounded-circle me-lg-2 d-flex" alt="user-image" />
+                        <div class="avatar-sm rounded-circle me-lg-2 d-flex align-items-center justify-content-center bg-primary text-white fw-bold" style="width: 32px; height: 32px; font-size: 14px;">
+                            {{ profile.user.first_name|first|upper }}{{ profile.user.last_name|first|upper }}
+                        </div>
                         <div class="d-lg-flex align-items-center gap-1 d-none">
                             <span>
-                                <h5 class="my-0 lh-1 pro-username">David Dev</h5>
-                                <span class="fs-xs lh-1">Admin Head</span>
+                                <h5 class="my-0 lh-1 pro-username">{{ profile.get_full_name|default:"Admin" }}</h5>
+                                <span class="fs-xs lh-1">{{ profile.get_role_display|default:"Administrator" }}</span>
                             </span>
                             <i class="ti ti-chevron-down align-middle"></i>
                         </div>
                     </a>
                     <div class="dropdown-menu dropdown-menu-end">
                         <!-- Lock -->
-                        <a href="#" class="dropdown-item">
+                        <a href="{% url 'dashboard_lock_screen' %}" class="dropdown-item">
                             <i class="ti ti-lock me-1 fs-lg align-middle"></i>
                             <span class="align-middle">Lock Screen</span>
                         </a>
 
                         <!-- Logout -->
-                        <a href="#" class="dropdown-item fw-semibold">
+                        <a href="/logout/" class="dropdown-item fw-semibold text-danger">
                             <i class="ti ti-logout me-1 fs-lg align-middle"></i>
                             <span class="align-middle">Log Out</span>
                         </a>

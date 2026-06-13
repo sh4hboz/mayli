@@ -1,15 +1,13 @@
-{% load static %}
-<!DOCTYPE html>
+{% load static %}<!doctype html>
 <html lang="uz">
-
 <head>
     <meta charset="utf-8" />
-    <title>Xodimlar Portali | Mayli Restobar</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta content="Mayli Restobar - Xodimlar kirish portali" name="description" />
+    <title>Kirish - Mayli Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Mayli Restobar - Admin Dashboard" />
 
     <!-- App favicon -->
-    <link rel="shortcut icon" href="{% static 'assets/images/favicon.ico' %}">
+    <link rel="shortcut icon" href="{% static 'assets/images/favicon.ico' %}" />
 
     <!-- Theme Config Js -->
     <script src="{% static 'assets/js/config.js' %}"></script>
@@ -18,68 +16,86 @@
     <link href="{% static 'assets/css/vendor.min.css' %}" rel="stylesheet" type="text/css" />
 
     <!-- App css -->
-    <link href="{% static 'assets/css/app.min.css' %}" rel="stylesheet" type="text/css" id="app-style" />
+    <link id="app-style" href="{% static 'assets/css/app.min.css' %}" rel="stylesheet" type="text/css" />
 
-    <!-- Icons css -->
-    <link href="{% static 'assets/css/icons.min.css' %}" rel="stylesheet" type="text/css" />
 </head>
 
 <body>
 
-    <div class="auth-bg d-flex min-vh-100">
-        <div class="row g-0 justify-content-center w-100 m-xxl-5 px-xxl-4 m-3">
-            <div class="col-xxl-3 col-lg-5 col-md-6">
-                <a href="{% url 'home' %}" class="auth-brand d-flex justify-content-center mb-2">
-                    <img src="{% static 'assets/images/logo-dark.png' %}" alt="dark logo" height="26" class="logo-dark">
-                    <img src="{% static 'assets/images/logo.png' %}" alt="logo light" height="26" class="logo-light">
-                </a>
-
-                <p class="fw-semibold mb-4 text-center text-muted fs-15">Mayli Restobar - Xodimlar Portali</p>
-
-                <div class="card overflow-hidden p-xxl-4 p-3 mb-0">
-
-                    <h4 class="text-center fw-bold fs-18 mb-1">Xodimlar Kirishi</h4>
-                    <p class="text-muted text-center fs-13 mb-4">Menejer, Admin, Ofitsiant va Barmanlar uchun tizimga kirish.</p>
-
-                    {% if error %}
-                    <div class="alert alert-danger text-start fs-13 mb-3" role="alert">
-                        <i class="bx bx-error-circle me-1"></i> {{ error }}
-                    </div>
-                    {% endif %}
-
-                    <!-- Xodimlar Kirish Formasi -->
-                    <form method="post" action="{% url 'login' %}" class="text-start mb-3">
-                        {% csrf_token %}
-                        <input type="hidden" name="user_type" value="staff">
-                        
-                        <div class="mb-3">
-                            <label class="form-label" for="username">Login (Foydalanuvchi nomi)</label>
-                            <input type="text" id="username" name="username" class="form-control"
-                                placeholder="Masalan: waiter_ali, manager1" value="{{ username|default:'' }}" required autocomplete="off">
+    <div class="auth-box overflow-hidden align-items-center d-flex">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-xxl-5 col-md-6 col-sm-8">
+                    <div class="card p-4">
+                        <div class="auth-brand text-center mb-2">
+                            <a href="/" class="logo-dark">
+                                <img src="{% static 'src/img/icons/logo-lg-black.svg' %}" alt="dark logo" height="32" />
+                            </a>
+                            <a href="/" class="logo-light">
+                                <img src="{% static 'src/img/icons/logo-lg.svg' %}" alt="logo" height="32" />
+                            </a>
                         </div>
 
-                        <div class="mb-3">
-                            <label class="form-label" for="staffPassword">PIN Kod yoki Parol</label>
-                            <input type="password" id="staffPassword" name="password" class="form-control"
-                                placeholder="PIN yoki parolingizni kiriting" required autocomplete="off">
-                        </div>
+                        {% if form.non_field_errors %}
+                            {% for error in form.non_field_errors %}
+                                <div class="alert alert-danger alert-dismissible fade show mb-3" role="alert">
+                                    <i class="ti ti-alert-circle me-2"></i>
+                                    {{ error }}
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                </div>
+                            {% endfor %}
+                        {% endif %}
 
-                        <div class="mb-3 fs-13">
-                            <div class="form-check">
-                                <input type="checkbox" class="form-check-input" id="checkbox-staff">
-                                <label class="form-check-label" for="checkbox-staff">Eslab qolish</label>
+
+                        <form method="post" action="{% url 'login' %}">
+                            {% csrf_token %}
+                            <input type="hidden" name="user_type" value="staff">
+
+                            <div class="mb-3">
+                                <label for="{{ form.username.id_for_label }}" class="form-label">
+                                    Foydalanuvchi nomi
+                                    <span class="text-danger">*</span>
+                                </label>
+                                <div class="input-group">
+                                    <input type="text" class="form-control" id="{{ form.username.id_for_label }}" name="username" placeholder="Foydalanuvchi nomi" required autofocus />
+                                </div>
+                                {% if form.username.errors %}
+                                    {% for error in form.username.errors %}
+                                        <div class="invalid-feedback d-block">{{ error }}</div>
+                                    {% endfor %}
+                                {% endif %}
                             </div>
-                        </div>
 
-                        <div class="d-grid">
-                            <button class="btn btn-primary fw-semibold" type="submit">Xodim sifatida kirish</button>
-                        </div>
-                    </form>
+                            <div class="mb-3">
+                                <label for="{{ form.password.id_for_label }}" class="form-label">
+                                    Parol
+                                    <span class="text-danger">*</span>
+                                </label>
+                                <div class="input-group">
+                                    <input type="password" class="form-control" id="{{ form.password.id_for_label }}" name="password" placeholder="••••••••" required />
+                                </div>
+                                {% if form.password.errors %}
+                                    {% for error in form.password.errors %}
+                                        <div class="invalid-feedback d-block">{{ error }}</div>
+                                    {% endfor %}
+                                {% endif %}
+                            </div>
+
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <div class="form-check">
+                                    <input class="form-check-input form-check-input-light fs-14" type="checkbox" id="rememberMe" name="remember" />
+                                    <label class="form-check-label" for="rememberMe">Eslab qolish</label>
+                                </div>
+                            </div>
+
+                            <div class="d-grid">
+                                <button type="submit" class="btn btn-primary fw-semibold py-2">Kirish</button>
+                            </div>
+                        </form>
+
+                    </div>
 
                 </div>
-                <p class="mt-4 text-center mb-0">
-                    <script>document.write(new Date().getFullYear())</script> © Mayli Restobar
-                </p>
             </div>
         </div>
     </div>

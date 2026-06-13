@@ -1,0 +1,133 @@
+{% load static %}<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ekran Qulfi - Mayli Dashboard</title>
+    <link href="{% static 'assets/css/app.min.css' %}" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons@latest/tabler-icons.min.css">
+    <style>
+        .lock-screen-wrapper {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .lock-screen-card {
+            background: white;
+            border-radius: 12px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 400px;
+            width: 100%;
+            text-align: center;
+        }
+        .lock-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            color: white;
+            font-size: 36px;
+            font-weight: bold;
+        }
+        .lock-username {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: #333;
+        }
+        .lock-role {
+            font-size: 13px;
+            color: #999;
+            margin-bottom: 30px;
+        }
+        .lock-icon {
+            font-size: 48px;
+            color: #667eea;
+            margin-bottom: 20px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-control {
+            border: 1px solid #ddd;
+            padding: 10px 15px;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+        .form-control:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+        }
+        .btn-unlock {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            width: 100%;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .btn-unlock:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+        .logout-link {
+            margin-top: 20px;
+            text-align: center;
+        }
+        .logout-link a {
+            color: #667eea;
+            text-decoration: none;
+            font-size: 13px;
+        }
+        .logout-link a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="lock-screen-wrapper">
+        <div class="lock-screen-card">
+            <div class="lock-icon">
+                <i class="ti ti-lock"></i>
+            </div>
+            <div class="lock-avatar">
+                {{ profile.first_name|first|upper }}{{ profile.last_name|first|upper }}
+            </div>
+            <div class="lock-username">{{ profile.get_full_name|default:"User" }}</div>
+            <div class="lock-role">{{ profile.staffprofile.get_role_display|default:"Administrator" }}</div>
+
+            <form method="post" action="{% url 'dashboard_unlock_screen' %}">
+                {% csrf_token %}
+                <div class="form-group">
+                    <input type="password" class="form-control" name="password" placeholder="Parolni kiriting..." required autofocus>
+                </div>
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+                <button type="submit" class="btn-unlock">
+                    <i class="ti ti-unlock me-1"></i>Qulfni oching
+                </button>
+            </form>
+
+            <div class="logout-link">
+                <a href="/logout/">Akkauntdan chiqish</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

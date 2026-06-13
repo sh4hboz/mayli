@@ -1,5 +1,7 @@
 from django.core.management.base import BaseCommand
-from website.models import SiteSettings, Vacancy, GalleryItem
+from django.utils import timezone
+from datetime import datetime, timedelta
+from website.models import SiteSettings, Vacancy, GalleryItem, News
 
 
 class Command(BaseCommand):
@@ -67,3 +69,27 @@ class Command(BaseCommand):
                 salary_en='5,000,000 – 8,000,000 UZS',
             )
             self.stdout.write(self.style.SUCCESS('Vakansiyalar yaratildi'))
+
+        if not News.objects.exists():
+            news1 = News.objects.create(
+                title='Yangi premium kalyan menyusi taqdimoti',
+                body='Mayli Restobar mehmonlari uchun yangi premium kalyan kolleksiyasini taqdim etadi. Menyuga dunyoning mashhur tamaki brendlaridan tanlangan yangi ta\'mlar qo\'shildi. Endi mehmonlar klassik mevali aromatlar bilan bir qatorda eksklyuziv mualliflik mikslarini ham sinab ko\'rishlari mumkin.\n\nYangi menyu tajribali kalyan ustalari tomonidan ishlab chiqilgan bo\'lib, har bir kombinatsiya uzoq davom etuvchi va boy ta\'m hissiyotlarini taqdim etadi. Yangilikni har kuni soat 12:00 dan 02:00 gacha sinab ko\'rishingiz mumkin.',
+                is_active=True,
+            )
+            News.objects.filter(pk=news1.pk).update(created_at=timezone.make_aware(datetime(2026, 6, 12, 12, 0, 0)))
+
+            news2 = News.objects.create(
+                title='Jonli musiqa oqshomlari boshlandi',
+                body='Mayli Restobarda har juma va shanba kunlari jonli musiqa dasturlari o\'tkazilmoqda. Professional musiqachilar va xonandalar ijrosidagi mashhur kompozitsiyalar mehmonlarga unutilmas kayfiyat ulashadi.\n\nMazali taomlar, mualliflik ichimliklari va sifatli musiqa uyg\'unligi dam olish kunlarini yanada maroqli o\'tkazishga yordam beradi. Tadbirlar uchun oldindan stol band qilish tavsiya etiladi.',
+                is_active=True,
+            )
+            News.objects.filter(pk=news2.pk).update(created_at=timezone.make_aware(datetime(2026, 5, 28, 18, 30, 0)))
+
+            news3 = News.objects.create(
+                title='Yangi yozgi menyu taqdim etildi',
+                body='Yoz mavsumi munosabati bilan Mayli Restobar menyusi yangi taomlar bilan boyitildi. Oshpazlarimiz tomonidan tayyorlangan yengil salatlar, grilda pishirilgan taomlar va mavsumiy desertlar mehmonlar e\'tiboriga havola etiladi.\n\nYangi taomlar mahalliy va sifatli mahsulotlardan tayyorlanib, yozgi kayfiyatni aks ettiruvchi maxsus ta\'mlar bilan boyitilgan. Barcha yangiliklar bugundan boshlab buyurtma uchun mavjud.',
+                is_active=True,
+            )
+            News.objects.filter(pk=news3.pk).update(created_at=timezone.make_aware(datetime(2026, 6, 3, 10, 15, 0)))
+
+            self.stdout.write(self.style.SUCCESS('Yangiliklar yaratildi'))
