@@ -1,0 +1,19 @@
+# Development & Testing Tools
+# Use: pip install -r requirements-dev.txt
+
+# Testing
+pytest==8.3.2
+pytest-django==4.8.1
+pytest-cov==5.0.0
+
+# Code formatting & Quality
+black==24.8.0
+flake8==7.1.1
+isort==5.13.2
+
+# Development utilities
+django-debug-toolbar==4.4.0
+django-extensions==3.2.3
+
+# Type checking (optional)
+django-stubs==5.1.0
