@@ -1,0 +1,116 @@
+{% load static i18n i18n_extras %}
+
+<!-- HEADER -->
+<header id="header">
+  <div class="container nav-container">
+    <a href="{% url 'website:home' %}" class="logo">
+      <img src="{% static 'src/img/icons/logo-white.png' %}" alt="Mayli Restobar" id="nav-logo" width="120" height="40">
+    </a>
+
+    <nav class="nav-links" id="nav-links">
+      <ul>
+        <li><a href="{% url 'website:about' %}">{% trans "Biz haqimizda" %}</a></li>
+      </ul>
+    </nav>
+
+    <div class="nav-right">
+      <!-- Til almashtirgich (custom dropdown) -->
+      {% get_current_language as cur_lang %}
+      <div class="lang-dropdown" id="langDropdown">
+        <button class="lang-dropdown-btn" id="langDropdownBtn" type="button" aria-haspopup="listbox" aria-expanded="false">
+          <span class="lang-flag">{% if cur_lang == 'uz' %}uz{% elif cur_lang == 'ru' %}ru{% else %}eng{% endif %}</span>
+        </button>
+        <div class="lang-dropdown-menu" id="langDropdownMenu" role="listbox">
+          {% get_available_languages as langs %}
+          {% for code, name in langs %}
+            {% if code == cur_lang %}
+              <div class="lang-option lang-option-active" role="option" aria-selected="true">
+                <span>{% if code == 'uz' %}uz{% elif code == 'ru' %}ru{% else %}eng{% endif %}</span>
+              </div>
+            {% else %}
+              <form action="{% url 'set_language' %}" method="post" class="lang-option-form">
+                {% csrf_token %}
+                <input type="hidden" name="language" value="{{ code }}">
+                <input type="hidden" name="next" value="{% lang_url code %}">
+                <button type="submit" class="lang-option" role="option" aria-selected="false">
+                  <span>{% if code == 'uz' %}uz{% elif code == 'ru' %}ru{% else %}eng{% endif %}</span>
+                </button>
+              </form>
+            {% endif %}
+          {% endfor %}
+        </div>
+      </div>
+
+      {% if site.phone_main %}
+      <a href="tel:{{ site.phone_main }}" class="nav-phone">
+        <i class="fa fa-phone"></i>
+        <span>{{ site.phone_main }}</span>
+      </a>
+      {% endif %}
+    </div>
+
+    <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="{% trans 'Menyu' %}">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</header>
+
+<!-- MOBILE MENU DRAWER -->
+<div class="mobile-menu-drawer" id="mobileMenuDrawer">
+  <!-- Drawer Header -->
+  <div class="mobile-menu-header">
+    <a href="{% url 'website:home' %}" class="mobile-menu-logo">
+      <img src="{% static 'src/img/icons/logo-white.png' %}" alt="Mayli Restobar" width="100" height="32">
+    </a>
+    <button class="mobile-menu-close" id="mobileMenuClose" aria-label="{% trans 'Yopish' %}">
+      <i class="fa fa-times"></i>
+    </button>
+  </div>
+
+  <div class="mobile-menu-content">
+    <!-- Menu Links -->
+    <nav class="mobile-menu-nav">
+      <a href="{% url 'website:home' %}">{% trans "Bosh sahifa" %}</a>
+      <a href="{% url 'website:home' %}#why-us">{% trans "Nega Mayli?" %}</a>
+      <a href="{% url 'website:home' %}#about-home">{% trans "Biz haqimizda" %}</a>
+      <a href="{% url 'website:home' %}#promotions">{% trans "Aksiyalar" %}</a>
+      <a href="{% url 'website:home' %}#gallery">{% trans "Galereya" %}</a>
+      <a href="{% url 'website:home' %}#testimonials">{% trans "Sharhlar" %}</a>
+      <a href="{% url 'website:home' %}#news">{% trans "Yangiliklar" %}</a>
+      <a href="{% url 'website:about' %}">{% trans "Batafsil" %}</a>
+    </nav>
+
+    <!-- Bottom Section -->
+    <div class="mobile-menu-bottom">
+      {% if site.phone_main %}
+      <div class="mobile-menu-phone">
+        <i class="fa fa-phone"></i>
+        <a href="tel:{{ site.phone_main }}">{{ site.phone_main }}</a>
+      </div>
+      {% endif %}
+
+      <!-- Language Switcher -->
+      <div class="mobile-menu-lang">
+        {% get_current_language as cur_lang %}
+        {% get_available_languages as langs %}
+        <div class="mobile-lang-options">
+          {% for code, name in langs %}
+            {% if code == cur_lang %}
+              <span class="mobile-lang-active">{% if code == 'uz' %}uz{% elif code == 'ru' %}ru{% else %}eng{% endif %}</span>
+            {% else %}
+              <form action="{% url 'set_language' %}" method="post" style="display:inline;">
+                {% csrf_token %}
+                <input type="hidden" name="language" value="{{ code }}">
+                <input type="hidden" name="next" value="{% lang_url code %}">
+                <button type="submit" class="mobile-lang-btn">{% if code == 'uz' %}uz{% elif code == 'ru' %}ru{% else %}eng{% endif %}</button>
+              </form>
+            {% endif %}
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Mobile Menu Backdrop -->
+<div class="mobile-menu-backdrop" id="mobileMenuBackdrop"></div>

@@ -1,0 +1,31 @@
+{% load static i18n %}
+
+<!-- ABOUT TEASER -->
+<section class="about-section section" id="about-home">
+  <div class="container">
+    <div class="about-grid">
+      <div class="about-img-wrap reveal">
+        <img src="{% static 'src/img/about.png' %}" alt="{% trans "Mayli Restobar Interior" %}" loading="lazy">
+        <div class="about-img-badge">
+          <strong>5+</strong>
+          <span>{% trans "Yil tajriba" %}</span>
+        </div>
+      </div>
+      <div class="about-text reveal">
+        <h2 class="section-title">{% trans "Mayli — sifat va lazzat markazi" %}</h2>
+        <p class="text-muted-lh17">
+          {{ site.about_text|default:_("Termiz shahrida joylashgan Mayli Restobar sizga turli xil taomlar, tetiklashtiruvchi ichimliklar va premium kalyan xizmatini taklif etadi.") }}
+        </p>
+        <div class="about-features">
+          <div class="about-feature"><i class="fa fa-check-circle"></i> {% trans "Halol va sifatli taomlar" %}</div>
+          <div class="about-feature"><i class="fa fa-check-circle"></i> {% trans "Premium kalyan xizmati" %}</div>
+          <div class="about-feature"><i class="fa fa-check-circle"></i> {% trans "Xususiy zal va tadbir" %}</div>
+          <div class="about-feature"><i class="fa fa-check-circle"></i> {% trans "Yetkazib berish xizmati" %}</div>
+        </div>
+        <a href="{% url 'website:about' %}" class="btn btn-gold mt-24-inline">
+          {% trans "Batafsil o'qish" %} <i class="fa fa-arrow-right"></i>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>

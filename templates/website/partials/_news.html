@@ -1,0 +1,47 @@
+{% load static i18n %}
+
+<!-- LATEST NEWS -->
+{% if latest_news %}
+<section class="section" id="news">
+  <div class="container">
+    <div class="section-header reveal">
+      <span class="section-badge">{% trans "Yangiliklar" %}</span>
+      <h2 class="section-title">{% trans "So'nggi yangiliklar" %}</h2>
+    </div>
+    <div class="news-grid">
+      {% for article in latest_news %}
+      <div class="news-card reveal">
+        {% if article.image %}
+        <div class="news-card-img">
+          <img src="{{ article.image.url }}" alt="{{ article.title }}" loading="lazy">
+        </div>
+        {% endif %}
+        <div class="news-card-body">
+          <div class="news-date">{{ article.created_at|date:"d.m.Y" }}</div>
+          <div class="news-card-title">
+            <a data-fancybox data-src="#news-modal-{{ article.id }}" href="javascript:;">{{ article.title }}</a>
+          </div>
+          <div class="news-excerpt">{{ article.body|truncatechars:120 }}</div>
+        </div>
+      </div>
+
+      <!-- Fancybox News Detail Modal -->
+      <div id="news-modal-{{ article.id }}" class="news-detail-modal">
+        <div class="news-modal-header">
+          <span class="news-date">{{ article.created_at|date:"d.m.Y" }}</span>
+          <h3 class="news-modal-title">{{ article.title }}</h3>
+        </div>
+        {% if article.image %}
+        <div class="news-modal-image">
+          <img src="{{ article.image.url }}" alt="{{ article.title }}">
+        </div>
+        {% endif %}
+        <div class="news-modal-body">
+          {{ article.body|linebreaks }}
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}

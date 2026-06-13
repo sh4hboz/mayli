@@ -1,0 +1,85 @@
+{% load static i18n %}
+
+<!-- CONTACT SECTION -->
+<section class="section" id="contact">
+  <div class="container">
+    <div class="contact-grid">
+      <!-- Ma'lumotlar -->
+      <div>
+        {% if site.phone_main %}
+        <div class="contact-info-item reveal">
+          <div class="contact-info-icon"><i class="fa fa-phone"></i></div>
+          <div>
+            <h4>{% trans "Telefon" %}</h4>
+            <a href="tel:{{ site.phone_main }}">{{ site.phone_main }}</a>
+
+          </div>
+        </div>
+        {% endif %}
+        {% if site.address %}
+        <div class="contact-info-item reveal">
+          <div class="contact-info-icon"><i class="fa fa-map-marker"></i></div>
+          <div><h4>{% trans "Manzil" %}</h4><p>{{ site.address }}</p></div>
+        </div>
+        {% endif %}
+        {% if site.working_hours %}
+        <div class="contact-info-item reveal">
+          <div class="contact-info-icon"><i class="fa fa-clock-o"></i></div>
+          <div><h4>{% trans "Ish vaqti" %}</h4><p>{{ site.working_hours }}</p></div>
+        </div>
+        {% endif %}
+        {% if site.email %}
+        <div class="contact-info-item reveal">
+          <div class="contact-info-icon"><i class="fa fa-envelope"></i></div>
+          <div><h4>Email</h4><a href="mailto:{{ site.email }}">{{ site.email }}</a></div>
+        </div>
+        {% endif %}
+
+        <div class="mt-24-flex">
+          {% if site.social_links.telegram_channel %}
+          <a href="{{ site.social_links.telegram_channel.url }}" target="_blank">
+            <i class="fa fa-telegram"></i> {{ site.social_links.telegram_channel.title }}
+          </a>
+          <br>
+          {% endif %}
+          {% if site.social_links.instagram %}
+          <a href="{{ site.social_links.instagram.url }}" target="_blank">
+            <i class="fa fa-instagram"></i> {{ site.social_links.instagram.title }}
+          </a>
+          {% endif %}
+          {% if site.phone_main %}
+          <a href="tel:{{ site.phone_main }}" class="btn btn-primary btn-sm">
+            <i class="fa fa-phone"></i> {% trans "Qo'ng'iroq" %}
+          </a>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Forma -->
+      <div class="reveal">
+        <h3 class="title-gold-h3">
+          {% trans "Xabar yuborish" %}
+        </h3>
+        <form class="ajax-form" action="{% url 'website:about' %}#contact" method="post">
+          {% csrf_token %}
+          <div class="form-group">
+            <label class="form-label">{% trans "Ismingiz" %} *</label>
+            <input type="text" name="name" class="form-control" placeholder="{% trans "Ismingizni kiriting" %}" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">{% trans "Telefon" %}</label>
+            <input type="tel" name="phone" class="form-control" placeholder="+998 XX XXX-XX-XX">
+          </div>
+          <div class="form-group">
+            <label class="form-label">{% trans "Xabaringiz" %} *</label>
+            <textarea name="message" class="form-control" rows="5" placeholder="{% trans "Xabaringizni yozing..." %}" required></textarea>
+          </div>
+          <div class="form-result"></div>
+          <button type="submit" class="btn btn-primary form-submit" data-label="{% trans "Yuborish" %}">
+            <i class="fa fa-paper-plane"></i> {% trans "Yuborish" %}
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>

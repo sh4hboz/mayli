@@ -1,0 +1,30 @@
+{% load static i18n %}
+
+<!-- GALLERY TEASER -->
+<section class="section" id="gallery">
+  <div class="container">
+    <div class="section-header reveal">
+      <span class="section-badge">{% trans "Galereya" %}</span>
+      <h2 class="section-title">{% trans "Atmosfera va kayfiyat" %}</h2>
+    </div>
+    {% if gallery_items %}
+    <div class="swiper gallery-swiper">
+      <div class="swiper-wrapper">
+        {% for item in gallery_items %}
+        <div class="swiper-slide">
+          <a class="gallery-item reveal" href="{{ item.image.url }}" data-fancybox="gallery-home" data-caption="{{ item.caption }}">
+            <img src="{{ item.image.url }}" alt="{{ item.caption }}" loading="lazy">
+            <div class="gallery-overlay"><i class="fa fa-search-plus"></i></div>
+          </a>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+    {% else %}
+    <div class="text-center gallery-empty-state">
+      <i class="fa fa-image icon-empty-md"></i>
+      {% trans "Tez orada galereya to'ldiriladi" %}
+    </div>
+    {% endif %}
+  </div>
+</section>

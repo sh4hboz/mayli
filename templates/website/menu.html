@@ -1,0 +1,83 @@
+{% extends 'website/base.html' %}
+{% load static i18n %}
+
+{% block title %}{% trans "Menyu" %}{% endblock %}
+{% block meta_description %}{% trans "Mayli Restobar to'liq menyu — taomlar, ichimliklar, kalyan, gazaklar. Narxlar va fotosuratlar bilan." %}{% endblock %}
+
+{% block content %}
+<section class="menu-hero">
+  <div class="container">
+    <span class="section-badge">{% trans "Menyu" %}</span>
+    <h1 class="section-title mb-8">{% trans "Bizning menyu" %}</h1>
+    <p class="text-muted">{% trans "Premium taomlar, ichimliklar va kalyan" %}</p>
+    <div class="breadcrumb">
+      <a href="{% url 'website:home' %}">{% trans "Bosh sahifa" %}</a> /
+      <span>{% trans "Menyu" %}</span>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <!-- Filterlar -->
+    <div class="menu-filters">
+      <a href="{% url 'website:menu' %}{% if search_query %}?q={{ search_query }}{% endif %}"
+         class="filter-btn {% if not active_category %}active{% endif %}">
+        {% trans "Barchasi" %}
+      </a>
+      {% for cat in categories %}
+      <a href="{% url 'website:menu' %}?cat={{ cat.slug }}{% if search_query %}&q={{ search_query }}{% endif %}"
+          class="filter-btn {% if active_category == cat.slug %}active{% endif %}">
+        {{ cat.name }}
+      </a>
+      {% endfor %}
+    </div>
+
+    <!-- Qidiruv -->
+    <form class="menu-search" id="menuSearchForm" action="{% url 'website:menu' %}" method="get">
+      {% if active_category %}
+        <input type="hidden" name="cat" value="{{ active_category }}">
+      {% endif %}
+      <input type="text" name="q" value="{{ search_query }}" placeholder="{% trans "Taom qidirish..." %}">
+      <button type="submit"><i class="fa fa-search"></i></button>
+    </form>
+
+    <!-- Taomlar -->
+    {% if dishes %}
+    <div class="dishes-grid">
+      {% for dish in dishes %}
+      <div class="dish-card reveal">
+        <div class="dish-img-wrap">
+          {% if dish.image %}
+            <img src="{{ dish.image.url }}" alt="{{ dish.name }}" loading="lazy">
+          {% else %}
+            <div class="dish-no-img">
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="currentColor"><path d="M18.06 22.99h1.66c.84 0 1.53-.64 1.63-1.46L23 5.05h-5V1h-1.97v4.05h-4.97l.3 2.34c1.71.47 3.31 1.32 4.27 2.26 1.44 1.42 2.43 2.89 2.43 5.29v8.05zM1 21.99V21h15.03v.99c0 .55-.45 1-1.01 1H2.01c-.56 0-1.01-.45-1.01-1zm15.03-7c0-2.6-1.53-3.97-4.18-3.97-2.32 0-3.03 1.25-4.85 1.25-1.5 0-2.21-.8-2.51-.8-.97 0-3.49 2.46-3.49 5.32v.2h15.03v-2z"/></svg>
+            </div>
+          {% endif %}
+          <span class="dish-badge">{{ dish.category.name }}</span>
+        </div>
+        <div class="dish-info">
+          <div class="dish-name">{{ dish.name }}</div>
+          {% if dish.description %}
+          <div class="dish-desc">{{ dish.description|truncatechars:80 }}</div>
+          {% endif %}
+          <div class="dish-footer">
+            <div class="dish-price">
+              {{ dish.price|floatformat:0 }} <span class="currency">{% trans "so'm" %}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="no-dishes">
+      <i class="fa fa-search"></i>
+      <p>{% trans "Taom topilmadi. Boshqa kalit so'z yoki kategoriyani sinab ko'ring." %}</p>
+      <a href="{% url 'website:menu' %}" class="btn btn-gold mt-16">{% trans "Hammasini ko'rish" %}</a>
+    </div>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

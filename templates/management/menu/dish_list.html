@@ -1,0 +1,69 @@
+{% extends 'management/base.html' %}
+{% load static %}
+{% block title %}Taomlar | Mayli Restobar{% endblock %}
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="page-title-box d-flex align-items-center justify-content-between">
+            <h4 class="page-title">Taomlar</h4>
+            <ol class="breadcrumb m-0">
+                <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Dashboard</a></li>
+                <li class="breadcrumb-item active">Taomlar</li>
+            </ol>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header d-flex align-items-center justify-content-between">
+                <h5 class="card-title mb-0">Barcha taomlar ({{ dish_list.count }})</h5>
+                <a href="{% url 'dashboard_dish_create' %}" class="btn btn-primary btn-sm"><i class="ti ti-plus me-1"></i>Taom qo'shish</a>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover table-nowrap mb-0">
+                        <thead class="table-light">
+                            <tr><th>#</th><th>Rasm</th><th>Nomi (UZ)</th><th>Kategoriya</th><th>Narxi</th><th>Mavjud</th><th>Faol</th><th>Amallar</th></tr>
+                        </thead>
+                        <tbody>
+                            {% for item in dish_list %}
+                            <tr>
+                                <td>{{ forloop.counter }}</td>
+                                <td>{% if item.image %}<img src="{{ item.image.url }}" class="thumb-img" alt="">{% else %}—{% endif %}</td>
+                                <td>{{ item.name_uz|truncatechars:30 }}</td>
+                                <td>{{ item.category.name_uz|default:"—" }}</td>
+                                <td>{{ item.price|floatformat:0 }} so'm</td>
+                                <td>
+                                    <button class="btn btn-sm {% if item.is_available %}btn-success{% else %}btn-secondary{% endif %}"
+                                            data-toggle-url="{% url 'dashboard_toggle_active' 'menu' 'dish' item.pk %}" data-field="is_available">
+                                        <span class="status-badge">{% if item.is_available %}Ha{% else %}Yo'q{% endif %}</span>
+                                    </button>
+                                </td>
+                                <td>
+                                    <button class="btn btn-sm {% if item.is_active %}btn-success{% else %}btn-secondary{% endif %}"
+                                            data-toggle-url="{% url 'dashboard_toggle_active' 'menu' 'dish' item.pk %}" data-field="is_active">
+                                        <span class="status-badge">{% if item.is_active %}Faol{% else %}Nofaol{% endif %}</span>
+                                    </button>
+                                </td>
+                                <td>
+                                    <div class="d-flex gap-1">
+                                        <a href="{% url 'dashboard_dish_edit' item.pk %}" class="btn btn-sm btn-warning"><i class="ti ti-edit"></i></a>
+                                        <form method="post" action="{% url 'dashboard_dish_delete' item.pk %}" class="d-inline">
+                                            {% csrf_token %}
+                                            <button type="submit" class="btn btn-sm btn-danger" data-confirm="Taomni o'chirasizmi?"><i class="ti ti-trash"></i></button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr><td colspan="8" class="text-center text-muted py-4">Taomlar topilmadi</td></tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

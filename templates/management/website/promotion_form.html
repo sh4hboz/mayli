@@ -1,0 +1,49 @@
+{% extends 'management/base.html' %}
+{% load static %}
+{% block title %}{% if object %}Aksiyani tahrirlash{% else %}Aksiya qo'shish{% endif %} | Mayli Restobar{% endblock %}
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="page-title-box d-flex align-items-center justify-content-between">
+            <h4 class="page-title">{% if object %}Aksiyani tahrirlash{% else %}Aksiya qo'shish{% endif %}</h4>
+            <ol class="breadcrumb m-0">
+                <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Dashboard</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'dashboard_promotion_list' %}">Aksiyalar</a></li>
+                <li class="breadcrumb-item active">{% if object %}Tahrirlash{% else %}Qo'shish{% endif %}</li>
+            </ol>
+        </div>
+    </div>
+</div>
+<div class="row justify-content-center">
+    <div class="col-lg-9">
+        <div class="card">
+            <div class="card-header"><h5 class="card-title mb-0">{% if object %}{{ object.title_uz }}{% else %}Yangi aksiya{% endif %}</h5></div>
+            <div class="card-body">
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="row g-3">
+                        <div class="col-md-4"><label class="form-label">{{ form.title_uz.label }}</label>{{ form.title_uz }}</div>
+                        <div class="col-md-4"><label class="form-label">{{ form.title_ru.label }}</label>{{ form.title_ru }}</div>
+                        <div class="col-md-4"><label class="form-label">{{ form.title_en.label }}</label>{{ form.title_en }}</div>
+                        <div class="col-md-4"><label class="form-label">{{ form.description_uz.label }}</label>{{ form.description_uz }}</div>
+                        <div class="col-md-4"><label class="form-label">{{ form.description_ru.label }}</label>{{ form.description_ru }}</div>
+                        <div class="col-md-4"><label class="form-label">{{ form.description_en.label }}</label>{{ form.description_en }}</div>
+                        <div class="col-md-4">
+                            <label class="form-label">{{ form.image.label }}</label>{{ form.image }}
+                            {% if object.image %}<div class="mt-2"><img src="{{ object.image.url }}" class="thumb-img" alt=""></div>{% endif %}
+                        </div>
+                        <div class="col-md-4"><label class="form-label">{{ form.valid_until.label }}</label>{{ form.valid_until }}</div>
+                        <div class="col-md-4 d-flex align-items-end pb-2">
+                            <div class="form-check">{{ form.is_active }}<label class="form-check-label">{{ form.is_active.label }}</label></div>
+                        </div>
+                    </div>
+                    <div class="d-flex gap-2 mt-4">
+                        <button type="submit" class="btn btn-primary">Saqlash</button>
+                        <a href="{% url 'dashboard_promotion_list' %}" class="btn btn-secondary">Orqaga</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,61 @@
+{% extends 'management/base.html' %}
+{% load static %}
+{% block title %}Murojaatlar | Mayli Restobar{% endblock %}
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="page-title-box d-flex align-items-center justify-content-between">
+            <h4 class="page-title">Murojaatlar</h4>
+            <ol class="breadcrumb m-0">
+                <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Dashboard</a></li>
+                <li class="breadcrumb-item active">Murojaatlar</li>
+            </ol>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header"><h5 class="card-title mb-0">Barcha murojaatlar ({{ contacts_list.count }})</h5></div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
+                            <tr><th>#</th><th>Ism</th><th>Telefon</th><th>Xabar</th><th>Holat</th><th>Sana</th><th>Amallar</th></tr>
+                        </thead>
+                        <tbody>
+                            {% for item in contacts_list %}
+                            <tr>
+                                <td>{{ forloop.counter }}</td>
+                                <td><strong>{{ item.name }}</strong></td>
+                                <td>{{ item.phone|default:"—" }}</td>
+                                <td>{{ item.message|truncatechars:60 }}</td>
+                                <td>
+                                    {% if item.is_read %}
+                                    <span class="badge bg-success">O'qilgan</span>
+                                    {% else %}
+                                    <span class="badge bg-warning text-dark">Yangi</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ item.created_at|date:"d.m.Y H:i" }}</td>
+                                <td>
+                                    <div class="d-flex gap-1">
+                                        <a href="{% url 'dashboard_contact_detail' item.pk %}" class="btn btn-sm btn-info"><i class="ti ti-eye"></i></a>
+                                        <form method="post" action="{% url 'dashboard_contact_delete' item.pk %}" class="d-inline">
+                                            {% csrf_token %}
+                                            <button type="submit" class="btn btn-sm btn-danger" data-confirm="Murojaatni o'chirasizmi?"><i class="ti ti-trash"></i></button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr><td colspan="7" class="text-center text-muted py-4">Murojaatlar topilmadi</td></tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

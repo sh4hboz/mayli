@@ -1,0 +1,95 @@
+{% extends 'management/base.html' %}
+{% load static %}
+{% block title %}Sayt sozlamalari | Mayli Restobar{% endblock %}
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="page-title-box d-flex align-items-center justify-content-between">
+            <h4 class="page-title">Sayt sozlamalari</h4>
+            <ol class="breadcrumb m-0">
+                <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Dashboard</a></li>
+                <li class="breadcrumb-item active">Sozlamalar</li>
+            </ol>
+        </div>
+    </div>
+</div>
+<div class="row justify-content-center">
+    <div class="col-lg-10">
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            {% if form.non_field_errors %}<div class="alert alert-danger">{{ form.non_field_errors }}</div>{% endif %}
+
+            <div class="card mb-3">
+                <div class="card-header"><h5 class="card-title mb-0">Asosiy ma'lumotlar</h5></div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-6"><label class="form-label">{{ form.name.label }}</label>{{ form.name }}</div>
+                        <div class="col-md-6"><label class="form-label">{{ form.phone_main.label }}</label>{{ form.phone_main }}</div>
+                        <div class="col-md-6"><label class="form-label">{{ form.phone_secondary.label }}</label>{{ form.phone_secondary }}</div>
+                        <div class="col-md-6"><label class="form-label">{{ form.email.label }}</label>{{ form.email }}</div>
+                        <div class="col-md-6"><label class="form-label">{{ form.instagram_url.label }}</label>{{ form.instagram_url }}</div>
+                        <div class="col-md-6"><label class="form-label">{{ form.telegram_channel_url.label }}</label>{{ form.telegram_channel_url }}</div>
+                        <div class="col-md-6"><label class="form-label">{{ form.telegram_bot_url.label }}</label>{{ form.telegram_bot_url }}</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card mb-3">
+                <div class="card-header"><h5 class="card-title mb-0">Tagline (uz / ru / en)</h5></div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-4"><label class="form-label">{{ form.tagline_uz.label }}</label>{{ form.tagline_uz }}</div>
+                        <div class="col-md-4"><label class="form-label">{{ form.tagline_ru.label }}</label>{{ form.tagline_ru }}</div>
+                        <div class="col-md-4"><label class="form-label">{{ form.tagline_en.label }}</label>{{ form.tagline_en }}</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card mb-3">
+                <div class="card-header"><h5 class="card-title mb-0">Manzil va ish vaqti</h5></div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-4"><label class="form-label">{{ form.address_uz.label }}</label>{{ form.address_uz }}</div>
+                        <div class="col-md-4"><label class="form-label">{{ form.address_ru.label }}</label>{{ form.address_ru }}</div>
+                        <div class="col-md-4"><label class="form-label">{{ form.address_en.label }}</label>{{ form.address_en }}</div>
+                        <div class="col-md-4"><label class="form-label">{{ form.working_hours_uz.label }}</label>{{ form.working_hours_uz }}</div>
+                        <div class="col-md-4"><label class="form-label">{{ form.working_hours_ru.label }}</label>{{ form.working_hours_ru }}</div>
+                        <div class="col-md-4"><label class="form-label">{{ form.working_hours_en.label }}</label>{{ form.working_hours_en }}</div>
+                        <div class="col-md-6"><label class="form-label">{{ form.latitude.label }}</label>{{ form.latitude }}</div>
+                        <div class="col-md-6"><label class="form-label">{{ form.longitude.label }}</label>{{ form.longitude }}</div>
+                        <div class="col-12"><label class="form-label">{{ form.map_embed_code.label }}</label>{{ form.map_embed_code }}</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card mb-3">
+                <div class="card-header"><h5 class="card-title mb-0">Rasmlar</h5></div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-3"><label class="form-label">{{ form.logo.label }}</label>{{ form.logo }}</div>
+                        <div class="col-md-3"><label class="form-label">{{ form.logo_dark.label }}</label>{{ form.logo_dark }}</div>
+                        <div class="col-md-3"><label class="form-label">{{ form.favicon.label }}</label>{{ form.favicon }}</div>
+                        <div class="col-md-3"><label class="form-label">{{ form.about_image.label }}</label>{{ form.about_image }}</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card mb-3">
+                <div class="card-header"><h5 class="card-title mb-0">SEO</h5></div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-4"><label class="form-label">{{ form.google_verify.label }}</label>{{ form.google_verify }}</div>
+                        <div class="col-md-4"><label class="form-label">{{ form.yandex_verify.label }}</label>{{ form.yandex_verify }}</div>
+                        <div class="col-md-4"><label class="form-label">{{ form.google_analytics_id.label }}</label>{{ form.google_analytics_id }}</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="d-flex gap-2 mb-4">
+                <button type="submit" class="btn btn-primary">Saqlash</button>
+                <a href="{% url 'dashboard' %}" class="btn btn-secondary">Bekor qilish</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,50 @@
+{% extends 'website/base.html' %}
+{% load i18n %}
+
+{% block title %}{% trans "Maxfiylik siyosati" %}{% endblock %}
+
+{% block content %}
+<section class="sec-padding">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-9">
+        <h1 class="mb-4">{% trans "Maxfiylik siyosati" %}</h1>
+        <p class="text-muted">{% trans "Oxirgi yangilanish: 12-iyun, 2026-yil" %}</p>
+        <hr class="mb-4">
+
+        <div class="content-text">
+          <h3>1. {% trans "Umumiy qoidalar" %}</h3>
+          <p>{% trans "Ushbu Maxfiylik siyosati Mayli Restobar (keyingi o'rinlarda 'Restobar' yoki 'Biz') tomonidan maylirestobar.uz saytidan foydalanuvchilarning shaxsiy ma'lumotlarini to'plash, qayta ishlash va himoya qilish tartibini belgilaydi." %}</p>
+
+          <h3>2. {% trans "Qanday ma'lumotlarni yig'amiz" %}</h3>
+          <p>{% trans "Biz quyidagi shaxsiy ma'lumotlarni yig'ishimiz mumkin:" %}</p>
+          <ul>
+            <li>{% trans "Ismingiz va familiyangiz" %}</li>
+            <li>{% trans "Telefon raqamingiz" %}</li>
+            <li>{% trans "Yetkazib berish manzilingiz va xaritadagi koordinatalaringiz" %}</li>
+            <li>{% trans "Buyurtma tarixi va izohlar" %}</li>
+          </ul>
+
+          <h3>3. {% trans "Ma'lumotlardan foydalanish maqsadi" %}</h3>
+          <p>{% trans "Yig'ilgan ma'lumotlardan quyidagi maqsadlarda foydalaniladi:" %}</p>
+          <ul>
+            <li>{% trans "Buyurtmalarni qabul qilish, tayyorlash va yetkazib berish" %}</li>
+            <li>{% trans "Siz bilan buyurtma holati yuzasidan bog'lanish va uni tasdiqlash" %}</li>
+            <li>{% trans "Sizning roziligingiz bilan yangiliklar, aksiyalar va promo-kodlar haqida SMS xabarnomalar yuborish (marketing)" %}</li>
+            <li>{% trans "Sayt va xizmatlar sifatini yaxshilash hamda tahlil qilish" %}</li>
+          </ul>
+
+          <h3>4. {% trans "Shaxsiy ma'lumotlarni himoya qilish" %}</h3>
+          <p>{% trans "Biz sizning shaxsiy ma'lumotlaringiz xavfsizligini ta'minlash uchun barcha zaruriy texnik va tashkiliy choralarni ko'ramiz. Ma'lumotlaringiz uchinchi shaxslarga sotilmaydi yoki ijaraga berilmaydi." %}</p>
+
+          <h3>5. {% trans "SMS va Marketing xabarnomalari" %}</h3>
+          <p>{% trans "Buyurtma berish jarayonida marketing roziligini bergan taqdiringizda, Restobar sizga yangi aksiyalar, chegirmalar va tadbirlar yuzasidan SMS yuborish huquqiga ega bo'ladi. Istalgan vaqtda ushbu xizmatdan voz kechish uchun biz bilan bog'lanishingiz mumkin." %}</p>
+
+          <h3>6. {% trans "Murojaat uchun" %}</h3>
+          <p>{% trans "Agar sizda ushbu maxfiylik siyosati yuzasidan savollar bo'lsa, iltimos, saytning Aloqa sahifasi orqali biz bilan bog'laning." %}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

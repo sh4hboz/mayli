@@ -1,0 +1,27 @@
+{% load static i18n %}
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-overlay"></div>
+  <div class="container hero-content">
+
+    <h1 class="hero-title">
+      {% trans "Mazali ta'mlar," %}<br>
+      <span>{% trans "Unutilmas lahzalar" %}</span>
+    </h1>
+    <p class="hero-desc">
+      {% trans "Termiz shahrining eng shinam maskanida premium taomlar, ichimliklar va kalyan xizmatidan bahramand bo'ling." %}
+    </p>
+    <div class="hero-btns">
+      <a href="{% url 'website:about' %}#contact" class="btn btn-outline">
+        <i class="fa fa-phone"></i> {% trans "Bron qilish" %}
+      </a>
+    </div>
+    <div class="hero-stats">
+      <div class="hero-stat"><strong>5+</strong><span>{% trans "Yil tajriba" %}</span></div>
+      <div class="hero-stat"><strong>200+</strong><span>{% trans "Taom turi" %}</span></div>
+      <div class="hero-stat"><strong>10 000+</strong><span>{% trans "Mamnun mehmon" %}</span></div>
+      <div class="hero-stat"><strong>100%</strong><span>{% trans "Sifat kafolati" %}</span></div>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,18 @@
+{% extends 'website/base.html' %}
+{% load static i18n %}
+
+{% block title %}{% trans "Bosh sahifa" %}{% endblock %}
+{% block meta_description %}{% trans "Mayli Restobar — Termizda premium taomlar, ichimliklar, kalyan va unutilmas atmosfera. Bron qiling yoki bizga tashrif buyuring." %}{% endblock %}
+
+{% block content %}
+
+{% include 'website/partials/_hero.html' %}
+{% include 'website/partials/_why_us.html' %}
+{% include 'website/partials/_about_teaser.html' %}
+{% include 'website/partials/_promotions.html' %}
+{% include 'website/partials/_gallery.html' %}
+{% include 'website/partials/_testimonials.html' %}
+{% include 'website/partials/_news.html' %}
+{% include 'website/partials/_map.html' %}
+
+{% endblock %}

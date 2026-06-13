@@ -1,0 +1,501 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="uz">
+
+<head>
+    <meta charset="utf-8" />
+    <title>Mijoz Profili | Mayli Restobar</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta content="Mayli Restobar - Shaxsiy Kabinet" name="description" />
+
+    <!-- App favicon -->
+    <link rel="shortcut icon" href="{% static 'assets/images/favicon.ico' %}">
+
+    <!-- Theme Config Js -->
+    <script src="{% static 'assets/js/config.js' %}"></script>
+
+    <!-- Vendor css -->
+    <link href="{% static 'assets/css/vendor.min.css' %}" rel="stylesheet" type="text/css" />
+
+    <!-- App css -->
+    <link href="{% static 'assets/css/app.min.css' %}" rel="stylesheet" type="text/css" id="app-style" />
+
+    <!-- Icons css -->
+    <link href="{% static 'assets/css/icons.min.css' %}" rel="stylesheet" type="text/css" />
+
+    <!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: radial-gradient(circle at top right, #1d2130 0%, #0d0e15 100%);
+            color: #fff;
+            min-height: 100vh;
+        }
+
+        .navbar-custom {
+            background: rgba(13, 14, 21, 0.8) !important;
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 15px 0;
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .glass-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 40px 0 rgba(234, 105, 0, 0.08);
+        }
+
+        .btn-orange-glow {
+            background: linear-gradient(135deg, #EA6900 0%, #ff8b2c 100%);
+            border: none;
+            color: #fff;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            border-radius: 30px;
+            box-shadow: 0 4px 15px rgba(234, 105, 0, 0.35);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-orange-glow:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(234, 105, 0, 0.5);
+            color: #fff;
+        }
+
+        .btn-orange-glow:active {
+            transform: translateY(1px);
+        }
+
+        .btn-waiter-pulse {
+            background: linear-gradient(135deg, #ff4c4c 0%, #ff1f1f 100%);
+            color: #white;
+            border: none;
+            font-weight: 700;
+            border-radius: 50px;
+            padding: 16px 28px;
+            box-shadow: 0 0 20px rgba(255, 76, 76, 0.4);
+            animation: pulse-red 2s infinite;
+            transition: all 0.3s ease;
+        }
+
+        .btn-waiter-pulse:hover {
+            transform: scale(1.03);
+            box-shadow: 0 0 30px rgba(255, 76, 76, 0.6);
+            color: #fff;
+        }
+
+        @keyframes pulse-red {
+            0% {
+                box-shadow: 0 0 0 0 rgba(255, 76, 76, 0.7);
+            }
+            70% {
+                box-shadow: 0 0 0 15px rgba(255, 76, 76, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(255, 76, 76, 0);
+            }
+        }
+
+        .status-badge {
+            padding: 6px 12px;
+            border-radius: 30px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .badge-pending { background: rgba(255, 193, 7, 0.15); color: #ffc107; }
+        .badge-preparing { background: rgba(13, 110, 253, 0.15); color: #0d6efd; }
+        .badge-ready { background: rgba(25, 135, 84, 0.15); color: #198754; }
+        .badge-delivered { background: rgba(111, 66, 193, 0.15); color: #6f42c1; }
+        .badge-completed { background: rgba(13, 202, 240, 0.15); color: #0dcaf0; }
+        .badge-cancelled { background: rgba(220, 53, 69, 0.15); color: #dc3545; }
+
+        .order-item-row {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 12px 0;
+        }
+
+        .order-item-row:last-child {
+            border-bottom: none;
+        }
+
+        .text-orange {
+            color: #EA6900;
+        }
+
+        .avatar-circle {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #EA6900 0%, #ff8b2c 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 16px;
+            color: white;
+            box-shadow: 0 4px 10px rgba(234, 105, 0, 0.2);
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Navigatsiya paneli -->
+    <nav class="navbar navbar-expand-lg navbar-dark navbar-custom mb-4">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center gap-2" href="{% url 'home' %}">
+                <img src="{% static 'assets/images/logo.png' %}" alt="logo" height="24">
+                <span class="fw-bold tracking-wider fs-18">Mayli Restobar</span>
+            </a>
+            
+            <div class="d-flex align-items-center gap-3">
+                <a href="{% url 'menu' %}" class="btn btn-outline-light btn-sm rounded-pill px-3">
+                    <i class="ri-restaurant-line me-1"></i> Taomlar Menyusi
+                </a>
+                <a href="{% url 'logout' %}" class="btn btn-sm btn-link text-muted text-decoration-none">
+                    <i class="ri-logout-box-r-line"></i> Chiqish
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <!-- Toast xabarnomalari -->
+        <div class="position-fixed top-0 start-50 translate-middle-x p-3" style="z-index: 1055;">
+            <div id="statusToast" class="toast align-items-center text-white bg-dark border-0" role="alert" aria-live="assertive" aria-atomic="true">
+                <div class="d-flex">
+                    <div class="toast-body d-flex align-items-center gap-2">
+                        <i class="ri-information-line fs-18 text-orange" id="toastIcon"></i>
+                        <span id="toastMessage"></span>
+                    </div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Profil Sarlavhasi -->
+        <div class="row align-items-center mb-4">
+            <div class="col-md-8 d-flex align-items-center gap-3">
+                <div class="avatar-circle">
+                    C
+                </div>
+                <div>
+                    <h3 class="m-0 fw-bold">Shaxsiy Kabinet</h3>
+                    <p class="text-muted m-0"><i class="ri-phone-fill me-1 text-orange"></i> {{ profile.phone_number }}</p>
+                </div>
+            </div>
+            <div class="col-md-4 text-md-end mt-3 mt-md-0">
+                {% if table_number %}
+                <span class="badge bg-warning text-dark px-3 py-2 fs-14 rounded-pill fw-bold border border-warning">
+                    <i class="ri-map-pin-2-fill me-1"></i> Siz {{ table_number }}-stoldasiz
+                </span>
+                {% else %}
+                <span class="badge bg-danger px-3 py-2 fs-14 rounded-pill fw-bold border border-danger">
+                    <i class="ri-map-pin-2-fill me-1"></i> Stol biriktirilmagan
+                </span>
+                {% endif %}
+            </div>
+        </div>
+
+        {% if not table_number %}
+        <!-- Stol biriktirilmagan ogohlantirish -->
+        <div class="glass-card text-center py-5">
+            <div class="avatar-sm bg-danger-soft text-danger rounded-circle d-flex align-items-center justify-content-center mx-auto mb-4" style="width: 64px; height: 64px;">
+                <i class="ri-map-pin-warning-line fs-32"></i>
+            </div>
+            <h4 class="fw-bold">Stol biriktirilmagan!</h4>
+            <p class="text-muted max-w-500 mx-auto fs-14 mb-4">
+                Sizning hisobingizga hozirda hech qanday stol biriktirilmagan. Iltimos, stoldagi QR kodni qaytadan skanerlang yoki sizga yordam berishlari uchun ofitsiantga murojaat qiling!
+            </p>
+            <a href="{% url 'menu' %}" class="btn btn-orange-glow rounded-pill px-4 py-2">
+                Menyuni ko'rish
+            </a>
+        </div>
+        {% else %}
+
+        <div class="row">
+            <!-- Chap tomon: Ofitsiant chaqirish va joriy hisob -->
+            <div class="col-lg-4">
+                <!-- Ofitsiant Chaqirish Card -->
+                <div class="glass-card text-center">
+                    <h4 class="fw-bold mb-3">Xizmat Ko'rsatish</h4>
+                    <p class="text-muted fs-13 mb-4">
+                        Ofitsiantni chaqirish yoki hisob-kitobni so'rash uchun quyidagi tugmalarni bosing.
+                    </p>
+                    
+                    <div class="d-grid gap-3">
+                        <button type="button" id="btnCallWaiter" class="btn btn-waiter-pulse btn-lg w-100 d-flex align-items-center justify-content-center gap-2">
+                            <i class="ri-notification-3-fill fs-20"></i> Ofitsiant Chaqirish
+                        </button>
+                        
+                        <button type="button" id="btnRequestCheckout" class="btn btn-outline-light rounded-pill py-2.5 fw-semibold fs-13">
+                            <i class="ri-wallet-3-line me-1"></i> Hisobni So'rash
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Joriy Faol Hisob Card -->
+                <div class="glass-card">
+                    <h4 class="fw-bold mb-3">Joriy Faol Hisob</h4>
+                    <div class="d-flex justify-content-between align-items-center py-2 border-bottom border-white-5">
+                        <span class="text-muted">Stol:</span>
+                        <span class="fw-semibold">#{{ table_number }}</span>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center py-2 border-bottom border-white-5">
+                        <span class="text-muted">Buyurtmalar soni:</span>
+                        <span class="fw-semibold">{{ active_orders|length }} ta</span>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center py-3">
+                        <span class="fs-16 fw-bold">Joriy Summa:</span>
+                        <span class="fs-18 fw-extrabold text-orange">{{ total_bill|default:0 }} UZS</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- O'ng tomon: Faol Buyurtmalar ro'yxati -->
+            <div class="col-lg-8">
+                <div class="glass-card">
+                    <h4 class="fw-bold mb-4">Mening Buyurtmalarim (Faol)</h4>
+
+                    {% if active_orders %}
+                        {% for order in active_orders %}
+                            <div class="mb-4 pb-4 border-bottom border-white-5" style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <div>
+                                        <span class="fs-15 fw-bold text-orange">Buyurtma #{{ order.id }}</span>
+                                        <span class="text-muted fs-12 ms-2">{{ order.created_at|date:"H:i, d-M" }}</span>
+                                    </div>
+                                    <div>
+                                        {% if order.checkout_requested %}
+                                        <span class="badge bg-warning-soft text-warning me-2 fs-11">Hisob So'ralgan</span>
+                                        {% endif %}
+                                        <span class="status-badge badge-{{ order.status }}">
+                                            {{ order.get_status_display }}
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <div class="ps-2">
+                                    {% for item in order.items.all %}
+                                        <div class="d-flex justify-content-between align-items-center py-2 order-item-row">
+                                            <div>
+                                                <h6 class="m-0 fw-semibold">{{ item.dish.name }}</h6>
+                                                <small class="text-muted">{{ item.price }} UZS x {{ item.quantity }}</small>
+                                            </div>
+                                            <span class="fw-bold">{% widthratio item.price 1 item.quantity %} UZS</span>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                                
+                                <div class="text-end mt-3">
+                                    <span class="text-muted fs-13">Buyurtma summasi:</span>
+                                    <span class="fw-bold text-orange ms-1">{{ order.total_price }} UZS</span>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="text-center py-5">
+                            <img src="/static/assets/images/svg/empty-state.svg" alt="Bo'sh" style="width: 100px; opacity: 0.1;" class="mb-3">
+                            <h5 class="fw-semibold">Faol buyurtmalar yo'q</h5>
+                            <p class="text-muted fs-13">Sizda ayni paytda tayyorlanayotgan taomlar mavjud emas.</p>
+                            <a href="{% url 'menu' %}" class="btn btn-outline-orange rounded-pill px-4 py-2 mt-2">
+                                Taom buyurtma qilish
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        {% endif %}
+
+        <!-- Buyurtmalar Arxivi (O'tgan buyurtmalar) -->
+        <div class="row mt-2">
+            <div class="col-12">
+                <div class="glass-card">
+                    <h4 class="fw-bold mb-4">O'tgan Buyurtmalar (Arxiv)</h4>
+                    
+                    {% if past_orders %}
+                        <div class="table-responsive">
+                            <table class="table table-hover table-centered mb-0 align-middle table-dark bg-transparent">
+                                <thead>
+                                    <tr class="border-white-5">
+                                        <th>Sana / Vaqt</th>
+                                        <th>Buyurtma ID</th>
+                                        <th>Stol</th>
+                                        <th>Tarkibi</th>
+                                        <th>Jami Summa</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for order in past_orders %}
+                                    <tr class="border-white-5">
+                                        <td class="text-muted fs-13">{{ order.created_at|date:"d-M Y, H:i" }}</td>
+                                        <td class="fw-bold text-orange">#{{ order.id }}</td>
+                                        <td>Stol #{{ order.table_number }}</td>
+                                        <td>
+                                            <span class="fs-13">
+                                                {% for item in order.items.all %}
+                                                    {{ item.dish.name }} ({{ item.quantity }}x){% if not forloop.last %}, {% endif %}
+                                                {% endfor %}
+                                            </span>
+                                        </td>
+                                        <td class="fw-bold">{{ order.total_price }} UZS</td>
+                                        <td>
+                                            <span class="status-badge badge-{{ order.status }}">
+                                                {{ order.get_status_display }}
+                                            </span>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="text-center py-4 text-muted">
+                            <i class="ri-folder-history-line fs-32 d-block mb-2"></i>
+                            Tarixda yakunlangan buyurtmalar mavjud emas.
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Vendor js -->
+    <script src="{% static 'assets/js/vendor.min.js' %}"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var btnCallWaiter = document.getElementById('btnCallWaiter');
+            var btnRequestCheckout = document.getElementById('btnRequestCheckout');
+            
+            var toastEl = document.getElementById('statusToast');
+            var toast = new bootstrap.Toast(toastEl, { delay: 4000 });
+            var toastMsg = document.getElementById('toastMessage');
+            var toastIcon = document.getElementById('toastIcon');
+
+            function showToast(message, isSuccess = true) {
+                toastMsg.innerText = message;
+                if (isSuccess) {
+                    toastEl.classList.remove('bg-danger');
+                    toastEl.classList.add('bg-dark');
+                    toastIcon.className = "ri-checkbox-circle-fill fs-18 text-orange";
+                } else {
+                    toastEl.classList.remove('bg-dark');
+                    toastEl.classList.add('bg-danger');
+                    toastIcon.className = "ri-error-warning-fill fs-18 text-white";
+                }
+                toast.show();
+            }
+
+            // CSRF token helper
+            function getCSRFToken() {
+                var name = 'csrftoken';
+                var cookieValue = null;
+                if (document.cookie && document.cookie !== '') {
+                    var cookies = document.cookie.split(';');
+                    for (var i = 0; i < cookies.length; i++) {
+                        var cookie = cookies[i].trim();
+                        if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                            break;
+                        }
+                    }
+                }
+                return cookieValue;
+            }
+
+            // 1. Ofitsiant Chaqirish AJAX so'rovi
+            if (btnCallWaiter) {
+                btnCallWaiter.addEventListener('click', function() {
+                    btnCallWaiter.disabled = true;
+                    btnCallWaiter.innerHTML = `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Chaqirilmoqda...`;
+
+                    fetch('{% url "call_waiter" %}', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': getCSRFToken(),
+                            'X-Requested-With': 'XMLHttpRequest'
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        btnCallWaiter.disabled = false;
+                        btnCallWaiter.innerHTML = `<i class="ri-notification-3-fill fs-20"></i> Ofitsiant Chaqirish`;
+                        
+                        if (data.success) {
+                            showToast(data.message, true);
+                        } else {
+                            showToast(data.error || "Xatolik yuz berdi!", false);
+                        }
+                    })
+                    .catch(error => {
+                        btnCallWaiter.disabled = false;
+                        btnCallWaiter.innerHTML = `<i class="ri-notification-3-fill fs-20"></i> Ofitsiant Chaqirish`;
+                        showToast("Server bilan bog'lanishda xatolik!", false);
+                    });
+                });
+            }
+
+            // 2. Hisobni So'rash AJAX so'rovi
+            if (btnRequestCheckout) {
+                btnRequestCheckout.addEventListener('click', function() {
+                    btnRequestCheckout.disabled = true;
+                    btnRequestCheckout.innerHTML = `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> So'ralmoqda...`;
+
+                    fetch('{% url "checkout_request" %}', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': getCSRFToken(),
+                            'X-Requested-With': 'XMLHttpRequest'
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        btnRequestCheckout.disabled = false;
+                        btnRequestCheckout.innerHTML = `<i class="ri-wallet-3-line me-1"></i> Hisobni So'rash`;
+                        
+                        if (data.success) {
+                            showToast(data.message, true);
+                            setTimeout(function() {
+                                window.location.reload();
+                            }, 1500);
+                        } else {
+                            showToast(data.error || "Xatolik yuz berdi!", false);
+                        }
+                    })
+                    .catch(error => {
+                        btnRequestCheckout.disabled = false;
+                        btnRequestCheckout.innerHTML = `<i class="ri-wallet-3-line me-1"></i> Hisobni So'rash`;
+                        showToast("Server bilan bog'lanishda xatolik!", false);
+                    });
+                });
+            }
+        });
+    </script>
+
+    <!-- App js -->
+    <script src="{% static 'assets/js/app.js' %}"></script>
+
+</body>
+
+</html>

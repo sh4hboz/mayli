@@ -1,0 +1,44 @@
+{% extends 'management/base.html' %}
+{% load static %}
+{% block title %}Murojaat tafsiloti | Mayli Restobar{% endblock %}
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="page-title-box d-flex align-items-center justify-content-between">
+            <h4 class="page-title">Murojaat tafsiloti</h4>
+            <ol class="breadcrumb m-0">
+                <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Dashboard</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'dashboard_contact_list' %}">Murojaatlar</a></li>
+                <li class="breadcrumb-item active">#{{ message.pk }}</li>
+            </ol>
+        </div>
+    </div>
+</div>
+<div class="row justify-content-center">
+    <div class="col-lg-7">
+        <div class="card">
+            <div class="card-header d-flex align-items-center justify-content-between">
+                <h5 class="card-title mb-0">{{ message.name }}</h5>
+                <div class="d-flex align-items-center gap-2">
+                    {% if message.is_read %}<span class="badge bg-success">O'qilgan</span>{% else %}<span class="badge bg-warning text-dark">Yangi</span>{% endif %}
+                    <span class="text-muted fs-13">{{ message.created_at|date:"d.m.Y H:i" }}</span>
+                </div>
+            </div>
+            <div class="card-body">
+                <dl class="row mb-0">
+                    <dt class="col-sm-4">Ism</dt><dd class="col-sm-8">{{ message.name }}</dd>
+                    <dt class="col-sm-4">Telefon</dt><dd class="col-sm-8">{% if message.phone %}<a href="tel:{{ message.phone }}">{{ message.phone }}</a>{% else %}—{% endif %}</dd>
+                    <dt class="col-sm-4">Xabar</dt><dd class="col-sm-8">{{ message.message|linebreaksbr }}</dd>
+                </dl>
+            </div>
+            <div class="card-footer d-flex gap-2">
+                <a href="{% url 'dashboard_contact_list' %}" class="btn btn-secondary btn-sm">Orqaga</a>
+                <form method="post" action="{% url 'dashboard_contact_delete' message.pk %}" class="d-inline">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-sm btn-danger" data-confirm="Murojaatni o'chirasizmi?"><i class="ti ti-trash me-1"></i>O'chirish</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

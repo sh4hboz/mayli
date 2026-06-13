@@ -1,0 +1,56 @@
+{% load static i18n %}
+
+<!-- FOOTER -->
+<footer id="footer">
+  <div class="container footer-grid">
+    <div class="footer-brand">
+      <a href="{% url 'website:home' %}">
+        <img src="{% static 'src/img/icons/logo-white.png' %}" alt="Mayli Restobar" width="140" loading="lazy">
+      </a>
+      <p>{{ site.tagline }}</p>
+    </div>
+
+    <div class="footer-links">
+      <h4>{% trans "Sahifalar" %}</h4>
+      <ul>
+        <li><a href="{% url 'website:home' %}">{% trans "Bosh sahifa" %}</a></li>
+
+        <li><a href="{% url 'website:about' %}">{% trans "Biz haqimizda" %}</a></li>
+
+        <li><a href="{% url 'website:privacy_policy' %}">{% trans "Maxfiylik siyosati" %}</a></li>
+        <li><a href="{% url 'website:terms_conditions' %}">{% trans "Foydalanish shartlari" %}</a></li>
+      </ul>
+    </div>
+
+    <div class="footer-contact">
+      <h4>{% trans "Contacts" %}</h4>
+      {% if site.phone_main %}
+      <p><i class="fa fa-phone"></i> <a href="tel:{{ site.phone_main }}">{{ site.phone_main }}</a></p>
+      {% endif %}
+
+      {% if site.address %}
+      <p><i class="fa fa-map-marker"></i> <a href="https://yandex.uz/maps/-/CPtG7YIO" target="_blank" rel="noopener">{{ site.address }}</a></p>
+      {% endif %}
+      {% if site.working_hours %}
+      <p><i class="fa fa-clock-o"></i> {{ site.working_hours }}</p>
+      {% endif %}
+
+      {% if site.social_links.telegram_bot %}
+      <p><i class="fa fa-telegram"></i> <a href="{{ site.social_links.telegram_bot.url }}" target="_blank" rel="noopener">{{ site.social_links.telegram_bot.title }}</a></p>
+      {% endif %}
+      {% if site.social_links.telegram_channel %}
+      <p><i class="fa fa-telegram"></i> <a href="{{ site.social_links.telegram_channel.url }}" target="_blank" rel="noopener">{{ site.social_links.telegram_channel.title }}</a></p>
+      {% endif %}
+      {% if site.social_links.instagram %}
+      <p><i class="fa fa-instagram"></i> <a href="{{ site.social_links.instagram.url }}" target="_blank" rel="noopener">{{ site.social_links.instagram.title }}</a></p>
+      {% endif %}
+    </div>
+
+  </div>
+
+  <div class="footer-bottom">
+    <div class="container">
+      <p>&copy; {% now "Y" %} Mayli Restobar. {% trans "Barcha huquqlar himoyalangan." %}</p>
+    </div>
+  </div>
+</footer>

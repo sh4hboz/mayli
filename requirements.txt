@@ -1,0 +1,29 @@
+# Core
+Django==5.1.0
+django-environ==0.13.0
+
+# REST API
+djangorestframework==3.17.1
+djangorestframework-simplejwt==5.5.1
+drf-spectacular==0.29.0
+
+# Real-time (WebSocket)
+channels==4.3.2
+channels-redis==4.3.0
+daphne==4.2.2
+redis==8.0.0
+
+# Database
+psycopg2-binary==2.9.12
+
+# i18n / translations
+django-modeltranslation==0.20.3
+
+# Media
+Pillow
+
+# Telegram bot
+aiogram==3.28.2
+
+# HTTP client (notifications, webhook)
+httpx==0.28.1

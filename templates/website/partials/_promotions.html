@@ -1,0 +1,34 @@
+{% load i18n %}
+
+<!-- PROMOTIONS -->
+{% if promotions %}
+<section class="section section-dark2" id="promotions">
+  <div class="container">
+    <div class="section-header reveal">
+      <span class="section-badge">{% trans "Aksiyalar" %}</span>
+      <h2 class="section-title">{% trans "Joriy aksiyalar" %}</h2>
+    </div>
+    <div class="grid-gap-16">
+      {% for promo in promotions %}
+      <div class="promo-card reveal">
+        {% if promo.image %}
+        <div class="promo-img">
+          <img src="{{ promo.image.url }}" alt="{{ promo.title }}" loading="lazy">
+        </div>
+        {% endif %}
+        <div class="promo-body">
+          <div class="promo-label">{% trans "Aksiya" %}</div>
+          <div class="promo-title">{{ promo.title }}</div>
+          {% if promo.description %}
+            <div class="promo-desc">{{ promo.description|truncatechars:80 }}</div>
+            <div class="promo-full-desc">{{ promo.description }}</div>
+          {% endif %}
+          {% if promo.valid_until %}<div class="promo-valid">{% trans "Amal qilish muddati:" %} {{ promo.valid_until }}</div>{% endif %}
+          <button type="button" class="promo-toggle-hint">{% trans "Batafsil uchun bosing" %} ▾</button>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}

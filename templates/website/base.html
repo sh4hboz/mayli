@@ -1,0 +1,127 @@
+{% load static i18n i18n_extras %}
+<!DOCTYPE html>
+<html lang="{{ LANGUAGE_CODE }}" dir="ltr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- SEO Meta -->
+  <title>{% block title %}Mayli Restobar{% endblock %} | {% trans "Termizning eng shinam maskanida" %}</title>
+  <meta name="description" content="{% block meta_description %}{% trans "Mayli Restobar — Termizda premium taomlar, ichimliklar, kalyan va unutilmas atmosfera. Bron qiling yoki bizga tashrif buyuring." %}{% endblock %}">
+  <meta name="keywords" content="{% block meta_keywords %}Mayli Restobar, Termiz restoran, restoran Termez, ресторан Термез, restaurant Termez{% endblock %}">
+  <meta name="robots" content="index, follow">
+
+  <!-- Canonical & hreflang -->
+  <link rel="canonical" href="{% block canonical %}{{ request.build_absolute_uri }}{% endblock %}">
+  <link rel="alternate" hreflang="uz" href="{{ request.scheme }}://{{ request.get_host }}{% lang_url 'uz' %}">
+  <link rel="alternate" hreflang="ru" href="{{ request.scheme }}://{{ request.get_host }}{% lang_url 'ru' %}">
+  <link rel="alternate" hreflang="en" href="{{ request.scheme }}://{{ request.get_host }}{% lang_url 'en' %}">
+  <link rel="alternate" hreflang="x-default" href="{{ request.scheme }}://{{ request.get_host }}{% lang_url 'uz' %}">
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="{% block og_title %}Mayli Restobar{% endblock %}">
+  <meta property="og:description" content="{% block og_description %}{% trans "Termizda premium taomlar va unutilmas atmosfera" %}{% endblock %}">
+  <meta property="og:image" content="{% block og_image %}{{ request.scheme }}://{{ request.get_host }}{% static 'src/img/icons/logo-black.png' %}{% endblock %}">
+  <meta property="og:url" content="{{ request.build_absolute_uri }}">
+  <meta property="og:locale" content="{{ LANGUAGE_CODE }}">
+  <meta name="twitter:card" content="summary_large_image">
+
+  <!-- Favicon -->
+  <link rel="icon" href="{% static 'src/img/icons/favicon.png' %}" type="image/png">
+
+  <!-- Fonts preconnect -->
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+  <link rel="stylesheet" href="{% static 'src/libs/swiper-bundle.min.css' %}">
+  <link rel="stylesheet" href="{% static 'src/libs/fancybox.css' %}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <link rel="stylesheet" href="{% static 'src/style.css' %}?v=1.4">
+
+
+  {% if site.google_verify %}<meta name="google-site-verification" content="{{ site.google_verify }}">{% endif %}
+  {% if site.yandex_verify %}<meta name="yandex-verification" content="{{ site.yandex_verify }}">{% endif %}
+
+  <!-- JSON-LD -->
+  <script type="application/ld+json">
+  {% autoescape off %}
+  {
+    "@context": "https://schema.org",
+    "@type": "Restaurant",
+    "name": "{{ site.name|escapejs }}",
+    "description": "{{ site.about_text|truncatechars:200|striptags|escapejs }}",
+    "url": "{{ request.scheme }}://{{ request.get_host }}",
+    "telephone": "{{ site.phone_main|escapejs }}",
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": "{{ site.address|escapejs }}",
+      "addressLocality": "{{ site.city|escapejs }}",
+      "addressCountry": "UZ"
+    },
+    "geo": {
+      "@type": "GeoCoordinates",
+      "latitude": {{ site.latitude|stringformat:"f" }},
+      "longitude": {{ site.longitude|stringformat:"f" }}
+    },
+    "openingHours": "Mo-Su 00:00-23:59",
+    "servesCuisine": "Uzbek, European",
+    "inLanguage": ["uz", "ru", "en"]
+  }
+  {% endautoescape %}
+  </script>
+
+  <!-- Google Analytics — GA_MEASUREMENT_ID ni .env/SiteSettings dan oling -->
+  {% if site.google_analytics_id %}
+  <script async src="https://www.googletagmanager.com/gtag/js?id={{ site.google_analytics_id }}"></script>
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','{{ site.google_analytics_id }}');</script>
+  {% endif %}
+  <!-- Yandex Metrica -->
+  {% if site.yandex_metrica_id %}
+  <script>(function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};m[i].l=1*new Date();k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})(window,document,"script","https://mc.yandex.ru/metrika/tag.js","ym");ym({{ site.yandex_metrica_id }},"init",{clickmap:true,trackLinks:true,accurateTrackBounce:true});</script>
+  <noscript><div><img src="https://mc.yandex.ru/watch/{{ site.yandex_metrica_id }}" style="position:absolute;left:-9999px;" alt="" /></div></noscript>
+  {% endif %}
+
+  {% block extra_head %}{% endblock %}
+</head>
+<body class="{% block body_class %}{% endblock %}">
+
+{% include 'website/partials/_header.html' %}
+
+<!-- MAIN CONTENT -->
+<main>
+  {% if messages %}
+    <div class="messages-container">
+      {% for msg in messages %}
+        <div class="alert alert-{{ msg.tags }}">{{ msg }}</div>
+      {% endfor %}
+    </div>
+  {% endif %}
+  {% block content %}{% endblock %}
+</main>
+
+{% include 'website/partials/_footer.html' %}
+{% include 'website/partials/_floating_buttons.html' %}
+{% include 'website/partials/_chat_widget.html' %}
+
+<!-- SCRIPTS -->
+<script>
+window.SITE_MESSAGES = {
+  success: "{% trans 'Muvaffaqiyatli yuborildi!' %}",
+  error:   "{% trans 'Xatolik yuz berdi.' %}",
+  network: "{% trans 'Tarmoq xatosi.' %}",
+  sending: "...",
+  chat_offline: {
+    uz: "💬 Tez orada operatorimiz siz bilan bog‘lanadi.",
+    ru: "💬 Оператор свяжется с вами в ближайшее время.",
+    en: "💬 Our operator will contact you shortly."
+  }
+};
+</script>
+<script src="{% static 'src/libs/jquery.min.js' %}" defer></script>
+<script src="{% static 'src/libs/swiper-bundle.min.js' %}" defer></script>
+<script src="{% static 'src/libs/fancybox.umd.js' %}" defer></script>
+<script src="{% static 'src/website.js' %}?v=1.4" defer></script>
+{% block extra_js %}{% endblock %}
+
+</body>
+</html>

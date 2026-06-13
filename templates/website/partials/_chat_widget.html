@@ -1,0 +1,31 @@
+{% load static i18n %}
+
+<!-- CHAT WIDGET -->
+<div class="chat-widget" id="chatWidget" data-lang="{{ LANGUAGE_CODE }}">
+  <div class="chat-header">
+    <div class="chat-header-info">
+      <div class="chat-avatar">
+        <img src="{% static 'src/img/icons/logo-white.png' %}" alt="Mayli" width="32" height="32">
+        <span class="chat-online-dot"></span>
+      </div>
+      <div>
+        <strong>Mayli Restobar</strong>
+        <small>{% trans "Odatda bir necha daqiqada javob beramiz" %}</small>
+      </div>
+    </div>
+    <button class="chat-close-btn" id="chatCloseBtn" aria-label="{% trans "Yopish" %}">
+      <i class="fa fa-times"></i>
+    </button>
+  </div>
+  <div class="chat-body" id="chatBody">
+    <div class="chat-msg chat-msg-bot">
+      <span>{% trans "Salom! 👋 Mayli Restobar'ga xush kelibsiz. Sizga qanday yordam bera olamiz?" %}</span>
+    </div>
+  </div>
+  <div class="chat-footer">
+    <input type="text" class="chat-input" id="chatInput" placeholder="{% trans "Xabar yozing..." %}" autocomplete="off">
+    <button class="chat-send-btn" id="chatSendBtn" aria-label="{% trans "Yuborish" %}">
+      <i class="fa fa-paper-plane"></i>
+    </button>
+  </div>
+</div>

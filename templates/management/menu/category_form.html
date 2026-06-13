@@ -1,0 +1,43 @@
+{% extends 'management/base.html' %}
+{% load static %}
+{% block title %}{% if object %}Kategoriyani tahrirlash{% else %}Kategoriya qo'shish{% endif %} | Mayli Restobar{% endblock %}
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="page-title-box d-flex align-items-center justify-content-between">
+            <h4 class="page-title">{% if object %}Kategoriyani tahrirlash{% else %}Kategoriya qo'shish{% endif %}</h4>
+            <ol class="breadcrumb m-0">
+                <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Dashboard</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'dashboard_category_list' %}">Kategoriyalar</a></li>
+                <li class="breadcrumb-item active">{% if object %}Tahrirlash{% else %}Qo'shish{% endif %}</li>
+            </ol>
+        </div>
+    </div>
+</div>
+<div class="row justify-content-center">
+    <div class="col-lg-6">
+        <div class="card">
+            <div class="card-header"><h5 class="card-title mb-0">{% if object %}{{ object.name_uz }}{% else %}Yangi kategoriya{% endif %}</h5></div>
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    {% if form.non_field_errors %}<div class="alert alert-danger">{{ form.non_field_errors }}</div>{% endif %}
+                    <div class="row g-3">
+                        <div class="col-md-4"><label class="form-label">{{ form.name_uz.label }}</label>{{ form.name_uz }}</div>
+                        <div class="col-md-4"><label class="form-label">{{ form.name_ru.label }}</label>{{ form.name_ru }}</div>
+                        <div class="col-md-4"><label class="form-label">{{ form.name_en.label }}</label>{{ form.name_en }}</div>
+                        <div class="col-md-6"><label class="form-label">{{ form.order.label }}</label>{{ form.order }}</div>
+                        <div class="col-md-6 d-flex align-items-end pb-2">
+                            <div class="form-check">{{ form.is_active }}<label class="form-check-label">{{ form.is_active.label }}</label></div>
+                        </div>
+                    </div>
+                    <div class="d-flex gap-2 mt-4">
+                        <button type="submit" class="btn btn-primary">Saqlash</button>
+                        <a href="{% url 'dashboard_category_list' %}" class="btn btn-secondary">Orqaga</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

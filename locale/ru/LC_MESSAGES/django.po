@@ -1,0 +1,434 @@
+# RUSSIAN translations — Mayli Restobar
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: ru\n"
+
+# === BASE.HTML ===
+msgid "Termizning eng shinam maskanida"
+msgstr "Лучший ресторан в Термезе"
+
+msgid "Mayli Restobar — Termizda premium taomlar, ichimliklar, kalyan va unutilmas atmosfera. Bron qiling yoki bizga tashrif buyuring."
+msgstr "Mayli Restobar — премиальная кухня, напитки, кальян и незабываемая атмосфера в Термезе. Забронируйте столик или посетите нас."
+
+msgid "Termizda premium taomlar va unutilmas atmosfera"
+msgstr "Премиальная кухня и незабываемая атмосфера в Термезе"
+
+msgid "Menyu"
+msgstr "Меню"
+
+msgid "Biz haqimizda"
+msgstr "О нас"
+
+msgid "Yangiliklar"
+msgstr "Новости"
+
+msgid "Galereya"
+msgstr "Галерея"
+
+msgid "Vakansiyalar"
+msgstr "Вакансии"
+
+msgid "Aloqa"
+msgstr "Контакты"
+
+msgid "Qo'ng'iroq qilish"
+msgstr "Позвонить"
+
+msgid "Chat"
+msgstr "Чат"
+
+msgid "Yuqoriga"
+msgstr "Наверх"
+
+msgid "Odatda bir necha daqiqada javob beramiz"
+msgstr "Обычно отвечаем за несколько минут"
+
+msgid "Yopish"
+msgstr "Закрыть"
+
+msgid "Salom! 👋 Mayli Restobar'ga xush kelibsiz. Sizga qanday yordam bera olamiz?"
+msgstr "Привет! 👋 Добро пожаловать в Mayli Restobar. Чем мы можем помочь?"
+
+msgid "Xabar yozing..."
+msgstr "Напишите сообщение..."
+
+msgid "Yuborish"
+msgstr "Отправить"
+
+msgid "Sahifalar"
+msgstr "Страницы"
+
+msgid "Bosh sahifa"
+msgstr "Главная"
+
+msgid "Xaritada"
+msgstr "На карте"
+
+msgid "Xaritada ko'rish"
+msgstr "Посмотреть на карте"
+
+msgid "Barcha huquqlar himoyalangan."
+msgstr "Все права защищены."
+
+msgid "Muvaffaqiyatli yuborildi!"
+msgstr "Успешно отправлено!"
+
+msgid "Xatolik yuz berdi."
+msgstr "Произошла ошибка."
+
+msgid "Tarmoq xatosi."
+msgstr "Ошибка сети."
+
+msgid "Telefon"
+msgstr "Телефон"
+
+msgid "Manzil"
+msgstr "Адрес"
+
+msgid "Ish vaqti"
+msgstr "Часы работы"
+
+# === HOME.HTML ===
+msgid "Termizning № 1 restorani"
+msgstr "Ресторан № 1 в Термезе"
+
+msgid "Mazali ta'mlar,"
+msgstr "Изысканные вкусы,"
+
+msgid "Unutilmas lahzalar"
+msgstr "Незабываемые моменты"
+
+msgid "Termiz shahrining eng shinam maskanida premium taomlar, ichimliklar va kalyan xizmatidan bahramand bo'ling."
+msgstr "Наслаждайтесь премиальной кухней, напитками и кальяном в самом уютном заведении Термеза."
+
+msgid "Menyuni ko'rish"
+msgstr "Смотреть меню"
+
+msgid "Bron qilish"
+msgstr "Забронировать"
+
+msgid "Yil tajriba"
+msgstr "Лет опыта"
+
+msgid "Taom turi"
+msgstr "Видов блюд"
+
+msgid "Mamnun mehmon"
+msgstr "Довольных гостей"
+
+msgid "Sifat kafolati"
+msgstr "Гарантия качества"
+
+msgid "Mashhur taomlar"
+msgstr "Популярные блюда"
+
+msgid "Eng sevimli taomlarimiz"
+msgstr "Наши самые любимые блюда"
+
+msgid "Mehmonlarimiz eng ko'p tanlagan taomlardan bir nechtasi"
+msgstr "Блюда, которые наши гости выбирают чаще всего"
+
+msgid "Barcha taomlarni ko'rish"
+msgstr "Смотреть все блюда"
+
+msgid "so'm"
+msgstr "сум"
+
+msgid "Bizning afzalliklarimiz"
+msgstr "Наши преимущества"
+
+msgid "Nega aynan biz?"
+msgstr "Почему именно мы?"
+
+msgid "Yangi ingredientlar"
+msgstr "Свежие ингредиенты"
+
+msgid "Har kuni yangi va sifatli mahsulotlardan foydalaniladi."
+msgstr "Ежедневно используются свежие и качественные продукты."
+
+msgid "Tajribali oshpazlar"
+msgstr "Опытные повара"
+
+msgid "Professional oshpazlarimiz har bir taomni san'at asariga aylantiradi."
+msgstr "Наши профессиональные повара превращают каждое блюдо в произведение искусства."
+
+msgid "Iliq xizmat"
+msgstr "Тёплый сервис"
+
+msgid "Har bir mehmonni iliq va samimiy munosabat bilan kutib olamiz."
+msgstr "Мы встречаем каждого гостя тёплым и искренним отношением."
+
+msgid "Ajoyib atmosfera"
+msgstr "Замечательная атмосфера"
+
+msgid "Premium interior, musiqa va kalyan — unutilmas kecha uchun."
+msgstr "Премиальный интерьер, музыка и кальян — для незабываемого вечера."
+
+msgid "Mayli Restobar Interior"
+msgstr "Интерьер Mayli Restobar"
+
+msgid "Mayli — sifat va lazzat markazi"
+msgstr "Mayli — центр качества и вкуса"
+
+msgid "Termiz shahrida joylashgan Mayli Restobar sizga turli xil taomlar, tetiklashtiruvchi ichimliklar va premium kalyan xizmatini taklif etadi."
+msgstr "Mayli Restobar в Термезе предлагает разнообразные блюда, освежающие напитки и услуги премиального кальяна."
+
+msgid "Halol va sifatli taomlar"
+msgstr "Халяльная и качественная еда"
+
+msgid "Premium kalyan xizmati"
+msgstr "Услуги премиального кальяна"
+
+msgid "Xususiy zal va tadbir"
+msgstr "Частный зал и мероприятия"
+
+msgid "Yetkazib berish xizmati"
+msgstr "Услуга доставки"
+
+msgid "Batafsil o'qish"
+msgstr "Читать подробнее"
+
+msgid "Aksiyalar"
+msgstr "Акции"
+
+msgid "Joriy aksiyalar"
+msgstr "Текущие акции"
+
+msgid "Aksiya"
+msgstr "Акция"
+
+msgid "Amal qilish muddati:"
+msgstr "Действует до:"
+
+msgid "Batafsil uchun bosing"
+msgstr "Нажмите для подробностей"
+
+msgid "Atmosfera va kayfiyat"
+msgstr "Атмосфера и настроение"
+
+msgid "Barcha rasmlarni ko'rish"
+msgstr "Смотреть все фото"
+
+msgid "Tez orada galereya to'ldiriladi"
+msgstr "Галерея скоро будет заполнена"
+
+msgid "Sharhlar"
+msgstr "Отзывы"
+
+msgid "Mehmonlarimiz fikri"
+msgstr "Мнения наших гостей"
+
+msgid "So'nggi yangiliklar"
+msgstr "Последние новости"
+
+msgid "Barcha yangiliklar"
+msgstr "Все новости"
+
+msgid "Bizni toping"
+msgstr "Найдите нас"
+
+msgid "Yandex Xarita"
+msgstr "Яндекс Карты"
+
+# === MENU.HTML ===
+msgid "Mayli Restobar to'liq menyu — taomlar, ichimliklar, kalyan, gazaklar. Narxlar va fotosuratlar bilan."
+msgstr "Полное меню Mayli Restobar — блюда, напитки, кальян, закуски. С ценами и фотографиями."
+
+msgid "Bizning menyu"
+msgstr "Наше меню"
+
+msgid "Premium taomlar, ichimliklar va kalyan"
+msgstr "Премиальные блюда, напитки и кальян"
+
+msgid "Barchasi"
+msgstr "Все"
+
+msgid "Taom qidirish..."
+msgstr "Поиск блюд..."
+
+msgid "Taom topilmadi. Boshqa kalit so'z yoki kategoriyani sinab ko'ring."
+msgstr "Блюдо не найдено. Попробуйте другое ключевое слово или категорию."
+
+msgid "Hammasini ko'rish"
+msgstr "Показать все"
+
+# === CONTACT.HTML ===
+msgid "Mayli Restobar bilan bog'laning. Telefon, manzil, ish vaqti va xarita."
+msgstr "Свяжитесь с Mayli Restobar. Телефон, адрес, часы работы и карта."
+
+msgid "Biz bilan bog'laning"
+msgstr "Свяжитесь с нами"
+
+msgid "Qo'ng'iroq"
+msgstr "Звонок"
+
+msgid "Xabar yuborish"
+msgstr "Отправить сообщение"
+
+msgid "Ismingiz"
+msgstr "Ваше имя"
+
+msgid "Ismingizni kiriting"
+msgstr "Введите ваше имя"
+
+msgid "Xabaringiz"
+msgstr "Ваше сообщение"
+
+msgid "Xabaringizni yozing..."
+msgstr "Напишите ваше сообщение..."
+
+# === ABOUT.HTML ===
+msgid "Mayli Restobar tarixi, missiyasi va jamoasi haqida."
+msgstr "О истории, миссии и команде Mayli Restobar."
+
+msgid "Bizning hikoyamiz"
+msgstr "Наша история"
+
+msgid "Sifat va lazzat markazi"
+msgstr "Центр качества и вкуса"
+
+msgid "Termiz shahrida joylashgan Mayli Restobar — bu nafaqat restoran, balki har bir mehmon uchun alohida tajriba. Premium taomlar, ajoyib atmosfera va iliq xizmat bilan sizni kutamiz."
+msgstr "Mayli Restobar в Термезе — это не просто ресторан, а особый опыт для каждого гостя. Ждём вас с премиальными блюдами, великолепной атмосферой и тёплым сервисом."
+
+msgid "Halol va yangi mahsulotlar"
+msgstr "Халяльные и свежие продукты"
+
+msgid "Tajribali oshpazlar jamoasi"
+msgstr "Команда опытных поваров"
+
+msgid "Xususiy zal va tadbirlar"
+msgstr "Частный зал и мероприятия"
+
+msgid "3 tilda xizmat"
+msgstr "Обслуживание на 3 языках"
+
+msgid "Bepul WiFi"
+msgstr "Бесплатный Wi-Fi"
+
+msgid "Qo'llab-quvvatlash"
+msgstr "Поддержка"
+
+msgid "Taklif"
+msgstr "Предложение"
+
+msgid "Bizga tashrif buyuring"
+msgstr "Посетите нас"
+
+msgid "Yaqinlaringiz bilan unutilmas kecha o'tkazish uchun bizga murojaat qiling."
+msgstr "Свяжитесь с нами, чтобы провести незабываемый вечер с близкими."
+
+msgid "Aloqaga chiqish"
+msgstr "Связаться"
+
+# === VACANCIES.HTML ===
+msgid "Mayli Restobar ochiq ish o'rinlari. Jamoamizga qo'shiling!"
+msgstr "Открытые вакансии Mayli Restobar. Присоединяйтесь к нашей команде!"
+
+msgid "Jamoamizga qo'shiling"
+msgstr "Присоединяйтесь к нашей команде"
+
+msgid "Biz doim iqtidorli va mehnatsevar odamlarni qidiramiz"
+msgstr "Мы всегда ищем талантливых и трудолюбивых людей"
+
+msgid "Ochiq lavozimlar"
+msgstr "Открытые вакансии"
+
+msgid "Talablar:"
+msgstr "Требования:"
+
+msgid "Ariza topshirish"
+msgstr "Подать заявку"
+
+msgid "Hozirda ochiq vakansiya yo'q. Keyinroq tekshirib ko'ring."
+msgstr "Сейчас открытых вакансий нет. Проверьте позже."
+
+msgid "Ariza yuborish"
+msgstr "Отправить заявку"
+
+msgid "Ism va familiya"
+msgstr "Имя и фамилия"
+
+msgid "Telefon raqam"
+msgstr "Номер телефона"
+
+msgid "Qo'shimcha ma'lumot"
+msgstr "Дополнительная информация"
+
+msgid "Tajribangiz, sabab va h.k."
+msgstr "Ваш опыт, причина обращения и т.д."
+
+# === NEWS.HTML ===
+msgid "Mayli Restobar yangiliklari, aksiyalar va tadbirlar."
+msgstr "Новости, акции и мероприятия Mayli Restobar."
+
+msgid "Yangiliklar va aksiyalar"
+msgstr "Новости и акции"
+
+msgid "Batafsil"
+msgstr "Подробнее"
+
+msgid "Yangiliklar hali qo'shilmagan"
+msgstr "Новости ещё не добавлены"
+
+# === NEWS DETAIL ===
+msgid "Yangilik"
+msgstr "Новость"
+
+msgid "Boshqa yangiliklar"
+msgstr "Другие новости"
+
+# === GALLERY.HTML ===
+msgid "Mayli Restobar galereya — interior, taomlar va tadbirlar rasmlari."
+msgstr "Галерея Mayli Restobar — интерьер, блюда и мероприятия."
+
+msgid "Galereya tez orada to'ldiriladi"
+msgstr "Галерея скоро будет заполнена"
+
+# === MODEL TRANSLATIONS (roles, categories) ===
+msgid "Taomlar"
+msgstr "Блюда"
+
+msgid "Ichimliklar"
+msgstr "Напитки"
+
+msgid "Kalyan"
+msgstr "Кальян"
+
+msgid "Gazaklar"
+msgstr "Закуски"
+
+msgid "Mijoz"
+msgstr "Клиент"
+
+msgid "Ofitsiant"
+msgstr "Официант"
+
+msgid "Barman"
+msgstr "Бармен"
+
+msgid "Bugalter"
+msgstr "Бухгалтер"
+
+msgid "Menejer"
+msgstr "Менеджер"
+
+msgid "Ega"
+msgstr "Владелец"
+
+msgid "Admin"
+msgstr "Админ"
+
+# === FORM MESSAGES ===
+msgid "Arizangiz qabul qilindi! Tez orada siz bilan bog'lanamiz."
+msgstr "Ваша заявка принята! Мы свяжемся с вами в ближайшее время."
+
+msgid "Ism va telefon raqam majburiy!"
+msgstr "Имя и номер телефона обязательны!"
+
+msgid "Xabaringiz yuborildi! Tez orada javob beramiz."
+msgstr "Ваше сообщение отправлено! Ответим в ближайшее время."
+
+msgid "Ism va xabar majburiy!"
+msgstr "Имя и сообщение обязательны!"

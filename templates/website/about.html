@@ -1,0 +1,16 @@
+{% extends 'website/base.html' %}
+{% load static i18n %}
+
+{% block title %}{% trans "Biz haqimizda" %}{% endblock %}
+{% block meta_description %}{% trans "Mayli Restobar tarixi, missiyasi va jamoasi haqida." %}{% endblock %}
+
+{% block content %}
+
+{% include 'website/partials/_page_hero.html' %}
+{% include 'website/partials/_about_full.html' %}
+{% include 'website/partials/_stats.html' %}
+{% include 'website/partials/_contact.html' %}
+{% include 'website/partials/_vacancies.html' %}
+{% include 'website/partials/_map.html' %}
+
+{% endblock %}

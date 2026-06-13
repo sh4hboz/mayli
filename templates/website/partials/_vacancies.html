@@ -1,0 +1,68 @@
+{% load i18n %}
+
+<!-- VACANCIES SECTION -->
+<section class="section section-dark2">
+  <div class="container">
+    <div class="section-header reveal">
+      <span class="section-badge">{% trans "Vakansiyalar" %}</span>
+      <h2 class="section-title">{% trans "Jamoamizga qo'shiling" %}</h2>
+      <p class="vacancies-section-subtitle">
+        {% trans "Biz doim iqtidorli va mehnatsevar odamlarni qidiramiz" %}
+      </p>
+    </div>
+
+    <div class="grid-2col">
+      <!-- Vakansiyalar ro'yxati -->
+      <div class="reveal">
+        <h3 class="title-gold-h3">{% trans "Ochiq lavozimlar" %}</h3>
+        {% if vacancies %}
+          {% for v in vacancies %}
+          <div class="vacancy-card reveal">
+            <div class="vacancy-title">{{ v.title }}</div>
+            {% if v.salary %}<div class="vacancy-salary"><i class="fa fa-money"></i> {{ v.salary }}</div>{% endif %}
+            <div class="vacancy-desc">{{ v.description }}</div>
+            {% if v.requirements %}
+            <div class="vacancy-requirements-label">
+              <strong class="text-bold">{% trans "Talablar:" %}</strong> {{ v.requirements }}
+            </div>
+            {% endif %}
+            <button class="btn btn-gold vacancy-apply-btn" data-vacancy-id="{{ v.pk }}">
+              {% trans "Ariza topshirish" %} <i class="fa fa-arrow-right"></i>
+            </button>
+          </div>
+          {% endfor %}
+        {% else %}
+          <div class="empty-state">
+            <i class="fa fa-briefcase icon-empty-md"></i>
+            {% trans "Hozirda ochiq vakansiya yo'q. Shunday bo'lsa-da, siz o'z ma'lumotlaringizni yuborishingiz mumkin." %}
+          </div>
+        {% endif %}
+      </div>
+
+      <!-- Ariza formasi -->
+      <div id="vacancyForm" class="reveal">
+        <h3 class="title-gold-h3">{% trans "Ariza yuborish" %}</h3>
+        <form class="ajax-form" action="{% url 'website:about' %}#contact" method="post">
+          {% csrf_token %}
+          <input type="hidden" name="vacancy_id" value="">
+          <div class="form-group">
+            <label class="form-label">{% trans "Ism va familiya" %} *</label>
+            <input type="text" name="full_name" class="form-control" placeholder="{% trans "Ismingizni kiriting" %}" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">{% trans "Telefon raqam" %} *</label>
+            <input type="tel" name="phone" class="form-control" placeholder="+998 XX XXX-XX-XX" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">{% trans "Qo'shimcha ma'lumot" %}</label>
+            <textarea name="message" class="form-control" rows="4" placeholder="{% trans "Tajribangiz, sabab va h.k." %}"></textarea>
+          </div>
+          <div class="form-result"></div>
+          <button type="submit" class="btn btn-primary form-submit" data-label="{% trans "Yuborish" %}">
+            <i class="fa fa-paper-plane"></i> {% trans "Yuborish" %}
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>

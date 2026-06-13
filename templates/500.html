@@ -1,0 +1,28 @@
+{% load static i18n %}
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>500 — Server xatosi | Mayli Restobar</title>
+  <link rel="icon" href="{% static 'src/img/icons/favicon.png' %}" type="image/png">
+  <link rel="stylesheet" href="{% static 'src/style.css' %}">
+
+  <style>
+    .error-page { min-height:100vh; display:flex; align-items:center; justify-content:center; text-align:center; padding:40px 20px; background:var(--dark); }
+    .error-code { font-size:clamp(6rem,20vw,12rem); font-weight:900; color:transparent; -webkit-text-stroke:2px rgba(197,160,89,.3); line-height:1; margin-bottom:8px; }
+    .error-title { font-size:clamp(1.4rem,3vw,2rem); font-weight:700; margin-bottom:16px; }
+    .error-desc { color:var(--text-muted); margin-bottom:36px; max-width:400px; margin-left:auto; margin-right:auto; }
+  </style>
+</head>
+<body>
+  <div class="error-page">
+    <div>
+      <div class="error-code">500</div>
+      <h1 class="error-title">Server xatosi</h1>
+      <p class="error-desc">Texnik nosozlik yuz berdi. Bir ozdan keyin qayta urinib ko'ring.</p>
+      <a href="/" class="btn btn-primary">Bosh sahifaga qaytish</a>
+    </div>
+  </div>
+</body>
+</html>

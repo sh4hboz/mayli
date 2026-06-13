@@ -1,0 +1,39 @@
+{% extends 'website/base.html' %}
+{% load i18n %}
+
+{% block title %}{% trans "Foydalanish shartlari" %}{% endblock %}
+
+{% block content %}
+<section class="sec-padding">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-9">
+        <h1 class="mb-4">{% trans "Foydalanish shartlari" %}</h1>
+        <p class="text-muted">{% trans "Oxirgi yangilanish: 12-iyun, 2026-yil" %}</p>
+        <hr class="mb-4">
+
+        <div class="content-text">
+          <h3>1. {% trans "Shartlar qabul qilinishi" %}</h3>
+          <p>{% trans "Mayli Restobar saytidan (keyingi o'rinlarda 'Sayt') yoki buyurtma berish xizmatidan foydalanish orqali siz ushbu shartlarga to'liq rozi ekanligingizni bildirasiz. Agar shartlarga rozi bo'lmasangiz, saytdan foydalanmasligingizni so'raymiz." %}</p>
+
+          <h3>2. {% trans "Buyurtma berish va yetkazish shartlari" %}</h3>
+          <ul>
+            <li>{% trans "Yetkazib berish xizmati faqat belgilangan Termiz shahri yetkazib berish hududida amalga oshiriladi." %}</li>
+            <li>{% trans "Buyurtma uchun taqdim qilingan telefon raqami va manzil to'g'ri bo'lishi shart. Agar ma'lumotlar xato bo'lsa yoki operator telefon orqali bog'lana olmasa, buyurtma bekor qilinishi mumkin." %}</li>
+            <li>{% trans "Olib ketish (Takeaway) buyurtmalarida mijoz buyurtmani o'zi belgilagan vaqtda kelib olib ketishi lozim." %}</li>
+          </ul>
+
+          <h3>3. {% trans "To'lovlar va narxlar" %}</h3>
+          <p>{% trans "Barcha narxlar saytda milliy valyutada (so'm) ko'rsatilgan. To'lov buyurtma olingan vaqtda naqd pulda yoki to'lov terminali orqali amalga oshiriladi." %}</p>
+
+          <h3>4. {% trans "Buyurtmani bekor qilish va qaytarish" %}</h3>
+          <p>{% trans "Taomlar tez buziluvchan mahsulotlar bo'lganligi sababli, buyurtma tayyorlash boshlangandan so'ng (buyurtma qabul qilingandan keyin 5 daqiqa ichida) uni bekor qilish imkoni yo'q. Sifatli va to'g'ri taom yetkazilishini ta'minlash bizning ustuvor vazifamizdir." %}</p>
+
+          <h3>5. {% trans "SMS-xabarnomalar va rozilik" %}</h3>
+          <p>{% trans "Siz buyurtma berish jarayonida rozilik checkbox'ini belgilash orqali shaxsiy ma'lumotlaringizni marketing xabarnomalariga yozilishi va sizga Restobar aksiyalari hamda maxsus takliflari yuzasidan SMS xabarlar yuborilishiga rozilik berasiz." %}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

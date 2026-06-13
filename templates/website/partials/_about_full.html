@@ -1,0 +1,34 @@
+{% load static i18n %}
+
+<!-- ABOUT FULL SECTION -->
+<section class="about-section section">
+  <div class="container">
+    <div class="about-grid">
+      <div class="about-img-wrap reveal">
+        {% if site.about_image %}
+          <img src="{{ site.about_image.url }}" alt="Mayli Restobar" loading="lazy">
+        {% else %}
+          <img src="{% static 'src/img/about.png' %}" alt="Mayli Restobar" loading="lazy">
+        {% endif %}
+        <div class="about-img-badge">
+          <strong>5+</strong><span>{% trans "Yil tajriba" %}</span>
+        </div>
+      </div>
+      <div class="reveal">
+        <span class="section-badge">{% trans "Bizning hikoyamiz" %}</span>
+        <h2 class="section-title">{% trans "Sifat va lazzat markazi" %}</h2>
+        <p class="text-muted-lh">
+          {% if site.about_text %}{{ site.about_text }}{% else %}{% trans "Termiz shahrida joylashgan Mayli Restobar — bu nafaqat restoran, balki har bir mehmon uchun alohida tajriba. Premium taomlar, ajoyib atmosfera va iliq xizmat bilan sizni kutamiz." %}{% endif %}
+        </p>
+        <div class="about-features">
+          <div class="about-feature"><i class="fa fa-check-circle"></i> {% trans "Halol va yangi mahsulotlar" %}</div>
+          <div class="about-feature"><i class="fa fa-check-circle"></i> {% trans "Tajribali oshpazlar jamoasi" %}</div>
+          <div class="about-feature"><i class="fa fa-check-circle"></i> {% trans "Premium kalyan xizmati" %}</div>
+          <div class="about-feature"><i class="fa fa-check-circle"></i> {% trans "Xususiy zal va tadbirlar" %}</div>
+          <div class="about-feature"><i class="fa fa-check-circle"></i> {% trans "3 tilda xizmat" %}</div>
+          <div class="about-feature"><i class="fa fa-check-circle"></i> {% trans "Bepul WiFi" %}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
