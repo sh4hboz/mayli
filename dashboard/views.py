@@ -6,14 +6,14 @@ from django.urls import reverse_lazy
 from django.shortcuts import get_object_or_404
 from django.http import JsonResponse
 from django.contrib import messages
-from django.views import View
 from django.core.exceptions import PermissionDenied
+from django.db.models import Q
 
 from accounts.models import Role
 from website.models import SiteSettings, News, Promotion, GalleryItem, Vacancy, JobApplication, ContactMessage
 from menu.models import Category, Dish
-from orders.models import Order
-from .forms import SiteSettingsForm, NewsForm, PromotionForm, GalleryItemForm, VacancyForm, CategoryForm, DishForm
+from crm.models import Customer, Tag, Gender, CustomerSource
+from .forms import SiteSettingsForm, NewsForm, PromotionForm, GalleryItemForm, VacancyForm, CategoryForm, DishForm, CustomerForm
 
 
 @login_required(login_url='/login/')
@@ -28,6 +28,7 @@ def dashboard_home(request):
         'vacancy_active': Vacancy.objects.filter(is_active=True).count(),
         'unread_contacts': ContactMessage.objects.filter(is_read=False).count(),
         'new_applications': JobApplication.objects.count(),
+        'customers_count': Customer.objects.count(),
     }
     recent_contacts = ContactMessage.objects.order_by('-created_at')[:5]
     return render(request, 'management/dashboard.html', {
@@ -35,13 +36,6 @@ def dashboard_home(request):
         'stats': stats,
         'recent_contacts': recent_contacts,
     })
-
-
-@login_required(login_url='/login/')
-def chat_view(request):
-    if request.user.role == Role.CUSTOMER:
-        return redirect('/dashboard/')
-    return render(request, 'management/chat.html', {'profile': request.user})
 
 
 # --- CMS views-lar uchun Mixin base ---
@@ -364,84 +358,81 @@ class DishDeleteView(CMSBaseMixin, SuccessMessageMixin, DeleteView):
     success_url = reverse_lazy('dashboard_dish_list')
 
 
-# --- Buyurtmalar Boshqaruvi ---
-class OrderListView(CMSBaseMixin, ListView):
-    model = Order
-    template_name = 'management/orders/order_list.html'
-    context_object_name = 'order_list'
-
-    def get_queryset(self):
-        qs = super().get_queryset()
-        order_type = self.request.GET.get('type')
-        status = self.request.GET.get('status')
-        if order_type:
-            qs = qs.filter(order_type=order_type)
-        if status:
-            qs = qs.filter(status=status)
-        return qs.order_by('-created_at')
-
-    def get_context_data(self, **kwargs):
-        ctx = super().get_context_data(**kwargs)
-        ctx['active_type'] = self.request.GET.get('type', '')
-        ctx['active_status'] = self.request.GET.get('status', '')
-        return ctx
-
-
-class OrderDetailView(CMSBaseMixin, DetailView):
-    model = Order
-    template_name = 'management/orders/order_detail.html'
-    context_object_name = 'order'
-
-    def get_context_data(self, **kwargs):
-        ctx = super().get_context_data(**kwargs)
-        from django.conf import settings
-        ctx['YANDEX_MAPS_API_KEY'] = getattr(settings, 'YANDEX_MAPS_API_KEY', '')
-        return ctx
-
-
-class OrderStatusChangeView(CMSBaseMixin, View):
-
-    def post(self, request, *args, **kwargs):
-        from django.utils import timezone
-
-        order = get_object_or_404(Order, pk=kwargs.get('pk'))
-        status = request.POST.get('status')
-
-        if status in [choice[0] for choice in order._meta.get_field('status').choices]:
-            old_status = order.status
-            order.status = status
-
-            # Auto-set timestamps based on status
-            if status == 'cooking' and not order.accepted_at:
-                order.accepted_at = timezone.now()
-            elif status == 'delivering' and not order.delivered_at:
-                order.delivered_at = timezone.now()
-            elif status == 'completed' and not order.completed_at:
-                order.completed_at = timezone.now()
-
-            order.save()
-            messages.success(request, f"Buyurtma #{order.id} statusi '{status}' ga o'zgartirildi.")
-
-        return redirect('dashboard_order_detail', pk=order.pk)
-
-
-class OrderDeleteView(CMSBaseMixin, SuccessMessageMixin, DeleteView):
-    model = Order
-    template_name = 'management/confirm_delete.html'
-    success_url = reverse_lazy('dashboard_order_list')
-
-
-# --- Mijozlar Ro'yxati ---
-from django.contrib.auth import get_user_model
-User = get_user_model()
-
+# --- Mijozlar CRM ---
 class CustomerListView(CMSBaseMixin, ListView):
-    model = User
-    template_name = 'management/customers/customer_list.html'
+    model = Customer
+    template_name = 'management/crm/customer_list.html'
     context_object_name = 'customer_list'
+    paginate_by = 25
 
     def get_queryset(self):
-        return super().get_queryset().filter(role=Role.CUSTOMER).order_by('-date_joined')
+        qs = super().get_queryset().prefetch_related('tags')
+        q = self.request.GET.get('q', '').strip()
+        gender = self.request.GET.get('gender', '')
+        source = self.request.GET.get('source', '')
+        tag = self.request.GET.get('tag', '')
+        birth_month = self.request.GET.get('birth_month', '')
+        if q:
+            qs = qs.filter(
+                Q(first_name__icontains=q) | Q(last_name__icontains=q) | Q(phone__icontains=q)
+            )
+        if gender:
+            qs = qs.filter(gender=gender)
+        if source:
+            qs = qs.filter(source=source)
+        if tag:
+            qs = qs.filter(tags__id=tag)
+        if birth_month:
+            qs = qs.filter(birth_date__month=birth_month)
+        return qs.distinct()
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        ctx['q'] = self.request.GET.get('q', '')
+        ctx['active_gender'] = self.request.GET.get('gender', '')
+        ctx['active_source'] = self.request.GET.get('source', '')
+        ctx['active_tag'] = self.request.GET.get('tag', '')
+        ctx['active_birth_month'] = self.request.GET.get('birth_month', '')
+        ctx['genders'] = Gender.choices
+        ctx['sources'] = CustomerSource.choices
+        ctx['all_tags'] = Tag.objects.all()
+        ctx['months'] = [
+            (1, 'Yanvar'), (2, 'Fevral'), (3, 'Mart'), (4, 'Aprel'),
+            (5, 'May'), (6, 'Iyun'), (7, 'Iyul'), (8, 'Avgust'),
+            (9, 'Sentabr'), (10, 'Oktabr'), (11, 'Noyabr'), (12, 'Dekabr'),
+        ]
+        ctx['total_count'] = Customer.objects.count()
+        return ctx
+
+
+class CustomerDetailView(CMSBaseMixin, DetailView):
+    model = Customer
+    template_name = 'management/crm/customer_detail.html'
+    context_object_name = 'customer'
+
+
+class CustomerCreateView(CMSBaseMixin, SuccessMessageMixin, CreateView):
+    model = Customer
+    form_class = CustomerForm
+    template_name = 'management/crm/customer_form.html'
+    success_url = reverse_lazy('dashboard_customer_list')
+
+    def form_valid(self, form):
+        form.instance.created_by = self.request.user
+        return super().form_valid(form)
+
+
+class CustomerUpdateView(CMSBaseMixin, SuccessMessageMixin, UpdateView):
+    model = Customer
+    form_class = CustomerForm
+    template_name = 'management/crm/customer_form.html'
+    success_url = reverse_lazy('dashboard_customer_list')
+
+
+class CustomerDeleteView(CMSBaseMixin, SuccessMessageMixin, DeleteView):
+    model = Customer
+    template_name = 'management/confirm_delete.html'
+    success_url = reverse_lazy('dashboard_customer_list')
 
 
 # --- Lock Screen ---

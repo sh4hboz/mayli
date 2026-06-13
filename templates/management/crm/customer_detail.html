@@ -1,0 +1,66 @@
+{% extends 'management/base.html' %}
+{% block title %}{{ customer.full_name|default:customer.phone }} | Mijoz | Mayli Restobar{% endblock %}
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="page-title-box d-flex align-items-center justify-content-between">
+            <h4 class="page-title">Mijoz: {{ customer.full_name|default:customer.phone }}</h4>
+            <ol class="breadcrumb m-0">
+                <li class="breadcrumb-item"><a href="{% url 'dashboard_home' %}">Dashboard</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'dashboard_customer_list' %}">Mijozlar</a></li>
+                <li class="breadcrumb-item active">{{ customer.full_name|default:customer.phone }}</li>
+            </ol>
+        </div>
+    </div>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-lg-9">
+        <div class="card">
+            <div class="card-header d-flex align-items-center justify-content-between">
+                <h5 class="card-title mb-0">
+                    {{ customer.full_name|default:"—" }}
+                    {% if customer.is_active %}<span class="badge bg-success-subtle text-success ms-2">Faol</span>{% else %}<span class="badge bg-secondary-subtle text-secondary ms-2">Nofaol</span>{% endif %}
+                </h5>
+                <div class="d-flex gap-2">
+                    <a href="{% url 'dashboard_customer_edit' customer.pk %}" class="btn btn-warning btn-sm"><i class="ti ti-edit me-1"></i>Tahrirlash</a>
+                    <a href="{% url 'dashboard_customer_list' %}" class="btn btn-secondary btn-sm"><i class="ti ti-arrow-left me-1"></i>Orqaga</a>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <table class="table table-borderless mb-0">
+                            <tr><th class="text-muted" style="width:40%">Telefon</th><td>{{ customer.phone }}</td></tr>
+                            <tr><th class="text-muted">Jins</th><td>{{ customer.get_gender_display|default:"—" }}</td></tr>
+                            <tr><th class="text-muted">Tug'ilgan kun</th><td>{% if customer.birth_date %}{{ customer.birth_date|date:"d.m.Y" }}{% if customer.age %} ({{ customer.age }} yosh){% endif %}{% else %}—{% endif %}</td></tr>
+                            <tr><th class="text-muted">Manba</th><td>{{ customer.get_source_display }}</td></tr>
+                            <tr><th class="text-muted">Teglar</th><td>
+                                {% for t in customer.tags.all %}<span class="badge bg-{{ t.color|default:'secondary' }}-subtle text-{{ t.color|default:'secondary' }}">{{ t.name }}</span> {% empty %}—{% endfor %}
+                            </td></tr>
+                        </table>
+                    </div>
+                    <div class="col-md-6">
+                        <table class="table table-borderless mb-0">
+                            <tr><th class="text-muted" style="width:40%">Email</th><td>{{ customer.email|default:"—" }}</td></tr>
+                            <tr><th class="text-muted">Telegram</th><td>{{ customer.telegram_username|default:"—" }}</td></tr>
+                            <tr><th class="text-muted">Reklama roziligi</th><td>
+                                <span class="badge bg-{% if customer.sms_consent %}success{% else %}secondary{% endif %}-subtle text-{% if customer.sms_consent %}success{% else %}secondary{% endif %}">SMS</span>
+                                <span class="badge bg-{% if customer.email_consent %}success{% else %}secondary{% endif %}-subtle text-{% if customer.email_consent %}success{% else %}secondary{% endif %}">Email</span>
+                                <span class="badge bg-{% if customer.telegram_consent %}success{% else %}secondary{% endif %}-subtle text-{% if customer.telegram_consent %}success{% else %}secondary{% endif %}">Telegram</span>
+                            </td></tr>
+                            <tr><th class="text-muted">Qo'shilgan</th><td>{{ customer.created_at|date:"d.m.Y H:i" }}{% if customer.created_by %} · {{ customer.created_by.full_name|default:customer.created_by.phone }}{% endif %}</td></tr>
+                            <tr><th class="text-muted">Akkaunt</th><td>{% if customer.user %}{{ customer.user.phone }}{% else %}—{% endif %}</td></tr>
+                        </table>
+                    </div>
+                </div>
+                {% if customer.notes %}
+                <hr>
+                <h6 class="text-muted text-uppercase fs-xs">Izoh</h6>
+                <p class="mb-0">{{ customer.notes|linebreaksbr }}</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

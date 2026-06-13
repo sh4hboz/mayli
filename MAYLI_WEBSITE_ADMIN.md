@@ -22,7 +22,7 @@
 ## ✅ BAJARILGAN VAZIFALAR (2026-06-13)
 
 ### ✅ 0 — urls.py holati
-- `config/urls.py` — API URL'lar (orders/delivery/payments) hozircha yo'q (kerak bo'lganda qaytariladi)
+- `config/urls.py` — faqat website + dashboard + admin + i18n + auth (orders/delivery/payments olib tashlandi)
 - Mavjud: `website` (public), `dashboard`, `admin`, `i18n`, `restobar` (auth)
 
 ### ✅ 1 — Inventar
@@ -41,7 +41,7 @@
 
 #### Sidebar (`management/partials/sidebar.html`):
 - Paces demo menyu o'chirildi
-- Mayli navigatsiyasi: **Asosiy** (Dashboard) · **Sayt Boshqaruvi** (Sozlamalar, Yangiliklar, Aksiyalar, Galereya, Vakansiyalar, Arizalar, Aloqa) · **Menyu** (Kategoriyalar, Taomlar) · **Buyurtmalar** · **Mijozlar**
+- Mayli navigatsiyasi: **Asosiy** (Dashboard) · **Sayt Boshqaruvi** (Sozlamalar, Yangiliklar, Aksiyalar, Galereya, Vakansiyalar, Arizalar, Aloqa) · **Menyu** (Kategoriyalar, Taomlar) · **Mijozlar (CRM)**
 - User profil: `profile.get_full_name` + `profile.get_role_display`
 - Logout: `/logout/`
 
@@ -64,8 +64,8 @@
 | ContactMessage | ✅ | — | — | ✅ | detail + is_read toggle |
 | Category | ✅ | ✅ | ✅ | ✅ | |
 | Dish | ✅ | ✅ | ✅ | ✅ | is_active toggle |
-| Order | ✅ | — | — | ✅ | detail + status change |
-| Customer | ✅ | — | — | — | |
+
+> ℹ️ `Order` / buyurtma boshqaruvi olib tashlandi (delivery alohida loyiha). `Customer` — `crm` app'da qayta quriladi (BOSQICH 3).
 
 **Universal AJAX toggle:** `POST /dashboard/toggle-active/<app>/<model>/<pk>/`
 
@@ -117,19 +117,12 @@
   - Barcha CreateView, UpdateView, DeleteView'larga qo'shildi
   - Messages: "X muvaffaqiyatli qo'shildi/yangilandi/o'chirildi"
   - Base template'da display (Bootstrap alerts bilan)
-- [x] **OrderStatusChangeView** — Auto timestamps
-  - Status → cooking: `accepted_at = now()` (agar null)
-  - Status → delivering: `delivered_at = now()` (agar null)
-  - Status → completed: `completed_at = now()` (agar null)
-  - User-friendly messages
-
 ## 🔲 QOLGAN ISHLAR
 
 - [ ] `Testimonial`, `TeamMember` CRUD (agar website'da bo'lsa)
-- [ ] Dashboard analytics/statistics page
-- [ ] Bulk operations (mass delete, status change)
+- [ ] Mijozlar CRM (BOSQICH 3 — `crm` app)
+- [ ] Bulk operations (mass delete)
 - [ ] Export to CSV/Excel
-- [ ] Email notifications (order status changes)
 
 ---
 
@@ -142,17 +135,16 @@
 - [x] Success messages — Form save/update/delete bo'lganda feedback
 - [x] Login page — Beautiful Paces uslubida
 - [x] Lock screen — Password bilan ekran qulfi
-- [x] Order timestamps — Status o'zgarganda auto-set
-- [x] ⛔ Buyurtma/delivery/statistika'ga tegmagan. Public sayt ishlaydi.
+- [x] ⛔ Buyurtma/delivery tizimi loyihadan olib tashlandi. Public sayt ishlaydi.
 
 ---
 
 ## 📊 Dashboard Status
 - ✅ Authentication: Login, Lock screen, Role-based access
 - ✅ UI: Topbar, Sidebar, Base template, Messages
-- ✅ CRUD: 10 ta model (News, Promo, Gallery, Vacancy, Contacts, Applications, Category, Dish, Order, Customer)
+- ✅ CRUD: 8 ta model (News, Promo, Gallery, Vacancy, Contacts, Applications, Category, Dish)
 - ✅ Forms: Error messages, validation styling, delete confirmations
 - ✅ User feedback: Success messages, form errors, alerts
-- ✅ Order management: Status change, auto timestamps
+- 🔲 Mijozlar CRM: `crm` app (BOSQICH 3)
 - 🔲 Analytics: Dashboard statistics page (optional)
 - 🔲 Bulk operations: Mass actions (optional)

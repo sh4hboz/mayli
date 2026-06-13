@@ -31,11 +31,8 @@ INSTALLED_APPS = [
     'core',
     'accounts',
     'menu',
-    'tables',
-    'orders',
-    'payments',
-    'chat',
     'notifications',
+    'crm',
     'website',
     'dashboard',
 ]

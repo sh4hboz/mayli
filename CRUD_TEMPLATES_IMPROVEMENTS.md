@@ -94,7 +94,6 @@ Barcha admin dashboard CRUD form templatelarini yangilandi: error messages, vali
   - "Rasmni o'chirasizmi?" (Gallery)
   - "Arizani o'chirasizmi?" (Application)
   - "Murojaatni o'chirasizmi?" (Contact)
-  - "Buyurtmani o'chirasizmi?" (Order)
 
 ### JavaScript Handler
 ```javascript
@@ -174,7 +173,6 @@ The following list templates did NOT need changes (already have proper structure
 - `customer_list.html`
 - `applications_list.html`
 - `contacts_list.html`
-- `order_list.html`
 
 All these templates already had delete confirmation (`data-confirm` attributes).
 

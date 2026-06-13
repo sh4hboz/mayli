@@ -21,13 +21,6 @@ accounts/          — User authentication
 - apps.py
 - tests.py
 
-chat/              — Chat/messaging app
-- migrations/      ✅ TRACK
-- models.py
-- views.py
-- urls.py
-- etc.
-
 core/              — Core utilities
 - migrations/      ✅ TRACK
 - models.py
@@ -46,13 +39,7 @@ menu/              — Menu/dishes management
 - views.py
 - etc.
 
-orders/            — Orders management
-- migrations/      ✅ TRACK
-- models.py
-- views.py
-- etc.
-
-payments/          — Payment processing
+crm/               — Mijozlar CRM (quriladi)
 - migrations/      ✅ TRACK
 - models.py
 - etc.

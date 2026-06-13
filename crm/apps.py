@@ -1,6 +1,7 @@
 from django.apps import AppConfig
 
 
-class ChatConfig(AppConfig):
+class CrmConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
-    name = 'chat'
+    name = 'crm'
+    verbose_name = 'Mijozlar (CRM)'

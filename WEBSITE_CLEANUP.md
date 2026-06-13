@@ -13,8 +13,8 @@
 - `/terms-conditions/` — Foydalanish shartlari
 
 ### Olib tashlangan URL'lar
-- `/order/`, `/order/create/`, `/order/status/` → Delivery/takeaway uchun keyin qo'shiladi
-- `/menu/` → legacy, faqat restobar app'da qoldi
+- `/order/`, `/order/create/`, `/order/status/` → olib tashlandi (delivery alohida loyiha sifatida keyin quriladi)
+- `/menu/` → restobar app'da (menyu ko'rsatish)
 
 **Fayl:** `website/urls.py`
 
@@ -173,12 +173,11 @@
 
 ---
 
-## 9. KELAJAK (BOSQICH 2+)
+## 9. KELAJAK
 
-- 🔲 Delivery & Take away (web)
-- 🔲 Admin dashboard (Paces)
-- 🔲 Mobil ilova (React Native)
-- 🔲 Online to'lovlar (Payme/Click)
+- ✅ Admin dashboard (CMS) — tayyor
+- 🔲 Mijozlar CRM (BOSQICH 3)
+- 🔲 CRM marketing (SMS/email/Telegram)
 
 ---
 

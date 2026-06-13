@@ -24,9 +24,6 @@ urlpatterns = [
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
 
-    # Chat APIs (BOSQICH 2.6)
-    path('api/chat/', include('chat.urls')),
-
     # SEO
     path('sitemap.xml', sitemap, {'sitemaps': sitemaps}, name='sitemap'),
     path('robots.txt', include('website.robots_urls')),
