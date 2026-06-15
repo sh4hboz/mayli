@@ -3,6 +3,10 @@ from .base import *
 DEBUG = False
 
 # Production xavfsizligi
+# nginx HTTPS'ni tugatadi va gunicorn'ga HTTP (proxy) orqali uzatadi.
+# Bu sarlavhasiz SECURE_SSL_REDIRECT cheksiz redirect loop yasaydi.
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
 SECURE_SSL_REDIRECT = True
 SECURE_HSTS_SECONDS = 31536000
 SECURE_HSTS_INCLUDE_SUBDOMAINS = True
