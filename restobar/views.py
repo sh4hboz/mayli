@@ -74,51 +74,12 @@ def login_view(request):
                     'username': username_input,
                 })
         else:
-            # Yangi xodim (tizimda mavjud bo'lmagan login)
-            if not username_input.startswith('+') or not username_input[1:].isdigit():
-                return render(request, 'registration/login.html', {
-                    'error': "Tizimda mavjud bo'lmagan xodim! Login telefon raqami formatida bo'lishi kerak.",
-                    'username': username_input,
-                })
-
-            staff_role = Role.WAITER
-            if 'barman' in username_input:
-                staff_role = Role.BARMAN
-            elif 'manager' in username_input:
-                staff_role = Role.MANAGER
-            elif 'admin' in username_input or 'super' in username_input:
-                staff_role = Role.ADMIN
-
-            if staff_role in [Role.WAITER, Role.BARMAN]:
-                if len(password_input) != 4 or not password_input.isdigit():
-                    return render(request, 'registration/login.html', {
-                        'error': "Ofitsiant va Barmanlar faqat 4 xonali PIN kod kiritishlari shart!",
-                        'username': username_input,
-                    })
-
-            try:
-                new_user = User.objects.create_user(
-                    phone=username_input,
-                    password=password_input,
-                    role=staff_role,
-                    full_name=username_input
-                )
-
-                staff_prof = StaffProfile.objects.create(
-                    user=new_user,
-                    role=staff_role
-                )
-                if staff_role in [Role.WAITER, Role.BARMAN]:
-                    staff_prof.set_pin(password_input)
-                    staff_prof.save()
-
-                login(request, new_user)
-                return redirect('dashboard_home')
-            except Exception as e:
-                return render(request, 'registration/login.html', {
-                    'error': f"Xodimni yaratishda xatolik: {str(e)}",
-                    'username': username_input,
-                })
+            # Tizimda mavjud bo'lmagan login — yangi xodim faqat boshqaruv
+            # panelidagi "Xodimlar" bo'limi orqali qo'shiladi (staff_management).
+            return render(request, 'registration/login.html', {
+                'error': "Foydalanuvchi nomi yoki parol/PIN noto'g'ri!",
+                'username': username_input,
+            })
 
     return render(request, 'registration/login.html')
 
