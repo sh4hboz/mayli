@@ -14,10 +14,15 @@ RuntimeDirectory=gunicorn
 WorkingDirectory=/var/www/mayli
 Environment=DJANGO_SETTINGS_MODULE=config.settings.prod
 
+# workers: 6 yadro uchun (2*cores+1 formulasi = 13, lekin marketing+CRM
+# yuki past, shuning uchun 9 — RAM zaxirasini qoldiradi).
+# max-requests: worker'larni davriy qayta ishga tushiradi (xotira sizishiga qarshi).
 ExecStart=/var/www/mayli/venv/bin/gunicorn \
     --name mayli \
-    --workers 3 \
+    --workers 9 \
     --timeout 60 \
+    --max-requests 1000 \
+    --max-requests-jitter 100 \
     --access-logfile - \
     --error-logfile - \
     --bind unix:/run/gunicorn/mayli.sock \

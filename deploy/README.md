@@ -11,20 +11,52 @@ Bu papkada productionga deploy qilish uchun konfiguratsiya fayllari:
 **Arxitektura:** `nginx (443, SSL) → unix socket → gunicorn → Django (config.wsgi)`.
 WebSocket ishlatilmaydi, shuning uchun WSGI (gunicorn) yetarli.
 
+**Maqsadli server:** Ubuntu 24.04, 6 CPU, 12 GB RAM, 100 GB NVMe.
+gunicorn 9 worker'ga sozlangan (`deploy/gunicorn.service`). Ma'lumotlar
+bazasi sifatida **PostgreSQL** tavsiya etiladi (bu server quvvatiga mos).
+
 > Quyidagi yo'llar `/var/www/mayli` va foydalanuvchi `www-data` deb olingan.
 > O'zingiznikiga moslang.
 
 ---
 
-## 1. Server tayyorgarligi (Ubuntu/Debian)
+## 1. Server tayyorgarligi (Ubuntu 24.04)
 
 ```bash
-sudo apt update
-sudo apt install -y python3-venv python3-pip nginx git
-# Ixtiyoriy (prod.py cache/channels Redis'ga ishora qiladi):
-sudo apt install -y redis-server
-# Postgres ishlatsangiz:
-# sudo apt install -y postgresql libpq-dev
+sudo apt update && sudo apt upgrade -y
+sudo apt install -y python3-venv python3-pip python3-dev build-essential \
+                    nginx git redis-server \
+                    postgresql libpq-dev
+```
+
+Ubuntu 24.04 Python 3.12 bilan keladi (Django 5.1 to'liq qo'llab-quvvatlaydi).
+
+Firewall (ochiq portlar — SSH, HTTP, HTTPS):
+
+```bash
+sudo ufw allow OpenSSH
+sudo ufw allow 'Nginx Full'
+sudo ufw enable
+```
+
+### PostgreSQL bazasini yaratish (tavsiya)
+
+```bash
+sudo -u postgres psql <<'SQL'
+CREATE DATABASE mayli;
+CREATE USER mayli WITH PASSWORD 'KUCHLI_PAROL';
+ALTER ROLE mayli SET client_encoding TO 'utf8';
+ALTER ROLE mayli SET default_transaction_isolation TO 'read committed';
+ALTER ROLE mayli SET timezone TO 'Asia/Tashkent';
+GRANT ALL PRIVILEGES ON DATABASE mayli TO mayli;
+\c mayli
+GRANT ALL ON SCHEMA public TO mayli;
+SQL
+```
+
+So'ng `.env` da:
+```
+DATABASE_URL=postgres://mayli:KUCHLI_PAROL@127.0.0.1:5432/mayli
 ```
 
 ## 2. Kodni olish va virtual muhit
