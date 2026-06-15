@@ -9,6 +9,7 @@ class SiteSettings(models.Model):
     logo = models.ImageField(upload_to='site/', blank=True, null=True)
     logo_dark = models.ImageField(upload_to='site/', blank=True, null=True)
     favicon = models.ImageField(upload_to='site/', blank=True, null=True)
+    hero_bg_image = models.ImageField(upload_to='site/', blank=True, null=True)
 
     phone_main = models.CharField(max_length=20, blank=True)
     phone_secondary = models.CharField(max_length=20, blank=True)
@@ -171,9 +172,17 @@ class JobApplication(TimeStampedModel):
 
 
 class ContactMessage(TimeStampedModel):
+    KIND_MESSAGE = 'message'
+    KIND_BOOKING = 'booking'
+    KIND_CHOICES = [
+        (KIND_MESSAGE, 'Murojaat'),
+        (KIND_BOOKING, 'Bron so\'rovi'),
+    ]
+
     name = models.CharField(max_length=200)
     phone = models.CharField(max_length=20, blank=True)
-    message = models.TextField()
+    message = models.TextField(blank=True)
+    kind = models.CharField(max_length=20, choices=KIND_CHOICES, default=KIND_MESSAGE)
     is_read = models.BooleanField(default=False)
 
     class Meta:

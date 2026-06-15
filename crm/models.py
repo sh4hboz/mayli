@@ -111,3 +111,90 @@ class Customer(TimeStampedModel):
         return today.year - self.birth_date.year - (
             (today.month, today.day) < (self.birth_date.month, self.birth_date.day)
         )
+
+
+class CampaignChannel(models.TextChoices):
+    SMS = 'sms', _('SMS')
+    EMAIL = 'email', _('Email')
+    TELEGRAM = 'telegram', _('Telegram')
+
+
+class CampaignStatus(models.TextChoices):
+    DRAFT = 'draft', _('Qoralama')
+    SCHEDULED = 'scheduled', _('Rejalashtirylgan')
+    SENT = 'sent', _('Jo\'natilgan')
+
+
+class Campaign(TimeStampedModel):
+    name = models.CharField(_('Kampaniya nomi'), max_length=200)
+    description = models.TextField(_('Tavsif'), blank=True)
+    channel = models.CharField(_('Kanal'), max_length=20, choices=CampaignChannel.choices)
+    template = models.TextField(
+        _('Shablon'),
+        help_text=_('{{first_name}}, {{full_name}}, {{phone}} ishlatish mumkin'),
+    )
+    tags = models.ManyToManyField(
+        Tag, blank=True, related_name='campaigns', verbose_name=_('Teglar (filtr)'),
+        help_text=_('Bo\'sh bo\'lsa — barcha mijozlarga'),
+    )
+    status = models.CharField(
+        _('Holat'), max_length=20, choices=CampaignStatus.choices,
+        default=CampaignStatus.DRAFT,
+    )
+    scheduled_at = models.DateTimeField(_('Jo\'natish vaqti'), null=True, blank=True)
+    sent_count = models.IntegerField(_('Yuborilan soni'), default=0)
+    failed_count = models.IntegerField(_('Muvaffaqiyatsiz soni'), default=0)
+    created_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.SET_NULL,
+        null=True, blank=True, related_name='created_campaigns',
+        verbose_name=_('Kim yaratgan'),
+    )
+
+    class Meta:
+        verbose_name = _('Kampaniya')
+        verbose_name_plural = _('Kampaniyalar')
+        ordering = ['-created_at']
+        indexes = [
+            models.Index(fields=['-created_at']),
+            models.Index(fields=['status']),
+        ]
+
+    def __str__(self):
+        return f"{self.name} ({self.get_channel_display()})"
+
+
+class CampaignLogStatus(models.TextChoices):
+    PENDING = 'pending', _('Kutayotgan')
+    SENT = 'sent', _('Jo\'natilgan')
+    FAILED = 'failed', _('Muvaffaqiyatsiz')
+
+
+class CampaignLog(TimeStampedModel):
+    campaign = models.ForeignKey(
+        Campaign, on_delete=models.CASCADE, related_name='logs',
+        verbose_name=_('Kampaniya'),
+    )
+    customer = models.ForeignKey(
+        Customer, on_delete=models.CASCADE, related_name='campaign_logs',
+        verbose_name=_('Mijoz'),
+    )
+    status = models.CharField(
+        _('Holat'), max_length=20, choices=CampaignLogStatus.choices,
+        default=CampaignLogStatus.PENDING,
+    )
+    message_text = models.TextField(_('Xabar'), blank=True)
+    error_message = models.TextField(_('Xato xabari'), blank=True)
+    sent_at = models.DateTimeField(_('Jo\'natilgan'), null=True, blank=True)
+
+    class Meta:
+        verbose_name = _('Kampaniya logi')
+        verbose_name_plural = _('Kampaniya loglari')
+        ordering = ['-created_at']
+        indexes = [
+            models.Index(fields=['campaign', 'status']),
+            models.Index(fields=['customer']),
+        ]
+        unique_together = [('campaign', 'customer')]
+
+    def __str__(self):
+        return f"{self.campaign.name} → {self.customer.full_name}"

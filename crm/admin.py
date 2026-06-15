@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Customer, Tag
+from .models import Campaign, CampaignLog, Customer, Tag
 
 
 @admin.register(Tag)
@@ -16,4 +16,44 @@ class CustomerAdmin(admin.ModelAdmin):
     search_fields = ('first_name', 'last_name', 'phone', 'email')
     filter_horizontal = ('tags',)
     readonly_fields = ('created_at', 'updated_at')
+    date_hierarchy = 'created_at'
+
+
+class CampaignLogInline(admin.TabularInline):
+    model = CampaignLog
+    extra = 0
+    readonly_fields = ('customer', 'status', 'message_text', 'error_message', 'sent_at', 'created_at')
+    can_delete = False
+
+
+@admin.register(Campaign)
+class CampaignAdmin(admin.ModelAdmin):
+    list_display = ('name', 'channel', 'status', 'sent_count', 'failed_count', 'created_at')
+    list_filter = ('channel', 'status', 'created_at')
+    search_fields = ('name', 'description')
+    filter_horizontal = ('tags',)
+    readonly_fields = ('sent_count', 'failed_count', 'created_at', 'updated_at')
+    fieldsets = (
+        ('Asosiy', {
+            'fields': ('name', 'description', 'channel', 'created_by')
+        }),
+        ('Shablon va filtr', {
+            'fields': ('template', 'tags')
+        }),
+        ('Holat', {
+            'fields': ('status', 'scheduled_at')
+        }),
+        ('Statistika', {
+            'fields': ('sent_count', 'failed_count', 'created_at', 'updated_at')
+        }),
+    )
+    inlines = (CampaignLogInline,)
+
+
+@admin.register(CampaignLog)
+class CampaignLogAdmin(admin.ModelAdmin):
+    list_display = ('campaign', 'customer', 'status', 'sent_at', 'created_at')
+    list_filter = ('campaign', 'status', 'created_at')
+    search_fields = ('campaign__name', 'customer__first_name', 'customer__last_name', 'customer__phone')
+    readonly_fields = ('campaign', 'customer', 'status', 'message_text', 'error_message', 'sent_at', 'created_at', 'updated_at')
     date_hierarchy = 'created_at'

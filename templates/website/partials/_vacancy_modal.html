@@ -1,0 +1,40 @@
+{% load static i18n %}
+
+<!-- VACANCY APPLICATION MODAL -->
+<div class="site-modal" id="vacancyModal" aria-hidden="true">
+  <div class="site-modal-backdrop" data-modal-close></div>
+  <div class="site-modal-dialog reveal visible" role="dialog" aria-modal="true" aria-labelledby="vacancyModalTitle">
+    <button type="button" class="site-modal-close" data-modal-close aria-label="{% trans 'Yopish' %}">
+      <i class="fa fa-times"></i>
+    </button>
+    <span class="section-badge">{% trans "Vakansiya" %}</span>
+    <h3 class="title-gold-h3" id="vacancyModalTitle">{% trans "Ariza yuborish" %}</h3>
+    <p class="site-modal-sub" id="vacancyModalPosition"></p>
+
+    <form class="ajax-form" action="{% url 'website:about' %}" method="post">
+      {% csrf_token %}
+      <input type="hidden" name="vacancy_id" value="">
+      <!-- Honeypot (botlar uchun tuzoq) -->
+      <div class="hp-field" aria-hidden="true">
+        <label>Website</label>
+        <input type="text" name="website" tabindex="-1" autocomplete="off">
+      </div>
+      <div class="form-group">
+        <label class="form-label">{% trans "Ism va familiya" %} *</label>
+        <input type="text" name="full_name" class="form-control" maxlength="120" placeholder="{% trans 'Ismingizni kiriting' %}" required>
+      </div>
+      <div class="form-group">
+        <label class="form-label">{% trans "Telefon raqam" %} *</label>
+        <input type="tel" name="phone" class="form-control" maxlength="20" placeholder="+998 XX XXX-XX-XX" required>
+      </div>
+      <div class="form-group">
+        <label class="form-label">{% trans "Qo'shimcha ma'lumot" %}</label>
+        <textarea name="message" class="form-control" rows="4" maxlength="2000" placeholder="{% trans 'Tajribangiz, sabab va h.k.' %}"></textarea>
+      </div>
+      <div class="form-result"></div>
+      <button type="submit" class="btn btn-primary form-submit" data-label="{% trans 'Yuborish' %}">
+        <i class="fa fa-paper-plane"></i> {% trans "Yuborish" %}
+      </button>
+    </form>
+  </div>
+</div>

@@ -60,6 +60,13 @@ urlpatterns = [
     path('customers/<int:pk>/edit/', views.CustomerUpdateView.as_view(), name='dashboard_customer_edit'),
     path('customers/<int:pk>/delete/', views.CustomerDeleteView.as_view(), name='dashboard_customer_delete'),
 
+    # Kampaniyalar (CRM Marketing)
+    path('campaigns/', views.CampaignListView.as_view(), name='dashboard_campaign_list'),
+    path('campaigns/add/', views.CampaignCreateView.as_view(), name='dashboard_campaign_create'),
+    path('campaigns/<int:pk>/', views.CampaignDetailView.as_view(), name='dashboard_campaign_detail'),
+    path('campaigns/<int:pk>/edit/', views.CampaignUpdateView.as_view(), name='dashboard_campaign_edit'),
+    path('campaigns/<int:pk>/delete/', views.CampaignDeleteView.as_view(), name='dashboard_campaign_delete'),
+
     # Universal AJAX toggle active
     path('toggle-active/<str:app_label>/<str:model_name>/<int:pk>/', views.toggle_active_ajax, name='dashboard_toggle_active'),
 

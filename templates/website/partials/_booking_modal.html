@@ -1,0 +1,40 @@
+{% load static i18n %}
+
+<!-- BOOKING MODAL -->
+<div class="site-modal" id="bookingModal" aria-hidden="true">
+  <div class="site-modal-backdrop" data-modal-close></div>
+  <div class="site-modal-dialog reveal visible" role="dialog" aria-modal="true" aria-labelledby="bookingModalTitle">
+    <button type="button" class="site-modal-close" data-modal-close aria-label="{% trans 'Yopish' %}">
+      <i class="fa fa-times"></i>
+    </button>
+    <span class="section-badge">{% trans "Bron qilish" %}</span>
+    <h3 class="title-gold-h3" id="bookingModalTitle">{% trans "Stol band qilish" %}</h3>
+    <p class="site-modal-sub">{% trans "Ma'lumotlaringizni qoldiring — biz siz bilan bog'lanamiz." %}</p>
+
+    <form class="ajax-form" action="{% url 'website:about' %}" method="post">
+      {% csrf_token %}
+      <input type="hidden" name="kind" value="booking">
+      <!-- Honeypot (botlar uchun tuzoq) -->
+      <div class="hp-field" aria-hidden="true">
+        <label>Website</label>
+        <input type="text" name="website" tabindex="-1" autocomplete="off">
+      </div>
+      <div class="form-group">
+        <label class="form-label">{% trans "Ismingiz" %} *</label>
+        <input type="text" name="name" class="form-control" maxlength="120" placeholder="{% trans 'Ismingizni kiriting' %}" required>
+      </div>
+      <div class="form-group">
+        <label class="form-label">{% trans "Telefon" %} *</label>
+        <input type="tel" name="phone" class="form-control" maxlength="20" placeholder="+998 XX XXX-XX-XX" required>
+      </div>
+      <div class="form-group">
+        <label class="form-label">{% trans "Sana, vaqt va mehmonlar soni" %}</label>
+        <textarea name="message" class="form-control" rows="3" maxlength="2000" placeholder="{% trans 'Masalan: 5-iyun, 19:00, 4 kishi' %}"></textarea>
+      </div>
+      <div class="form-result"></div>
+      <button type="submit" class="btn btn-primary form-submit" data-label="{% trans 'Yuborish' %}">
+        <i class="fa fa-paper-plane"></i> {% trans "Yuborish" %}
+      </button>
+    </form>
+  </div>
+</div>

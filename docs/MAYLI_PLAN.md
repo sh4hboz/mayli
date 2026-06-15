@@ -44,30 +44,47 @@
 
 ---
 
-## 5. BOSQICH 5 — CRM marketing (🔜 tayyor boshlashga)
+## 5. BOSQICH 5 — CRM marketing (🔄 send logic tayyor)
 
 **Maqsad:** SMS/email/Telegram orqali mass marketing kampaniyalarini jo'natish tizimi.
 
-**Modellar:**
-- **`Campaign`:** nomi, tavsif, kanal (sms/email/telegram), shablon ({{first_name}} suporta), target tags, status (draft/scheduled/sent), timestamps, counts (success/fail).
-- **`CampaignLog`:** har customer-kanal juftligi uchun; status (pending/sent/failed), error message.
+**Tayyor qilingan:**
+✅ **Modellar:** Campaign, CampaignLog (migrations applied)
+✅ **Admin paneli:** Campaign CRUD + inline logs
+✅ **Dashboard UI:** CampaignListView, CreateView, DetailView, UpdateView, DeleteView
+  - Campaign listini ko'rish (filtr: kanal, holat)
+  - Kampaniya yaratish/tahrirlash (shablon, taglar, sxemali vaqt)
+  - Detail view → log jadval (har customer'ning jo'natish holati)
 
-**Dashboard UI:**
-- CampaignListView: janvali (nomi, kanal, holat, sana, natija), filtr (kanal, holat).
-- CampaignCreateView: forma (nomi, tavsif, kanal, shablon, teglar, sxemali vaqt).
-- CampaignDetailView: log jadavali (pagination), success/fail statistika.
-- Send button: holat draft → scheduled.
+✅ **Provider adapters (crm/providers.py):**
+- **SMSProvider (Eskiz.uz):** Stub (keyingi: Eskiz API integration)
+- **EmailProvider:** Django email backend ishlatadi
+- **TelegramProvider:** `notifications.telegram` orqali
+- **render_template():** {{first_name}}, {{full_name}}, {{phone}} almashtirish
 
-**Provider adapters (crm/providers/):**
-- **SMSProvider (Eskiz.uz):** API credentials → send(customer, message_text).
-- **EmailProvider:** Django email backend → send(customer, subject, message_text).
-- **TelegramProvider:** `notifications.telegram.send_message` reuse.
+✅ **Send logic (crm/services.py):**
+- **CampaignSendService.send_campaign():** Kampaniyani barcha target mijozlarga jo'natish
+- Mijozlarni filtrlash: tags + kanal + consent
+- Log yaratish har customer uchun (success/failed + error message)
+- Campaign statistika yangilash (sent_count, failed_count, status=SENT)
 
-**Send logic (ixtiyoriy):**
-- Django management command yoki Celery task: scheduled campaigns → send all customers → log update.
-- Template variable helper ({{first_name}}, {{full_name}}, {{phone}}) suggestion.
+✅ **Management command (crm/management/commands/send_campaigns.py):**
+```bash
+# Barcha rejalashtirylgan kampaniyalarni jo'natish
+python manage.py send_campaigns
 
-**Status:** Reja taqdim qilindi. Keyingi: User Eskiz credentials (email, password, SMS sender name, rate limit) → Campaign model + SMS provider yoziladi.
+# Bitta kampaniyani jo'natish (by ID)
+python manage.py send_campaigns 1
+
+# Test jo'natish (bitta mijozga)
+python manage.py send_campaigns 1 --test
+python manage.py send_campaigns 1 --test --customer-id 5
+```
+
+**Keyingi:**
+🔜 **Eskiz.uz SMS integration:** ESKIZ_EMAIL, ESKIZ_PASSWORD (Eskiz API)
+🔜 **Celery task:** scheduled campaigns automatik jo'natish (yoki cron job)
+🔜 **Dashboard "Send" button:** Draft → Scheduled holat o'zgartirish
 
 
 

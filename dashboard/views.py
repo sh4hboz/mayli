@@ -12,8 +12,8 @@ from django.db.models import Q
 from accounts.models import Role
 from website.models import SiteSettings, News, Promotion, GalleryItem, Vacancy, JobApplication, ContactMessage
 from menu.models import Category, Dish
-from crm.models import Customer, Tag, Gender, CustomerSource
-from .forms import SiteSettingsForm, NewsForm, PromotionForm, GalleryItemForm, VacancyForm, CategoryForm, DishForm, CustomerForm
+from crm.models import Customer, Tag, Gender, CustomerSource, Campaign, CampaignLog
+from .forms import SiteSettingsForm, NewsForm, PromotionForm, GalleryItemForm, VacancyForm, CategoryForm, DishForm, CustomerForm, CampaignForm
 
 
 @login_required(login_url='/login/')
@@ -433,6 +433,69 @@ class CustomerDeleteView(CMSBaseMixin, SuccessMessageMixin, DeleteView):
     model = Customer
     template_name = 'management/confirm_delete.html'
     success_url = reverse_lazy('dashboard_customer_list')
+
+
+# --- Kampaniyalar (Campaigns) ---
+class CampaignListView(CMSBaseMixin, ListView):
+    model = Campaign
+    template_name = 'management/crm/campaign_list.html'
+    context_object_name = 'campaign_list'
+    paginate_by = 20
+
+    def get_queryset(self):
+        qs = super().get_queryset().prefetch_related('tags')
+        channel = self.request.GET.get('channel', '')
+        status = self.request.GET.get('status', '')
+        if channel:
+            qs = qs.filter(channel=channel)
+        if status:
+            qs = qs.filter(status=status)
+        return qs
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        from crm.models import CampaignChannel, CampaignStatus
+        ctx['channels'] = CampaignChannel.choices
+        ctx['statuses'] = CampaignStatus.choices
+        ctx['active_channel'] = self.request.GET.get('channel', '')
+        ctx['active_status'] = self.request.GET.get('status', '')
+        return ctx
+
+
+class CampaignCreateView(CMSBaseMixin, SuccessMessageMixin, CreateView):
+    model = Campaign
+    form_class = CampaignForm
+    template_name = 'management/crm/campaign_form.html'
+    success_url = reverse_lazy('dashboard_campaign_list')
+
+    def form_valid(self, form):
+        form.instance.created_by = self.request.user
+        return super().form_valid(form)
+
+
+class CampaignDetailView(CMSBaseMixin, DetailView):
+    model = Campaign
+    template_name = 'management/crm/campaign_detail.html'
+    context_object_name = 'campaign'
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        campaign = self.get_object()
+        ctx['logs'] = campaign.logs.select_related('customer')
+        return ctx
+
+
+class CampaignUpdateView(CMSBaseMixin, SuccessMessageMixin, UpdateView):
+    model = Campaign
+    form_class = CampaignForm
+    template_name = 'management/crm/campaign_form.html'
+    success_url = reverse_lazy('dashboard_campaign_list')
+
+
+class CampaignDeleteView(CMSBaseMixin, SuccessMessageMixin, DeleteView):
+    model = Campaign
+    template_name = 'management/confirm_delete.html'
+    success_url = reverse_lazy('dashboard_campaign_list')
 
 
 # --- Lock Screen ---

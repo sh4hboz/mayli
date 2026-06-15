@@ -141,8 +141,8 @@ MODELTRANSLATION_LANGUAGES = ('uz', 'ru', 'en')
 # --- Static & Media ---
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [
-    ('src', BASE_DIR / 'src'),
     BASE_DIR / 'static',
+    ('src', BASE_DIR / 'src'),
 ]
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 MEDIA_URL = '/media/'

@@ -432,3 +432,7 @@ msgstr "Your message has been sent! We will reply soon."
 
 msgid "Ism va xabar majburiy!"
 msgstr "Name and message are required!"
+
+# === BOOKING CTA ===
+msgid "Hozir bron qilish"
+msgstr "Book Now"

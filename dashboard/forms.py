@@ -1,7 +1,7 @@
 from django import forms
 from website.models import SiteSettings, News, Promotion, GalleryItem, Vacancy
 from menu.models import Category, Dish
-from crm.models import Customer
+from crm.models import Customer, Campaign
 
 class BootstrapModelForm(forms.ModelForm):
     """
@@ -131,4 +131,21 @@ class CustomerForm(BootstrapModelForm):
         widgets = {
             'birth_date': forms.DateInput(attrs={'type': 'date'}, format='%Y-%m-%d'),
             'notes': forms.Textarea(attrs={'rows': 3}),
+        }
+
+
+class CampaignForm(BootstrapModelForm):
+    class Meta:
+        model = Campaign
+        fields = [
+            'name', 'description', 'channel', 'template',
+            'tags', 'status', 'scheduled_at',
+        ]
+        widgets = {
+            'description': forms.Textarea(attrs={'rows': 3}),
+            'template': forms.Textarea(attrs={'rows': 5}),
+            'scheduled_at': forms.DateTimeInput(attrs={'type': 'datetime-local'}),
+        }
+        help_texts = {
+            'template': 'Shablon: {{first_name}}, {{full_name}}, {{phone}} ishlatish mumkin',
         }

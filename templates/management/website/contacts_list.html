@@ -27,9 +27,14 @@
                             {% for item in contacts_list %}
                             <tr>
                                 <td>{{ forloop.counter }}</td>
-                                <td><strong>{{ item.name }}</strong></td>
+                                <td>
+                                    <strong>{{ item.name }}</strong>
+                                    {% if item.kind == 'booking' %}
+                                    <span class="badge bg-primary">Bron</span>
+                                    {% endif %}
+                                </td>
                                 <td>{{ item.phone|default:"—" }}</td>
-                                <td>{{ item.message|truncatechars:60 }}</td>
+                                <td>{{ item.message|truncatechars:60|default:"—" }}</td>
                                 <td>
                                     {% if item.is_read %}
                                     <span class="badge bg-success">O'qilgan</span>

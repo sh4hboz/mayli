@@ -4,7 +4,7 @@
 <footer id="footer">
   <div class="container footer-grid">
     <div class="footer-brand">
-      <a href="{% url 'website:home' %}">
+      <a href="{% url 'website:home' %}" class="logo-shine">
         <img src="{% static 'src/img/icons/logo-white.png' %}" alt="Mayli Restobar" width="140" loading="lazy">
       </a>
       <p>{{ site.tagline }}</p>
@@ -16,6 +16,8 @@
         <li><a href="{% url 'website:home' %}">{% trans "Bosh sahifa" %}</a></li>
 
         <li><a href="{% url 'website:about' %}">{% trans "Biz haqimizda" %}</a></li>
+
+        <li><a href="{% url 'website:news_list' %}">{% trans "Yangiliklar" %}</a></li>
 
         <li><a href="{% url 'website:privacy_policy' %}">{% trans "Maxfiylik siyosati" %}</a></li>
         <li><a href="{% url 'website:terms_conditions' %}">{% trans "Foydalanish shartlari" %}</a></li>
