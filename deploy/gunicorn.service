@@ -1,0 +1,32 @@
+[Unit]
+Description=Mayli Restobar Gunicorn (WSGI) daemon
+After=network.target
+
+[Service]
+# --- Foydalanuvchini moslang (nginx bilan bir xil bo'lsa sodda) ---
+User=www-data
+Group=www-data
+
+# /run/gunicorn papkasini avtomatik yaratadi (socket shu yerda turadi)
+RuntimeDirectory=gunicorn
+
+# --- Loyiha joylashuvini moslang ---
+WorkingDirectory=/var/www/mayli
+Environment=DJANGO_SETTINGS_MODULE=config.settings.prod
+
+ExecStart=/var/www/mayli/venv/bin/gunicorn \
+    --name mayli \
+    --workers 3 \
+    --timeout 60 \
+    --access-logfile - \
+    --error-logfile - \
+    --bind unix:/run/gunicorn/mayli.sock \
+    config.wsgi:application
+
+ExecReload=/bin/kill -s HUP $MAINPID
+KillMode=mixed
+Restart=always
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target
