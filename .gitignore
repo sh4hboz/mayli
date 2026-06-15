@@ -36,6 +36,9 @@ db.sqlite3-journal
 /staticfiles
 
 # NOTE: /static, /src and /media are SOURCE/content dirs and ARE committed.
+
+# Internal docs (local only)
+/docs/
 *.pot
 
 # IDEs & Local Config
