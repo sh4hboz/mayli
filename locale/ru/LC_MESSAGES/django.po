@@ -432,3 +432,7 @@ msgstr "Ваше сообщение отправлено! Ответим в бл
 
 msgid "Ism va xabar majburiy!"
 msgstr "Имя и сообщение обязательны!"
+
+# === BOOKING CTA ===
+msgid "Hozir bron qilish"
+msgstr "Забронировать сейчас"

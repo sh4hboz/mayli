@@ -21,12 +21,6 @@ urlpatterns = [
     path('dashboard/staff/delete/<int:user_id>/', views.delete_staff_view, name='delete_staff'),
     path('dashboard/staff/<int:user_id>/permissions/', views.staff_permissions_view, name='staff_permissions'),
     
-    # Mijoz shaxsiy kabineti va ofitsiant chaqirish
+    # Mijoz shaxsiy kabineti
     path('profile/', views.profile_view, name='profile'),
-    path('call-waiter/', views.call_waiter_view, name='call_waiter'),
-    path('checkout-request/', views.checkout_request_view, name='checkout_request'),
-    
-    # Xodimlar paneli bildirishnomalari API
-    path('dashboard/api/active-calls/', views.active_calls_api_view, name='active_calls_api'),
-    path('dashboard/call/resolve/<int:call_id>/', views.resolve_call_view, name='resolve_call'),
 ]

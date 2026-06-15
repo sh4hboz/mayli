@@ -7,7 +7,7 @@ from .models import (SiteSettings, News, Promotion, GalleryItem,
 @admin.register(SiteSettings)
 class SiteSettingsAdmin(TranslationAdmin):
     fieldsets = (
-        ('Asosiy', {'fields': ('name', 'tagline', 'logo', 'logo_dark', 'favicon')}),
+        ('Asosiy', {'fields': ('name', 'tagline', 'logo', 'logo_dark', 'favicon', 'hero_bg_image')}),
         ('Kontakt', {'fields': ('phone_main', 'phone_secondary', 'email')}),
         ('Manzil', {'fields': ('address', 'city', 'working_hours', 'latitude', 'longitude', 'map_embed_code')}),
         ('Ijtimoiy tarmoqlar', {

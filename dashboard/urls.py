@@ -3,7 +3,6 @@ from . import views
 
 urlpatterns = [
     path('', views.dashboard_home, name='dashboard_home'),
-    path('chat/', views.chat_view, name='dashboard_chat'),
 
     # Sayt sozlamalari
     path('settings/website/', views.SiteSettingsUpdateView.as_view(), name='dashboard_settings_website'),
@@ -54,14 +53,19 @@ urlpatterns = [
     path('menu/dishes/<int:pk>/edit/', views.DishUpdateView.as_view(), name='dashboard_dish_edit'),
     path('menu/dishes/<int:pk>/delete/', views.DishDeleteView.as_view(), name='dashboard_dish_delete'),
 
-    # Buyurtmalar boshqaruvi
-    path('orders/', views.OrderListView.as_view(), name='dashboard_order_list'),
-    path('orders/<int:pk>/', views.OrderDetailView.as_view(), name='dashboard_order_detail'),
-    path('orders/<int:pk>/status-change/', views.OrderStatusChangeView.as_view(), name='dashboard_order_status_change'),
-    path('orders/<int:pk>/delete/', views.OrderDeleteView.as_view(), name='dashboard_order_delete'),
-
-    # Mijozlar boshqaruvi
+    # Mijozlar (CRM)
     path('customers/', views.CustomerListView.as_view(), name='dashboard_customer_list'),
+    path('customers/add/', views.CustomerCreateView.as_view(), name='dashboard_customer_create'),
+    path('customers/<int:pk>/', views.CustomerDetailView.as_view(), name='dashboard_customer_detail'),
+    path('customers/<int:pk>/edit/', views.CustomerUpdateView.as_view(), name='dashboard_customer_edit'),
+    path('customers/<int:pk>/delete/', views.CustomerDeleteView.as_view(), name='dashboard_customer_delete'),
+
+    # Kampaniyalar (CRM Marketing)
+    path('campaigns/', views.CampaignListView.as_view(), name='dashboard_campaign_list'),
+    path('campaigns/add/', views.CampaignCreateView.as_view(), name='dashboard_campaign_create'),
+    path('campaigns/<int:pk>/', views.CampaignDetailView.as_view(), name='dashboard_campaign_detail'),
+    path('campaigns/<int:pk>/edit/', views.CampaignUpdateView.as_view(), name='dashboard_campaign_edit'),
+    path('campaigns/<int:pk>/delete/', views.CampaignDeleteView.as_view(), name='dashboard_campaign_delete'),
 
     # Universal AJAX toggle active
     path('toggle-active/<str:app_label>/<str:model_name>/<int:pk>/', views.toggle_active_ajax, name='dashboard_toggle_active'),

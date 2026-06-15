@@ -36,7 +36,7 @@
   <link rel="stylesheet" href="{% static 'src/libs/swiper-bundle.min.css' %}">
   <link rel="stylesheet" href="{% static 'src/libs/fancybox.css' %}">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-  <link rel="stylesheet" href="{% static 'src/style.css' %}?v=1.4">
+  <link rel="stylesheet" href="{% static 'src/style.css' %}?v=1.5">
 
 
   {% if site.google_verify %}<meta name="google-site-verification" content="{{ site.google_verify }}">{% endif %}
@@ -102,6 +102,7 @@
 {% include 'website/partials/_footer.html' %}
 {% include 'website/partials/_floating_buttons.html' %}
 {% include 'website/partials/_chat_widget.html' %}
+{% include 'website/partials/_booking_modal.html' %}
 
 <!-- SCRIPTS -->
 <script>
@@ -120,7 +121,7 @@ window.SITE_MESSAGES = {
 <script src="{% static 'src/libs/jquery.min.js' %}" defer></script>
 <script src="{% static 'src/libs/swiper-bundle.min.js' %}" defer></script>
 <script src="{% static 'src/libs/fancybox.umd.js' %}" defer></script>
-<script src="{% static 'src/website.js' %}?v=1.4" defer></script>
+<script src="{% static 'src/website.js' %}?v=1.5" defer></script>
 {% block extra_js %}{% endblock %}
 
 </body>

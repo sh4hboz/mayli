@@ -31,10 +31,11 @@ MANIFEST
 local_settings.py
 db.sqlite3
 db.sqlite3-journal
-/media
-/static
+
+# collectstatic build output (regenerated on server via `manage.py collectstatic`)
 /staticfiles
-/src
+
+# NOTE: /static, /src and /media are SOURCE/content dirs and ARE committed.
 *.pot
 
 # IDEs & Local Config
@@ -80,6 +81,8 @@ yarn-error.log
 *.mp3
 *.wav
 *.flac
+# ...except site background audio (source asset, needed in production)
+!/src/audio/*.mp3
 
 # Large Binary Files
 *.exe

@@ -1,7 +1,10 @@
 # 🍽️ Mayli Restobar — Backend Platformasi
 
-**Termiz shahridagi Mayli Restobar uchun to'liq Django backend.**
-Marketing sayti (3 tilda), jonli chat, QR-buyurtma tizimi, xodimlar paneli, Telegram bot.
+**Termiz shahridagi Mayli Restobar uchun Django backend.**
+Hozirgi fokus: **(1) marketing sayti (3 tilda, SEO)** va **(2) mijozlar bilan ishlash uchun CRM tizimi**.
+
+> ℹ️ Delivery / olib-ketish / buyurtma tizimi loyihadan **olib tashlandi** —
+> u alohida, kattaroq loyiha sifatida keyin qayta quriladi.
 
 ---
 
@@ -23,10 +26,7 @@ python manage.py migrate
 # 4. Superuser
 python manage.py createsuperuser
 
-# 5. Ishga tushirish (ASGI + Daphne — WebSocket uchun)
-daphne -b 0.0.0.0 -p 8000 config.asgi:application
-
-# Yoki oddiy dev server (WebSocket ishlamaydi, faqat HTTP)
+# 5. Ishga tushirish (dev)
 python manage.py runserver
 ```
 
@@ -37,16 +37,15 @@ python manage.py runserver
 | App | Vazifasi | Holat |
 |---|---|---|
 | `core` | Abstrakt `TimeStampedModel` | ✅ |
-| `accounts` | RBAC rollar, `StaffProfile` (PIN) | ✅ BOSQICH 0.4 |
-| `restobar` | Mavjud auth/dashboard/buyurtma tizimi | ✅ Ishlaydi |
-| `website` | Marketing sayti (3 til, SEO) | ✅ BOSQICH 1 |
-| `chat` | Jonli chat: modellari + WS consumer (to'liq — BOSQICH 2.1) | ✅ BOSQICH 2.1 |
-| `notifications` | Telegram webhook + bildirishnoma utilitalari | ✅ BOSQICH 0.7 |
-| `menu` | Kategoriya + Taom (uz/ru/en, modeltranslation) | ✅ BOSQICH 0.8 |
-| `tables` | Stollar + QR token + TableSession | ✅ BOSQICH 0.8 |
-| `orders` | Buyurtmalar + OrderItem + WaiterCall | ✅ BOSQICH 0.8 |
-| `payments` | To'lovlar (Payme/Click — BOSQICH 5) | 🔲 |
-| `dashboard` | Xodimlar paneli app (BOSQICH 4) | 🔲 |
+| `accounts` | RBAC rollar (`User`, phone=USERNAME_FIELD), `StaffProfile` (PIN) | ✅ |
+| `restobar` | Auth (login/logout/register/reset) + xodimlarni boshqarish | ✅ |
+| `website` | Marketing sayti (3 til, SEO, yangiliklar, aksiya, galereya, vakansiya, aloqa) | ✅ |
+| `menu` | Kategoriya + Taom (uz/ru/en, modeltranslation) | ✅ |
+| `notifications` | Telegram outbound bildirishnoma (aloqa/vakansiya; kelajakda CRM marketing) | ✅ |
+| `dashboard` | Boshqaruv paneli (CMS) — sayt + menyu + CRM | ✅ |
+| `crm` | Mijozlar bazasi + marketing (SMS/email/Telegram) | ✅ (Campaign 🔜) |
+
+> Olib tashlangan app'lar: ~~`orders`, `tables`, `payments`, `chat`~~ (delivery/buyurtma keyingi alohida loyiha).
 
 ---
 
@@ -54,7 +53,7 @@ python manage.py runserver
 
 Uchta muhit:
 - `config/settings/base.py` — umumiy bazaviy sozlamalar
-- `config/settings/dev.py` — lokal ishlab chiqish (SQLite + InMemory channel)
+- `config/settings/dev.py` — lokal ishlab chiqish (SQLite)
 - `config/settings/prod.py` — production (PostgreSQL + Redis + xavfsizlik)
 
 ```bash
@@ -62,7 +61,7 @@ Uchta muhit:
 python manage.py runserver
 
 # Prod
-DJANGO_SETTINGS_MODULE=config.settings.prod daphne config.asgi:application
+DJANGO_SETTINGS_MODULE=config.settings.prod gunicorn config.wsgi:application
 ```
 
 ---
@@ -74,11 +73,11 @@ DJANGO_SETTINGS_MODULE=config.settings.prod daphne config.asgi:application
 | Klass | Kimlar kira oladi |
 |---|---|
 | `IsCustomer` | Faqat mijozlar |
-| `IsWaiter` | Ofitsiant va undan yuqori |
-| `IsAccountant` | Bugalter va undan yuqori |
+| `IsStaff` | Har qanday xodim (mijoz emas) |
 | `IsManager` | Menejer va undan yuqori |
 | `IsOwner` | Faqat ega/admin |
-| `IsStaff` | Har qanday xodim (mijoz emas) |
+
+Dashboard'ga faqat **OWNER, MANAGER, ADMIN** kira oladi (`dashboard.views.CMSBaseMixin`).
 
 ---
 
@@ -86,23 +85,16 @@ DJANGO_SETTINGS_MODULE=config.settings.prod daphne config.asgi:application
 
 | URL | Vazifasi |
 |---|---|
-| `/` | Marketing bosh sahifasi (uz) |
-| `/ru/` | Marketing bosh sahifasi (ru) |
-| `/en/` | Marketing bosh sahifasi (en) |
+| `/`, `/ru/`, `/en/` | Marketing bosh sahifasi (3 til) |
 | `/menu/` | Menyu sahifasi |
-| `/about/`, `/news/`, `/gallery/`, `/vacancies/`, `/contact/` | Sayf sahifalari |
-| `/login/` | Xodimlar va mijozlar login portali |
-| `/dashboard/` | Xodimlar boshqaruv paneli |
+| `/about/`, `/news/`, `/news/<slug>/` | Sayt sahifalari |
+| `/privacy-policy/`, `/terms-conditions/` | Huquqiy sahifalar |
+| `/login/` · `/logout/` | Login portali (mijoz + xodim) |
 | `/profile/` | Mijoz kabineti |
+| `/dashboard/` | Xodimlar boshqaruv paneli (CMS) |
 | `/admin/` | Django Admin |
 | `/api/docs/` | Swagger UI (DRF Spectacular) |
-| `/api/token/` | JWT token olish |
-| `/api/token/refresh/` | JWT token yangilash |
-| `/sitemap.xml` | SEO sitemap (3 tilda) |
-| `/robots.txt` | Robots.txt |
-| `/telegram/webhook/<secret>/` | Telegram Webhook (BOSQICH 2.2) |
-| `ws/chat/<visitor_id>/` | Chat WebSocket (BOSQICH 2.1) |
-| `ws/support/` | Xodimlar support WebSocket (BOSQICH 2.1) |
+| `/sitemap.xml` · `/robots.txt` | SEO |
 
 ---
 
@@ -114,18 +106,14 @@ DEBUG=True
 ALLOWED_HOSTS=localhost,127.0.0.1
 DATABASE_URL=sqlite:///db.sqlite3        # dev
 # DATABASE_URL=postgres://user:pass@localhost/mayli  # prod
-REDIS_URL=redis://127.0.0.1:6379
 
 TELEGRAM_BOT_TOKEN=...
 TELEGRAM_ADMIN_CHAT_ID=...              # guruh yoki kanal ID
-TELEGRAM_WEBHOOK_SECRET=...
 
-PAYME_MERCHANT_ID=
-PAYME_SECRET_KEY=
-CLICK_MERCHANT_ID=
-CLICK_SECRET_KEY=
-ESKIZ_EMAIL=
-ESKIZ_PASSWORD=
+# CRM SMS marketing (FAZA 5)
+ESKIZ_EMAIL=                            # Eskiz.uz akkaunt email
+ESKIZ_PASSWORD=                         # Eskiz.uz akkaunt paroli
+ESKIZ_SMS_FROM=MAYLI                    # SMS yuboruvchi nomi
 ```
 
 ---
@@ -134,21 +122,17 @@ ESKIZ_PASSWORD=
 
 | Bosqich | Nima | Holat |
 |---|---|---|
-| **0** | Fundament (settings, app'lar, RBAC, ASGI, i18n, chat/notif skeleti) | ✅ Tugallandi |
-| **1** | Marketing sayti (3 tilda, 8 sahifa, SEO, chat UI) | ✅ Tugallandi |
-| **2** | Jonli chat + Telegram bot + dashboard chat (real-time) | 🔥 2.1 ✅ / 2.2–2.6 navbatda |
-| 3 | QR menyu + stol buyurtmasi | kelajak |
-| 4 | Xodimlar paneli (to'liq) | kelajak |
-| 5 | To'lovlar (Payme/Click/Uzum) | kelajak |
-| 6 | Dostavka + mobil API + push | kelajak |
+| **0** | Fundament (settings, app'lar, RBAC, i18n) | ✅ |
+| **1** | Marketing sayti (3 tilda, SEO) | ✅ |
+| **2** | Boshqaruv paneli (CMS) — sayt + menyu | ✅ |
+| **3** | **Mijozlar CRM** — baza + dashboard CRUD + segmentlash | ✅ |
+| **4** | **Production tozalash** — legacy settings, docs, requirements-dev | ✅ |
+| **5** | **CRM marketing kampaniyalari** — SMS/email/Telegram (Eskiz API) | 🔜 tayyor |
+| — | Delivery & Take away — **alohida katta loyiha** (keyin) | rejada |
 
 ---
 
 ## 🌍 Sayt Tashqarisidagi SEO (Eslatma)
 
-Top'ga chiqish uchun quyidagilarni ham ro'yxatga olish kerak:
-- **Google Business Profile** — uz/ru/en tavsiflar bilan
-- **Yandex Business/Karta** — chet ellik ro'yxatdan o'tkazish
-- **2GIS** — Termiz mahalliy qidiruvlari uchun
-
-Barcha platformada **NAP (nom / manzil / telefon) bir xil** bo'lsin.
+1-o'ringa chiqish uchun: **Google Business Profile**, **Yandex Business/Karta**, **2GIS** —
+uz/ru/en tavsiflar bilan. Barcha platformada **NAP (nom / manzil / telefon) bir xil** bo'lsin.

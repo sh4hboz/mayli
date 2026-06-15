@@ -100,6 +100,26 @@
                     </div>
                 </a>
             </div>
+
+            <!-- Mijozlar (CRM) -->
+            <div class="col-sm-6 col-lg-3">
+                <a href="{% url 'dashboard_customer_list' %}" class="card text-reset text-decoration-none">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <p class="text-muted text-uppercase fs-xs fw-semibold mb-1">Mijozlar</p>
+                                <h3 class="fw-semibold mb-0">{{ stats.customers_count }}</h3>
+                                <p class="text-muted fs-xs mb-0 mt-1">CRM bazasi</p>
+                            </div>
+                            <div class="avatar-sm flex-shrink-0">
+                                <span class="avatar-title bg-primary-subtle rounded-circle fs-20">
+                                    <i class="ti ti-users text-primary"></i>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </div>
         </div>
 
         <!-- Tezkor havolalar -->
