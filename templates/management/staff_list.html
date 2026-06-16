@@ -1,0 +1,116 @@
+{% extends 'management/base.html' %}
+{% load static %}
+{% block title %}Maylirestobar | Xodimlar{% endblock %}
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="page-title-box d-flex align-items-center justify-content-between">
+            <h4 class="page-title">Xodimlar</h4>
+            <ol class="breadcrumb m-0">
+                <li class="breadcrumb-item"><a href="{% url 'dashboard_home' %}">Dashboard</a></li>
+                <li class="breadcrumb-item active">Xodimlar</li>
+            </ol>
+        </div>
+    </div>
+</div>
+
+{% if error %}
+<div class="alert alert-danger alert-dismissible fade show" role="alert">
+    <i class="ti ti-alert-circle me-2"></i>{{ error }}
+    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+</div>
+{% endif %}
+{% if success %}
+<div class="alert alert-success alert-dismissible fade show" role="alert">
+    <i class="ti ti-check me-2"></i>{{ success }}
+    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+</div>
+{% endif %}
+
+<div class="row">
+    <!-- Yangi xodim qo'shish -->
+    <div class="col-xl-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Yangi xodim qo'shish</h5>
+            </div>
+            <div class="card-body">
+                <form method="post" action="{% url 'staff_management' %}">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="staffPhone" class="form-label">Telefon (login) <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="staffPhone" name="username" placeholder="+998 90 123-45-67" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="staffRole" class="form-label">Rol <span class="text-danger">*</span></label>
+                        <select class="form-select" id="staffRole" name="role" required>
+                            <option value="">— Tanlang —</option>
+                            {% for value, label in assignable_roles %}
+                            <option value="{{ value }}">{{ label }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="staffPin" class="form-label">PIN / Parol <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="staffPin" name="pin" placeholder="Ofitsiant/Barman: 4 xonali PIN, qolganlar: parol" required>
+                        <small class="form-text text-muted">Ofitsiant va Barman uchun 4 xonali raqam; Menejer/Admin/Bugalter uchun kamida 6 belgili parol.</small>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="ti ti-user-plus me-1"></i>Qo'shish
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Xodimlar ro'yxati -->
+    <div class="col-xl-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Barcha xodimlar ({{ staff_list.count }})</h5>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover table-nowrap mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>#</th><th>Telefon</th><th>Ism</th><th>Rol</th><th>Faol</th><th>Amallar</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for staff in staff_list %}
+                            <tr>
+                                <td>{{ forloop.counter }}</td>
+                                <td><a href="{% url 'staff_permissions' staff.id %}">{{ staff.phone }}</a></td>
+                                <td>{{ staff.full_name|default:"—" }}</td>
+                                <td><span class="badge bg-info-subtle text-info">{{ staff.get_role_display }}</span></td>
+                                <td>
+                                    {% if staff.is_active %}
+                                        <span class="badge bg-success-subtle text-success">Faol</span>
+                                    {% else %}
+                                        <span class="badge bg-secondary-subtle text-secondary">Nofaol</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <div class="d-flex gap-1">
+                                        <a href="{% url 'staff_permissions' staff.id %}" class="btn btn-sm btn-info" title="Ruxsatlar"><i class="ti ti-key"></i></a>
+                                        {% if staff.id != profile.id %}
+                                        <form method="post" action="{% url 'delete_staff' staff.id %}" class="d-inline">
+                                            {% csrf_token %}
+                                            <button type="submit" class="btn btn-sm btn-danger" data-confirm="{{ staff.phone }} xodimini o'chirasizmi?"><i class="ti ti-trash"></i></button>
+                                        </form>
+                                        {% endif %}
+                                    </div>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr><td colspan="6" class="text-center text-muted py-4">Xodimlar topilmadi</td></tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

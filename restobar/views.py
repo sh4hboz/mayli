@@ -152,9 +152,20 @@ def staff_management_view(request):
     # Barcha xodimlarni olish (Customer'dan tashqari)
     staff_list = User.objects.exclude(role=Role.CUSTOMER).order_by('role', 'phone')
 
+    # Qo'shish formasi uchun tanlanadigan rollar (Mijoz va Egadan tashqari)
+    assignable_roles = [
+        (Role.WAITER, Role.WAITER.label),
+        (Role.BARMAN, Role.BARMAN.label),
+        (Role.ACCOUNTANT, Role.ACCOUNTANT.label),
+        (Role.MANAGER, Role.MANAGER.label),
+        (Role.ADMIN, Role.ADMIN.label),
+    ]
+
     return render(request, 'management/staff_list.html', {
         'staff_list': staff_list,
         'profile': user,
+        'assignable_roles': assignable_roles,
+        'pin_roles': [Role.WAITER, Role.BARMAN],
         'error': error_msg,
         'success': success_msg
     })

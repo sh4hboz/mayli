@@ -1,12 +1,10 @@
 """
 accounts/models.py
 
-BOSQICH 0.4 — Custom User + rollar + StaffProfile
+Custom User (telefon bilan kirish) + rollar + StaffProfile.
 
-Eslatma:
-- Hozircha AUTH_USER_MODEL = 'auth.User' bo'lib qolmoqda.
-  Restobar'dagi mavjud User/UserProfile data bor.
-  BOSQICH 0.8 da ehtiyotkor migratsiya bilan accounts.User ga o'tiladi.
+- AUTH_USER_MODEL = 'accounts.User' (config/settings/base.py da o'rnatilgan).
+- USERNAME_FIELD = 'phone' — login telefon raqami orqali.
 - StaffProfile: PIN kodi (4 raqam, hashlangan), lavozim, ishga qabul sanasi.
 - Rollar: CUSTOMER → WAITER → BARMAN → ACCOUNTANT → MANAGER → OWNER + ADMIN
 """
@@ -20,7 +18,6 @@ from core.models import TimeStampedModel
 
 class Role(models.TextChoices):
     CUSTOMER = 'customer', _('Mijoz')
-    COURIER = 'courier', _('Kuryer')
     WAITER = 'waiter', _('Ofitsiant')
     BARMAN = 'barman', _('Barman')
     ACCOUNTANT = 'accountant', _('Bugalter')
@@ -51,11 +48,6 @@ class UserManager(BaseUserManager):
         return self.create_user(phone, password, **extra_fields)
 
 
-# --- Kelajakdagi custom User (0.8 da AUTH_USER_MODEL ga o'tganda faollashtiriladi) ---
-# O'zgartirish: 0.8 da restobar UserProfile va auth.User data ko'chirilgandan keyin:
-#   1. AUTH_USER_MODEL = 'accounts.User' qo'yiladi
-#   2. Yangi migratsiya yaratilib qo'llaniladi
-
 class User(AbstractUser):
     """
     Mayli Restobar uchun maxsus foydalanuvchi modeli.
@@ -85,6 +77,13 @@ class User(AbstractUser):
 
     def __str__(self):
         return self.phone
+
+    def get_full_name(self):
+        """Custom `full_name` maydonini ishlatadi (AbstractUser first/last o'rniga)."""
+        return self.full_name or self.phone
+
+    def get_short_name(self):
+        return self.full_name or self.phone
 
     @property
     def is_staff_member(self):
@@ -121,7 +120,7 @@ class StaffProfile(TimeStampedModel):
         verbose_name_plural = _('Xodimlar profillari')
 
     def __str__(self):
-        return f"{self.user.username} ({self.get_role_display()})"
+        return f"{self.user.get_full_name()} ({self.get_role_display()})"
 
     def set_pin(self, raw_pin: str):
         """4 raqamli PIN kodni hashlaydi."""
@@ -139,7 +138,7 @@ class StaffProfile(TimeStampedModel):
 def has_role(user, *roles) -> bool:
     """Foydalanuvchining roli ko'rsatilgan rollar ichida ekanligini tekshiradi."""
     try:
-        return user.profile.role in roles
+        return user.role in roles
     except AttributeError:
         return False
 
