@@ -37,9 +37,10 @@
                     <!-- Asosiy maydonlar -->
                     <div class="row g-3 mb-4">
                         <div class="col-md-6">
-                            <label class="form-label">{{ form.category.label }}<span class="text-danger">*</span></label>
-                            {{ form.category }}
-                            {% if form.category.errors %}<div class="invalid-feedback d-block">{% for e in form.category.errors %}{{ e }}{% endfor %}</div>{% endif %}
+                            <label class="form-label">{{ form.categories.label }}<span class="text-danger">*</span></label>
+                            <div class="dish-categories-box">{{ form.categories }}</div>
+                            <small class="form-text text-muted">{{ form.categories.help_text }}</small>
+                            {% if form.categories.errors %}<div class="invalid-feedback d-block">{% for e in form.categories.errors %}{{ e }}{% endfor %}</div>{% endif %}
                         </div>
                         <div class="col-md-6">
                             <label class="form-label">{{ form.price.label }}<span class="text-danger">*</span></label>
@@ -123,9 +124,4 @@
         </div>
     </div>
 </div>
-
-<style>
-.form-control.is-invalid, .form-select.is-invalid { border-color: #dc3545; }
-.invalid-feedback { color: #dc3545; font-size: 0.875rem; margin-top: 0.25rem; }
-</style>
 {% endblock %}

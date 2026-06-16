@@ -30,9 +30,13 @@
                             {% for item in dish_list %}
                             <tr>
                                 <td>{{ forloop.counter }}</td>
-                                <td>{% if item.image %}<img src="{{ item.image.url }}" class="thumb-img" alt="">{% else %}—{% endif %}</td>
-                                <td>{{ item.name_uz|truncatechars:30 }}</td>
-                                <td>{{ item.category.name_uz|default:"—" }}</td>
+                                <td>
+                                    <a href="{% url 'dashboard_dish_edit' item.pk %}">
+                                        {% if item.image %}<img src="{{ item.image.url }}" class="thumb-img" alt="">{% else %}<i class="ti ti-photo text-muted fs-3"></i>{% endif %}
+                                    </a>
+                                </td>
+                                <td><a href="{% url 'dashboard_dish_edit' item.pk %}" class="text-reset fw-semibold">{{ item.name_uz|truncatechars:30 }}</a></td>
+                                <td>{% for c in item.categories.all %}<span class="badge bg-light text-dark">{{ c.name_uz }}</span> {% empty %}—{% endfor %}</td>
                                 <td>{{ item.price|floatformat:0 }} so'm</td>
                                 <td>
                                     <button class="btn btn-sm {% if item.is_available %}btn-success{% else %}btn-secondary{% endif %}"

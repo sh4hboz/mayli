@@ -13,7 +13,12 @@ class CategoryAdmin(TranslationAdmin):
 
 @admin.register(Dish)
 class DishAdmin(TranslationAdmin):
-    list_display = ('name', 'category', 'price', 'is_available', 'prep_time', 'created_at')
-    list_filter = ('category', 'is_available')
-    list_editable = ('price', 'is_available', 'prep_time')
+    list_display = ('name', 'category_names', 'price', 'is_available', 'is_active', 'created_at')
+    list_filter = ('categories', 'is_available', 'is_active')
+    list_editable = ('price', 'is_available', 'is_active')
     search_fields = ('name', 'description')
+    filter_horizontal = ('categories',)
+
+    @admin.display(description='Kategoriyalar')
+    def category_names(self, obj):
+        return ", ".join(c.name for c in obj.categories.all()) or "—"

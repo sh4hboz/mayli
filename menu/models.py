@@ -25,11 +25,12 @@ class Category(TimeStampedModel):
 
 
 class Dish(TimeStampedModel):
-    category = models.ForeignKey(
+    categories = models.ManyToManyField(
         Category,
-        on_delete=models.CASCADE,
         related_name='dishes',
-        verbose_name=_("Kategoriya")
+        verbose_name=_("Kategoriyalar"),
+        blank=True,
+        help_text=_("Bitta taom bir nechta kategoriyada bo'lishi mumkin"),
     )
     name = models.CharField(_("Nomi"), max_length=100)
     description = models.TextField(_("Tavsifi"), blank=True, null=True)
@@ -42,7 +43,7 @@ class Dish(TimeStampedModel):
     class Meta:
         verbose_name = _("Taom")
         verbose_name_plural = _("Taomlar")
-        ordering = ['category', 'name']
+        ordering = ['name']
 
     def __str__(self):
         return f"{self.name} - {self.price} UZS"

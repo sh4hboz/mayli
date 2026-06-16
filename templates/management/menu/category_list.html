@@ -30,7 +30,7 @@
                             {% for item in category_list %}
                             <tr>
                                 <td>{{ forloop.counter }}</td>
-                                <td>{{ item.name_uz }}</td>
+                                <td><a href="{% url 'dashboard_category_edit' item.pk %}" class="text-reset fw-semibold">{{ item.name_uz }}</a></td>
                                 <td>{{ item.name_ru }}</td>
                                 <td>{{ item.order }}</td>
                                 <td>

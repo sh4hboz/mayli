@@ -10,6 +10,9 @@ class BootstrapModelForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         for field_name, field in self.fields.items():
+            if isinstance(field.widget, (forms.CheckboxSelectMultiple, forms.RadioSelect)):
+                # Checkbox/radio ro'yxati — Bootstrap class kerak emas (template form-check ishlatadi).
+                continue
             if isinstance(field.widget, forms.CheckboxInput):
                 field.widget.attrs['class'] = 'form-check-input'
             elif isinstance(field.widget, forms.Select):
@@ -107,11 +110,12 @@ class DishForm(BootstrapModelForm):
     class Meta:
         model = Dish
         fields = [
-            'category', 'name_uz', 'name_ru', 'name_en',
+            'categories', 'name_uz', 'name_ru', 'name_en',
             'description_uz', 'description_ru', 'description_en',
             'price', 'image', 'is_available', 'is_active', 'prep_time'
         ]
         widgets = {
+            'categories': forms.CheckboxSelectMultiple(),
             'description_uz': forms.Textarea(attrs={'rows': 3}),
             'description_ru': forms.Textarea(attrs={'rows': 3}),
             'description_en': forms.Textarea(attrs={'rows': 3}),
