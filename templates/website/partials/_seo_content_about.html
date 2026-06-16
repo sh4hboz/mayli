@@ -1,0 +1,60 @@
+{% load i18n %}
+
+{# About sahifasi uchun SEO matni — bosh sahifadagidan FARQLI (duplicate content emas).
+   Yo'nalish: tarix, falsafa, atmosfera, jamoa. Til-shartli (gettext emas). #}
+<section class="section seo-content" id="about-seo-content">
+  <div class="container">
+    {% if LANGUAGE_CODE == 'ru' %}
+      <h2 class="section-title">О Mayli Restobar — любимый ресторан и рестобар в Термезе</h2>
+      <div class="seo-content-body reveal">
+        <p>Mayli Restobar уже много лет радует гостей города Термез качественным сервисом. Наша цель — дарить каждому гостю домашнее тепло, ресторанное качество и незабываемые впечатления. За годы работы Mayli стал любимым местом отдыха жителей и гостей города.</p>
+
+        <h3>Наша философия</h3>
+        <p>Мы верим, что каждое блюдо должно готовиться с душой. Только свежие и качественные продукты, традиционные рецепты и современный подход — вот основа кухни Mayli. Наши повара — мастера своего дела, и к каждому блюду относятся со вниманием и вкусом.</p>
+
+        <h3>Атмосфера и интерьер</h3>
+        <p>Современный и уютный интерьер Mayli Restobar подходит для любого настроения. Мягкое освещение, приятная музыка и продуманный дизайн делают время здесь настоящим удовольствием. Семейный ужин, дружеская встреча или важное мероприятие — для каждого мы создаём особую атмосферу.</p>
+
+        <h3>Наша команда</h3>
+        <p>Главное богатство Mayli Restobar — это его команда. Радушные официанты, умелые повара и внимательные менеджеры встречают каждого гостя с особой заботой. Мы ценим мнение наших гостей и постоянно улучшаем сервис.</p>
+
+        <h3>Почему термезцы выбирают Mayli</h3>
+        <p>В Термезе непросто найти в одном месте качественную еду, премиальный сервис и приятную атмосферу. Mayli Restobar выделяется именно этим сочетанием. Удобное расположение, большое меню, премиальный кальян и постоянные акции делают Mayli одним из ведущих рестобаров города. Приходите и почувствуйте разницу сами.</p>
+      </div>
+    {% elif LANGUAGE_CODE == 'en' %}
+      <h2 class="section-title">About Mayli Restobar — a favourite restaurant and restobar in Termez</h2>
+      <div class="seo-content-body reveal">
+        <p>For many years Mayli Restobar has delighted guests in the city of Termez with quality service. Our goal is to give every guest homely warmth, restaurant-level quality and unforgettable impressions. Over the years, Mayli has become a favourite place to relax for locals and visitors alike.</p>
+
+        <h3>Our philosophy</h3>
+        <p>We believe every dish should be prepared with heart. Only fresh, high-quality ingredients, traditional recipes and a modern approach — that is the foundation of Mayli's kitchen. Our chefs are masters of their craft and treat every dish with care and taste.</p>
+
+        <h3>Atmosphere and interior</h3>
+        <p>The modern and cosy interior of Mayli Restobar suits any mood. Soft lighting, pleasant music and thoughtful design make spending time here a true pleasure. A family dinner, a friendly meeting or an important event — we create a special atmosphere for each.</p>
+
+        <h3>Our team</h3>
+        <p>Mayli Restobar's greatest asset is its team. Welcoming waiters, skilled chefs and attentive managers greet every guest with special care. We value our guests' opinions and constantly improve our service.</p>
+
+        <h3>Why Termez residents choose Mayli</h3>
+        <p>In Termez it is not easy to find quality food, premium service and a pleasant atmosphere all in one place. Mayli Restobar stands out for exactly this combination. A convenient location, a large menu, premium hookah and regular promotions make Mayli one of the leading restobars in the city. Come and feel the difference for yourself.</p>
+      </div>
+    {% else %}
+      <h2 class="section-title">Mayli Restobar haqida — Termizdagi sevimli restoran va restobar</h2>
+      <div class="seo-content-body reveal">
+        <p>Mayli Restobar Termiz shahrida ko'p yillardan beri mehmonlarga sifatli xizmat ko'rsatib kelmoqda. Bizning maqsadimiz — har bir mehmonga uyidagidek iliqlik, restoran darajasidagi sifat va unutilmas taassurot ulashish. Yillar davomida Mayli shahar aholisi va mehmonlarning sevimli dam olish maskaniga aylandi.</p>
+
+        <h3>Bizning falsafamiz</h3>
+        <p>Biz har bir taom mehr bilan tayyorlanishi kerakligiga ishonamiz. Faqat yangi va sifatli mahsulotlar, an'anaviy retseptlar hamda zamonaviy yondashuv — Mayli oshxonasining asosi shu. Oshpazlarimiz o'z ishining ustalari bo'lib, har bir taomga e'tibor va did bilan yondashadi.</p>
+
+        <h3>Atmosfera va interyer</h3>
+        <p>Mayli Restobarning zamonaviy va shinam interyeri har qanday kayfiyatga mos keladi. Yumshoq yoritish, yoqimli musiqa va o'ylangan dizayn — bu yerda vaqt o'tkazish chinakam zavq. Oilaviy kechki ovqat, do'stona uchrashuv yoki muhim tadbir — har biri uchun alohida muhit yaratamiz.</p>
+
+        <h3>Jamoamiz</h3>
+        <p>Mayli Restobarning eng katta boyligi — bu uning jamoasi. Samimiy ofitsiantlar, mahoratli oshpazlar va e'tiborli menejerlar har bir mehmonni alohida g'amxo'rlik bilan kutib oladi. Biz mijozlarimizning fikrini qadrlaymiz va xizmatimizni doimo yaxshilab boramiz.</p>
+
+        <h3>Nega termizliklar Mayli'ni tanlaydi</h3>
+        <p>Termizda sifatli taom, premium xizmat va yoqimli atmosferani bir joyda topish oson emas. Mayli Restobar aynan shu uyg'unligi bilan ajralib turadi. Qulay joylashuv, keng menyu, premium kalyan va doimiy aksiyalar — Mayli'ni shahardagi yetakchi restobarlardan biriga aylantiradi. Bizga tashrif buyuring va farqni o'zingiz his eting.</p>
+      </div>
+    {% endif %}
+  </div>
+</section>
