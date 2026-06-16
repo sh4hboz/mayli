@@ -3,9 +3,10 @@ from django.http import JsonResponse
 from django.utils.translation import gettext_lazy as _
 from django.contrib import messages
 from django.core.cache import cache
-from menu.models import Dish
+from django.db.models import Q
+from menu.models import Dish, Category
 from .models import News, Promotion, GalleryItem, Vacancy, JobApplication, ContactMessage, Testimonial
-from notifications.telegram import notify_contact_form, notify_job_application
+from notifications.telegram import notify_contact_form, notify_job_application, notify_chat_message
 
 
 # ─── Xavfsizlik yordamchilari ───────────────────────────────────────────────
@@ -13,10 +14,14 @@ from notifications.telegram import notify_contact_form, notify_job_application
 MAX_NAME_LEN = 120
 MAX_PHONE_LEN = 20
 MAX_MESSAGE_LEN = 2000
+MAX_CHAT_LEN = 1000
 
 # Bir IP'dan maksimal yuborishlar (oddiy rate-limit, cache asosida).
 SUBMIT_LIMIT = 6
 SUBMIT_WINDOW = 600  # 10 daqiqa (soniya)
+# Chat ko'proq xabar yuborishi mumkin — alohida, kengroq limit.
+CHAT_LIMIT = 15
+CHAT_WINDOW = 600
 
 
 def _client_ip(request):
@@ -27,14 +32,14 @@ def _client_ip(request):
     return request.META.get('REMOTE_ADDR', '')
 
 
-def _is_rate_limited(request):
+def _is_rate_limited(request, prefix='form_submit', limit=SUBMIT_LIMIT, window=SUBMIT_WINDOW):
     """IP bo'yicha yuborishlar sonini cheklaydi. True — limit oshgan."""
     ip = _client_ip(request) or 'unknown'
-    key = f'form_submit:{ip}'
+    key = f'{prefix}:{ip}'
     count = cache.get(key, 0)
-    if count >= SUBMIT_LIMIT:
+    if count >= limit:
         return True
-    cache.set(key, count + 1, SUBMIT_WINDOW)
+    cache.set(key, count + 1, window)
     return False
 
 
@@ -146,6 +151,60 @@ def about(request):
         'vacancies': Vacancy.objects.filter(is_active=True)
     }
     return render(request, 'website/about.html', context)
+
+
+def menu(request):
+    """To'liq menyu sahifasi — kategoriya filtri va qidiruv bilan."""
+    categories = Category.objects.filter(is_active=True)
+    active_category = request.GET.get('cat', '').strip()
+    search_query = request.GET.get('q', '').strip()[:100]
+
+    dishes = (
+        Dish.objects.filter(is_active=True, is_available=True)
+        .prefetch_related('categories')
+    )
+    if active_category:
+        dishes = dishes.filter(categories__slug=active_category, categories__is_active=True)
+    if search_query:
+        dishes = dishes.filter(
+            Q(name__icontains=search_query) | Q(description__icontains=search_query)
+        )
+    dishes = dishes.distinct()
+
+    return render(request, 'website/menu.html', {
+        'categories': categories,
+        'active_category': active_category,
+        'search_query': search_query,
+        'dishes': dishes,
+    })
+
+
+def chat_send(request):
+    """Sayt chat oynasidan kelgan xabarni (bir tomonlama) Telegram'ga uzatadi."""
+    if request.method != 'POST':
+        return JsonResponse({'success': False, 'error': 'POST only'}, status=405)
+
+    # Bot honeypot: 'website' maydoni to'lsa — jim qabul qilgandek ko'rsatamiz.
+    if _is_bot(request):
+        return JsonResponse({'success': True, 'reply': str(_('Rahmat!'))})
+
+    if _is_rate_limited(request, prefix='chat_send', limit=CHAT_LIMIT, window=CHAT_WINDOW):
+        return JsonResponse(
+            {'success': False, 'error': str(_('Juda ko\'p xabar. Birozdan so\'ng urinib ko\'ring.'))},
+            status=429,
+        )
+
+    message = request.POST.get('message', '').strip()[:MAX_CHAT_LEN]
+    visitor_id = request.POST.get('visitor_id', '').strip()[:64]
+    lang = request.POST.get('lang', '').strip()[:5]
+    if not message:
+        return JsonResponse({'success': False, 'error': str(_('Xabar bo\'sh.'))}, status=400)
+
+    notify_chat_message(message, visitor_id=visitor_id, lang=lang)
+    return JsonResponse({
+        'success': True,
+        'reply': str(_('Rahmat! Xabaringiz qabul qilindi. Tez orada javob beramiz yoki qo\'ng\'iroq qilamiz.')),
+    })
 
 
 def news_list(request):

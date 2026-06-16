@@ -90,6 +90,20 @@ def notify_contact_form(name: str, phone: str, message: str, is_booking: bool = 
     return notify_admin(text)
 
 
+def notify_chat_message(message: str, visitor_id: str = '', lang: str = '') -> bool:
+    """Sayt chat oynasidan kelgan xabarni admin guruhiga yuboradi (bir tomonlama)."""
+    message = html.escape(message)
+    visitor_id = html.escape(visitor_id)
+    lang = html.escape(lang)
+    text = (
+        f"💬 <b>Sayt chat xabari</b>\n"
+        f"🆔 Mehmon: {visitor_id or '—'}\n"
+        f"🌐 Til: {lang or '—'}\n"
+        f"📝 Xabar: {message}"
+    )
+    return notify_admin(text)
+
+
 def notify_job_application(full_name: str, phone: str, vacancy_title: str = '') -> bool:
     full_name = html.escape(full_name)
     phone = html.escape(phone)

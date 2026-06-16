@@ -233,7 +233,9 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   });
 
-  // === REAL CHAT WIDGET (WebSocket) ===
+  // === CHAT WIDGET (bir tomonlama → Telegram) ===
+  // Mehmon xabar yozadi → /chat/send/ ga POST → admin Telegram botiga boradi.
+  // Real-time javob yo'q; admin Telegramdan javob beradi yoki qo'ng'iroq qiladi.
   const chatWidget = document.getElementById('chatWidget');
   const chatOpenBtn = document.getElementById('chatOpenBtn');
   const chatCloseBtn = document.getElementById('chatCloseBtn');
@@ -260,9 +262,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
   const visitorId = getVisitorId();
   const chatLang = (chatWidget && chatWidget.dataset.lang) || 'uz';
-  let chatWs = null;
-  let wsReconnectTimer = null;
-  let wsReconnectDelay = 1000; // Boshlang'ich reconnect delaysi (1s)
 
   function getCsrfToken() {
     let csrfToken = null;
@@ -277,11 +276,6 @@ document.addEventListener('DOMContentLoaded', function () {
       }
     }
     return csrfToken;
-  }
-
-  function buildWsUrl(token) {
-    const proto = location.protocol === 'https:' ? 'wss:' : 'ws:';
-    return proto + '//' + location.host + '/ws/chat/' + visitorId + '/?token=' + encodeURIComponent(token);
   }
 
   function appendChatMessage(sender, text, time) {
@@ -301,110 +295,53 @@ document.addEventListener('DOMContentLoaded', function () {
     chatBody.scrollTop = chatBody.scrollHeight;
   }
 
-  function connectChatWs() {
-    if (chatWs && (chatWs.readyState === WebSocket.OPEN || chatWs.readyState === WebSocket.CONNECTING)) return;
-    clearTimeout(wsReconnectTimer);
-
-    const csrfToken = getCsrfToken();
-
-    // Avval token olamiz
-    fetch('/api/chat/token/', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-CSRFToken': csrfToken,
-      },
-      body: JSON.stringify({ visitor_id: visitorId })
-    })
-    .then(r => {
-      if (!r.ok) throw new Error('Token request failed');
-      return r.json();
-    })
-    .then(data => {
-      if (!data.token) throw new Error('Token is missing');
-
-      chatWs = new WebSocket(buildWsUrl(data.token));
-
-      chatWs.onopen = function() {
-        wsReconnectDelay = 1000; // Muvaffaqiyatli ulanishda delayni qayta tiklash
-        chatWs.send(JSON.stringify({ type: 'identify', language: chatLang }));
-      };
-
-      chatWs.onmessage = function(event) {
-        try {
-          const data = JSON.parse(event.data);
-          if (data.type === 'history') {
-            if (data.messages && data.messages.length > 0) {
-              // Dublikatlarni oldini olish uchun body'ni tozalash
-              if (chatBody) {
-                chatBody.innerHTML = '';
-              }
-              data.messages.forEach(function(msg) {
-                appendChatMessage(msg.sender, msg.message, msg.time);
-              });
-            }
-          } else if (data.type === 'message') {
-            if (data.sender !== 'visitor') {
-              appendChatMessage(data.sender, data.message, data.time);
-            }
-          } else if (data.type === 'error') {
-            appendChatMessage('system', data.message, '');
-          }
-        } catch(e) {}
-      };
-
-      chatWs.onclose = function() {
-        chatWs = null;
-        scheduleReconnect();
-      };
-
-      chatWs.onerror = function() {
-        chatWs = null;
-      };
-    })
-    .catch(() => {
-      scheduleReconnect();
-    });
-  }
-
-  function scheduleReconnect() {
-    if (chatWidget && chatWidget.classList.contains('open')) {
-      clearTimeout(wsReconnectTimer);
-      wsReconnectTimer = setTimeout(connectChatWs, wsReconnectDelay);
-      wsReconnectDelay = Math.min(wsReconnectDelay * 2, 30000); // Exponential backoff max 30s
-    }
-  }
-
   function sendChatMessage() {
     const text = chatInput && chatInput.value.trim();
     if (!text) return;
 
-    // Darhol UI ga qo'shish (UI tomonda xabar ko'rsatiladi)
     const now = new Date();
     const timeStr = now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0');
-    
-    // Xabarni local ravishda ko'rsatish
+
     appendChatMessage('visitor', text, timeStr);
     chatInput.value = '';
+    if (chatSendBtn) chatSendBtn.disabled = true;
 
-    if (chatWs && chatWs.readyState === WebSocket.OPEN) {
-      chatWs.send(JSON.stringify({ type: 'message', message: text }));
-    } else {
-      // WS ulanmagan — demo xabarni ko'rsatish va ulanishga urinish
-      setTimeout(function() {
-        const offlineMsgs = (window.SITE_MESSAGES || {}).chat_offline || {};
-        const msg = offlineMsgs[chatLang] || offlineMsgs['uz'] || '💬 ...';
-        appendChatMessage('bot', msg, '');
-      }, 700);
-      connectChatWs();
-    }
+    const body = new URLSearchParams();
+    body.append('message', text);
+    body.append('visitor_id', visitorId);
+    body.append('lang', chatLang);
+
+    fetch('/chat/send/', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'X-CSRFToken': getCsrfToken(),
+        'X-Requested-With': 'XMLHttpRequest',
+      },
+      body: body.toString(),
+    })
+    .then(r => r.json())
+    .then(data => {
+      if (data && data.reply) {
+        appendChatMessage('bot', data.reply, '');
+      } else if (data && data.error) {
+        appendChatMessage('system', data.error, '');
+      }
+    })
+    .catch(() => {
+      const offlineMsgs = (window.SITE_MESSAGES || {}).chat_offline || {};
+      const msg = offlineMsgs[chatLang] || offlineMsgs['uz'] || '💬 Xabar yuborilmadi. Iltimos, telefon orqali bog\'laning.';
+      appendChatMessage('system', msg, '');
+    })
+    .finally(() => {
+      if (chatSendBtn) chatSendBtn.disabled = false;
+      if (chatInput) chatInput.focus();
+    });
   }
 
   function openChat() {
-    if (chatWidget) {
-      chatWidget.classList.add('open');
-      connectChatWs();
-    }
+    if (chatWidget) chatWidget.classList.add('open');
+    if (chatInput) chatInput.focus();
   }
   function closeChat() {
     if (chatWidget) chatWidget.classList.remove('open');
