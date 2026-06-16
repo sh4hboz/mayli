@@ -1,0 +1,61 @@
+{% load i18n %}
+
+{# SEO uchun mazmunli matn — kalit so'zlar (Mayli, restoran, restobar, Termiz, premium,
+   taomlar, ichimliklar, kalyan, bron, atmosfera). Uzun matn bo'lgani uchun til-shartli
+   bloklarda (gettext .po emas) — egasi 3 tilni shu yerda tahrir qiladi. #}
+<section class="section seo-content" id="seo-content">
+  <div class="container">
+    {% if LANGUAGE_CODE == 'ru' %}
+      <h2 class="section-title">Mayli Restobar — премиум ресторан и рестобар в Термезе</h2>
+      <div class="seo-content-body reveal">
+        <p>Mayli Restobar — одно из самых уютных и современных заведений города Термез. Здесь вас ждут лучшие блюда национальной и европейской кухни, освежающие напитки и премиальный кальян. Наш ресторан одинаково удобен для семейного ужина, дружеской встречи и больших мероприятий. Тёплая атмосфера, современный интерьер и искреннее обслуживание делают Mayli Restobar любимым местом отдыха в Термезе.</p>
+
+        <h3>Национальная и европейская кухня</h3>
+        <p>Наши повара готовят каждое блюдо с мастерством, используя только свежие и качественные продукты. В меню — широкий выбор: от традиционных узбекских блюд (плов, шурпа, шашлык, манты) до современной европейской и восточной кухни. Каждый гость найдёт блюдо по вкусу, есть вегетарианские и лёгкие позиции. Наши блюда отличаются не только вкусом, но и красивой подачей.</p>
+
+        <h3>Рестобар, напитки и кальян</h3>
+        <p>Mayli Restobar — это не просто ресторан, а настоящий рестобар. У нас большой выбор освежающих напитков, вкусных коктейлей и качественный премиальный кальян. По вечерам приятная музыка и особая атмосфера дарят гостям незабываемое настроение. Идеальное место, чтобы отдохнуть в кругу друзей или с близкими.</p>
+
+        <h3>Бронирование, банкеты и мероприятия</h3>
+        <p>Хотите отметить особенную дату или провести мероприятие? В Mayli Restobar есть отдельный зал и полное обслуживание для дней рождения, юбилеев, корпоративов и семейных банкетов. Забронировать стол или зал очень просто — через кнопку «Бронирование» на сайте или по телефону. Наша команда поможет организовать ваше событие на самом высоком уровне.</p>
+
+        <h3>Адрес и часы работы</h3>
+        <p>Mayli Restobar расположен в удобном месте города Термез, до которого легко добраться. Мы работаем каждый день и тепло встречаем каждого гостя. Если вы ищете в Термезе качественную еду, приятную атмосферу и премиальный сервис — Mayli Restobar ваш выбор. Приходите и оцените сами!</p>
+      </div>
+    {% elif LANGUAGE_CODE == 'en' %}
+      <h2 class="section-title">Mayli Restobar — premium restaurant and restobar in Termez</h2>
+      <div class="seo-content-body reveal">
+        <p>Mayli Restobar is one of the cosiest and most modern venues in the city of Termez. Here you will enjoy the finest dishes of national and European cuisine, refreshing drinks and premium hookah. Our restaurant is equally comfortable for a family dinner, a friendly meeting or large events. A warm atmosphere, modern interior and sincere service make Mayli Restobar a favourite place to relax in Termez.</p>
+
+        <h3>National and European cuisine</h3>
+        <p>Our chefs prepare every dish with skill, using only fresh, high-quality ingredients. The menu offers a wide choice — from traditional Uzbek dishes (plov, shurpa, kebab, manti) to modern European and oriental cuisine. Every guest will find a dish to their taste, and there are vegetarian and light options too. Our dishes stand out not only for their flavour but also for their beautiful presentation.</p>
+
+        <h3>Restobar, drinks and hookah</h3>
+        <p>Mayli Restobar is not just a restaurant but a true restobar. We offer a wide range of refreshing drinks, delicious cocktails and quality premium hookah. In the evenings, pleasant music and a special atmosphere give guests an unforgettable mood. It is the ideal place to relax with friends or loved ones.</p>
+
+        <h3>Booking, banquets and events</h3>
+        <p>Want to celebrate a special date or host an event? Mayli Restobar offers a private hall and full service for birthdays, anniversaries, corporate evenings and family banquets. Booking a table or hall is very easy — through the "Book" button on the website or by phone. Our team will help organise your event at the highest level.</p>
+
+        <h3>Location and opening hours</h3>
+        <p>Mayli Restobar is located in a convenient part of Termez that is easy to reach. We are open every day and warmly welcome every guest. If you are looking for quality food, a pleasant atmosphere and premium service in Termez — Mayli Restobar is your choice. Come and see for yourself!</p>
+      </div>
+    {% else %}
+      <h2 class="section-title">Mayli Restobar — Termizdagi premium restoran va restobar</h2>
+      <div class="seo-content-body reveal">
+        <p>Mayli Restobar — Termiz shahridagi eng shinam va zamonaviy maskanlardan biri. Bu yerda siz milliy va Yevropa oshxonasining eng sara taomlari, tetiklashtiruvchi ichimliklar hamda premium kalyan xizmatidan bahramand bo'lasiz. Restoranimiz oilaviy kechki ovqat, do'stona uchrashuvlar va katta tadbirlar uchun bir xilda qulay. Iliq atmosfera, zamonaviy interyer va samimiy xizmat — Mayli Restobarni Termizdagi sevimli dam olish maskaniga aylantiradi.</p>
+
+        <h3>Milliy va Yevropa taomlari</h3>
+        <p>Oshpazlarimiz har bir taomni mahorat bilan, faqat yangi va sifatli mahsulotlardan tayyorlaydi. Menyumizda an'anaviy o'zbek taomlari — palov, sho'rva, kabob va mantidan tortib, zamonaviy Yevropa va sharq taomlarigacha keng tanlov mavjud. Har bir mehmon o'z didiga mos taom topadi, vegetarian va yengil taomlar ham bor. Taomlarimiz nafaqat mazali, balki chiroyli taqdim etilishi bilan ham ajralib turadi.</p>
+
+        <h3>Restobar, ichimliklar va kalyan</h3>
+        <p>Mayli Restobar — bu shunchaki restoran emas, balki haqiqiy restobar. Bizda turli xil tetiklashtiruvchi ichimliklar, mazali kokteyllar va sifatli premium kalyan xizmati mavjud. Kechqurunlari yoqimli musiqa va maxsus atmosfera mehmonlarga unutilmas kayfiyat baxsh etadi. Do'stlar davrasida yoki yaqinlaringiz bilan dam olish uchun ideal makon.</p>
+
+        <h3>Bron qilish, bazm va tadbirlar</h3>
+        <p>Maxsus sana yoki tadbiringizni nishonlamoqchimisiz? Mayli Restobarda tug'ilgan kun, yubiley, korporativ kechalar va oilaviy bazmlar uchun xususiy zal va to'liq xizmat ko'rsatiladi. Stol yoki zalni oldindan bron qilish juda oson — saytdagi "Bron qilish" tugmasi orqali yoki telefon orqali bizga murojaat qiling. Jamoamiz tadbiringizni eng yuqori darajada tashkil etishga yordam beradi.</p>
+
+        <h3>Manzil va ish vaqti</h3>
+        <p>Mayli Restobar Termiz shahrining qulay joyida joylashgan bo'lib, mehmonlar uchun oson yetib boriladigan manzilda. Biz har kuni xizmatdamiz va har bir mehmonni iliq kutib olamiz. Termizda sifatli taom, yoqimli atmosfera va premium xizmatni qidirsangiz — Mayli Restobar sizning tanlovingiz. Bizga tashrif buyuring va o'zingiz baholang!</p>
+      </div>
+    {% endif %}
+  </div>
+</section>

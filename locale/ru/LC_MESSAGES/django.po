@@ -184,8 +184,8 @@ msgstr "Услуги премиального кальяна"
 msgid "Xususiy zal va tadbir"
 msgstr "Частный зал и мероприятия"
 
-msgid "Yetkazib berish xizmati"
-msgstr "Услуга доставки"
+msgid "Qulay bron qilish tizimi"
+msgstr "Удобная система бронирования"
 
 msgid "Batafsil o'qish"
 msgstr "Читать подробнее"

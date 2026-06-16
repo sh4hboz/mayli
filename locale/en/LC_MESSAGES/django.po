@@ -184,8 +184,8 @@ msgstr "Premium Hookah Service"
 msgid "Xususiy zal va tadbir"
 msgstr "Private Hall & Events"
 
-msgid "Yetkazib berish xizmati"
-msgstr "Delivery Service"
+msgid "Qulay bron qilish tizimi"
+msgstr "Convenient booking system"
 
 msgid "Batafsil o'qish"
 msgstr "Read More"

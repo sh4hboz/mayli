@@ -2281,3 +2281,25 @@ body.modal-open { overflow: hidden; }
   .site-modal-dialog { animation: none; }
 }
 
+/* ════════════════════════════════════════════════════════════════
+   SEO CONTENT — bosh sahifadagi mazmunli matn bloki
+   ════════════════════════════════════════════════════════════════ */
+.seo-content { background: var(--dark, #0a0a0a); }
+.seo-content .section-title { text-align: center; margin-bottom: 32px; }
+.seo-content-body { max-width: 880px; margin: 0 auto; }
+.seo-content-body h3 {
+  color: var(--gold-light, #e0c07a);
+  font-size: 1.15rem;
+  font-weight: 600;
+  margin: 28px 0 10px;
+}
+.seo-content-body p {
+  color: var(--text-muted, #888);
+  line-height: 1.85;
+  font-size: 1rem;
+  margin-bottom: 14px;
+}
+@media (max-width: 576px) {
+  .seo-content-body p { font-size: .95rem; line-height: 1.75; }
+}
+
