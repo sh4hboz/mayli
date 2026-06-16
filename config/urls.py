@@ -11,7 +11,8 @@ from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 sitemaps = {'static': StaticViewSitemap}
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    # Admin URL .env (ADMIN_URL) orqali maxfiy yo'lga ko'chirilishi mumkin.
+    path(settings.ADMIN_URL, admin.site.urls),
     path('i18n/', include('django.conf.urls.i18n')),
     path('careers/', RedirectView.as_view(url='/contact/', permanent=True)),
 

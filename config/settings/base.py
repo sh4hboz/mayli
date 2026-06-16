@@ -9,6 +9,15 @@ environ.Env.read_env(BASE_DIR / '.env')
 SECRET_KEY = env('SECRET_KEY')
 ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=[])
 
+# Admin'ni "yashirish": URL ni .env orqali maxfiy yo'lga ko'chirish mumkin.
+# Oxirida slash bo'lsin. Masalan: ADMIN_URL=mxli-7q9z-panel/
+ADMIN_URL = env('ADMIN_URL', default='admin/')
+
+# Dashboard/admin uchun alohida subdomen (masalan manage.maylirestobar.uz).
+# Bo'sh bo'lsa (dev) — host ajratish o'chiq. To'ldirilsa, ommaviy domende
+# /dashboard/ va admin 404 qaytaradi (core.middleware.HostSeparationMiddleware).
+DASHBOARD_HOST = env('DASHBOARD_HOST', default='')
+
 INSTALLED_APPS = [
     'daphne',
     'modeltranslation',  # admin'dan OLDIN turishi shart
@@ -39,6 +48,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'core.middleware.HostSeparationMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.locale.LocaleMiddleware',
     'django.middleware.common.CommonMiddleware',
