@@ -1,8 +1,10 @@
 {% load i18n %}
 
-{# SEO uchun mazmunli matn — kalit so'zlar (Mayli, restoran, restobar, Termiz, premium,
-   taomlar, ichimliklar, kalyan, bron, atmosfera). Uzun matn bo'lgani uchun til-shartli
-   bloklarda (gettext .po emas) — egasi 3 tilni shu yerda tahrir qiladi. #}
+{% comment %}
+  SEO uchun mazmunli matn — kalit so'zlar (Mayli, restoran, restobar, Termiz, premium,
+  taomlar, ichimliklar, kalyan, bron, atmosfera). Uzun matn bo'lgani uchun til-shartli
+  bloklarda (gettext .po emas) — egasi 3 tilni shu yerda tahrir qiladi.
+{% endcomment %}
 <section class="section seo-content" id="seo-content">
   <div class="container">
     {% if LANGUAGE_CODE == 'ru' %}
