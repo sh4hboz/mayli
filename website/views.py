@@ -1,11 +1,18 @@
+from datetime import timedelta
+
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import JsonResponse
+from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from django.contrib import messages
 from django.core.cache import cache
 from menu.models import Dish, Category
 from .models import News, Promotion, GalleryItem, Vacancy, JobApplication, ContactMessage, Testimonial
 from notifications.telegram import notify_contact_form, notify_job_application, notify_chat_message
+from notifications.models import ChatSession, ChatMessage
+
+# Admin shu vaqt ichida javob yozmasa, mehmonga avto-javob ko'rsatiladi.
+CHAT_AUTO_REPLY_DELAY = 30  # soniya
 
 
 # ─── Xavfsizlik yordamchilari ───────────────────────────────────────────────
@@ -173,7 +180,10 @@ def menu(request):
 
 
 def chat_send(request):
-    """Sayt chat oynasidan kelgan xabarni (bir tomonlama) Telegram'ga uzatadi."""
+    """Sayt chat xabarini saqlaydi va admin botiga uzatadi (ikki tomonlama chat).
+
+    Javob (admin Reply yoki 30s avto-javob) `chat_poll` orqali olinadi.
+    """
     if request.method != 'POST':
         return JsonResponse({'success': False, 'error': 'POST only'}, status=405)
 
@@ -192,12 +202,86 @@ def chat_send(request):
     lang = request.POST.get('lang', '').strip()[:5]
     if not message:
         return JsonResponse({'success': False, 'error': str(_('Xabar bo\'sh.'))}, status=400)
+    if not visitor_id:
+        return JsonResponse({'success': False, 'error': str(_('Sessiya aniqlanmadi.'))}, status=400)
 
-    notify_chat_message(message, visitor_id=visitor_id, lang=lang)
-    return JsonResponse({
-        'success': True,
-        'reply': str(_('Rahmat! Xabaringiz qabul qilindi. Tez orada javob beramiz yoki qo\'ng\'iroq qilamiz.')),
-    })
+    # Sessiya + kiruvchi xabarni saqlaymiz (ikki tomonlama chat uchun).
+    session, _created = ChatSession.objects.get_or_create(
+        visitor_id=visitor_id, defaults={'lang': lang},
+    )
+    if lang and session.lang != lang:
+        session.lang = lang
+        session.save(update_fields=['lang', 'updated_at'])
+
+    inbound = ChatMessage.objects.create(
+        session=session, direction=ChatMessage.IN, text=message,
+    )
+
+    # Botga yuboramiz va bildirishnoma message_id'ni saqlaymiz (admin Reply'ini bog'lash uchun).
+    tg_message_id = notify_chat_message(message, visitor_id=visitor_id, lang=lang)
+    if tg_message_id:
+        inbound.telegram_message_id = tg_message_id
+        inbound.save(update_fields=['telegram_message_id'])
+
+    # Avto-javob DARHOL emas — chat_poll'da 30s o'tib materializatsiya qilinadi.
+    return JsonResponse({'success': True})
+
+
+def chat_poll(request):
+    """Sayt chat oynasi uchun yangi 'out' xabarlarni (admin javobi / avto-javob) qaytaradi.
+
+    GET: visitor_id, after (oxirgi ko'rilgan ChatMessage id).
+    30s avto-javob shu yerda lazy yaratiladi (fon vazifasi kerak emas).
+    """
+    visitor_id = request.GET.get('visitor_id', '').strip()[:64]
+    try:
+        after = int(request.GET.get('after', '0'))
+    except (TypeError, ValueError):
+        after = 0
+    if not visitor_id:
+        return JsonResponse({'messages': []})
+
+    try:
+        session = ChatSession.objects.get(visitor_id=visitor_id)
+    except ChatSession.DoesNotExist:
+        return JsonResponse({'messages': []})
+
+    _maybe_create_auto_reply(session)
+
+    out_qs = session.messages.filter(direction=ChatMessage.OUT, id__gt=after).order_by('id')
+    new_ids = [m.id for m in out_qs]
+    data = [{
+        'id': m.id,
+        'text': m.text,
+        'time': timezone.localtime(m.created_at).strftime('%H:%M'),
+        'is_auto': m.is_auto,
+    } for m in out_qs]
+
+    if new_ids:
+        ChatMessage.objects.filter(id__in=new_ids).update(delivered=True)
+
+    return JsonResponse({'messages': data})
+
+
+def _maybe_create_auto_reply(session):
+    """Oxirgi kiruvchi xabarga 30s ichida admin javobi bo'lmasa — avto-javob yaratadi."""
+    last_in = session.messages.filter(direction=ChatMessage.IN).order_by('-id').first()
+    if not last_in:
+        return
+    # Shu kiruvchi xabardan keyin biror 'out' (admin yoki avto) bormi?
+    has_response = session.messages.filter(
+        direction=ChatMessage.OUT, id__gt=last_in.id,
+    ).exists()
+    if has_response:
+        return
+    if timezone.now() - last_in.created_at < timedelta(seconds=CHAT_AUTO_REPLY_DELAY):
+        return
+    ChatMessage.objects.create(
+        session=session,
+        direction=ChatMessage.OUT,
+        is_auto=True,
+        text=str(_('Rahmat! Xabaringiz qabul qilindi. Tez orada javob beramiz yoki qo\'ng\'iroq qilamiz.')),
+    )
 
 
 def news_list(request):

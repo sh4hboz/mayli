@@ -44,8 +44,11 @@ class Command(BaseCommand):
             url = f"{base}/setWebhook"
             payload = {
                 'url': webhook_url,
-                'allowed_updates': ['message', 'callback_query'],
+                'allowed_updates': ['message'],
                 'drop_pending_updates': True,
+                # Telegram har webhook so'rovida shu token'ni header sifatida yuboradi
+                # (X-Telegram-Bot-Api-Secret-Token) — view'da tekshiriladi.
+                'secret_token': secret,
             }
             action_msg = f"o'rnatildi: {webhook_url}"
 

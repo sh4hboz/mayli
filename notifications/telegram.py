@@ -70,6 +70,31 @@ def notify_admin(text: str) -> bool:
     return send_message(chat_id, text)
 
 
+def send_message_return_id(chat_id, text: str, **kwargs) -> int | None:
+    """Xabar yuboradi va Telegram message_id'ni qaytaradi (reply bog'lash uchun)."""
+    data = _post('sendMessage', {
+        'chat_id': chat_id,
+        'text': text,
+        'parse_mode': 'HTML',
+        **kwargs,
+    })
+    if data and data.get('ok'):
+        return data.get('result', {}).get('message_id')
+    return None
+
+
+def set_webhook(url: str, secret: str = '') -> dict | None:
+    """Telegram setWebhook — botning yangilanishlarni shu URL'ga yuborishini ta'minlaydi.
+
+    `secret` berilsa, Telegram har so'rovda `X-Telegram-Bot-Api-Secret-Token` header'ini
+    qo'shadi (webhook view'da tekshiriladi).
+    """
+    payload = {'url': url, 'allowed_updates': ['message']}
+    if secret:
+        payload['secret_token'] = secret
+    return _post('setWebhook', payload)
+
+
 # ─── Sayt bildirishnomalari ───────────────────────────────────────────────────
 
 def notify_contact_form(name: str, phone: str, message: str, is_booking: bool = False) -> bool:
@@ -90,8 +115,15 @@ def notify_contact_form(name: str, phone: str, message: str, is_booking: bool = 
     return notify_admin(text)
 
 
-def notify_chat_message(message: str, visitor_id: str = '', lang: str = '') -> bool:
-    """Sayt chat oynasidan kelgan xabarni admin guruhiga yuboradi (bir tomonlama)."""
+def notify_chat_message(message: str, visitor_id: str = '', lang: str = '') -> int | None:
+    """Sayt chat xabarini admin guruhiga yuboradi va bildirishnoma message_id'ni qaytaradi.
+
+    Admin shu xabarga **Reply** qilib javob yozsa, webhook reply_to_message orqali
+    mehmonni topadi. Shuning uchun message_id qaytariladi (saqlash uchun).
+    """
+    chat_id = _admin_chat_id()
+    if not chat_id:
+        return None
     message = html.escape(message)
     visitor_id = html.escape(visitor_id)
     lang = html.escape(lang)
@@ -99,9 +131,10 @@ def notify_chat_message(message: str, visitor_id: str = '', lang: str = '') -> b
         f"💬 <b>Sayt chat xabari</b>\n"
         f"🆔 Mehmon: {visitor_id or '—'}\n"
         f"🌐 Til: {lang or '—'}\n"
-        f"📝 Xabar: {message}"
+        f"📝 Xabar: {message}\n\n"
+        f"↩️ <i>Javob berish uchun shu xabarga «Reply» qiling.</i>"
     )
-    return notify_admin(text)
+    return send_message_return_id(chat_id, text)
 
 
 def notify_job_application(full_name: str, phone: str, vacancy_title: str = '') -> bool:

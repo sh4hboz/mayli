@@ -42,6 +42,55 @@ class TelegramSettings(models.Model):
         return obj
 
 
+class ChatSession(TimeStampedModel):
+    """Sayt chat oynasidagi bitta mehmon sessiyasi (visitor_id bo'yicha)."""
+    visitor_id = models.CharField(
+        _('Mehmon ID'), max_length=64, unique=True, db_index=True,
+    )
+    lang = models.CharField(_('Til'), max_length=5, blank=True)
+
+    class Meta:
+        verbose_name = _('Chat sessiyasi')
+        verbose_name_plural = _('Chat sessiyalari')
+        ordering = ['-updated_at']
+
+    def __str__(self):
+        return f'Chat {self.visitor_id}'
+
+
+class ChatMessage(TimeStampedModel):
+    """Chat xabari — mehmondan (in) yoki adminga/avto (out)."""
+    IN = 'in'
+    OUT = 'out'
+    DIRECTION_CHOICES = [
+        (IN, _('Mehmondan')),
+        (OUT, _('Adminga/avto')),
+    ]
+
+    session = models.ForeignKey(
+        ChatSession, on_delete=models.CASCADE, related_name='messages',
+        verbose_name=_('Sessiya'),
+    )
+    direction = models.CharField(
+        _('Yo\'nalish'), max_length=3, choices=DIRECTION_CHOICES,
+    )
+    text = models.TextField(_('Matn'))
+    # 'in' xabarning botdagi bildirishnoma message_id'si — admin Reply'ni bog'lash uchun.
+    telegram_message_id = models.BigIntegerField(
+        _('Telegram message_id'), null=True, blank=True, db_index=True,
+    )
+    is_auto = models.BooleanField(_('Avto-javob'), default=False)
+    delivered = models.BooleanField(_('Yetkazildi'), default=False)
+
+    class Meta:
+        verbose_name = _('Chat xabari')
+        verbose_name_plural = _('Chat xabarlari')
+        ordering = ['id']
+
+    def __str__(self):
+        return f'[{self.direction}] {self.text[:40]}'
+
+
 class DeviceToken(TimeStampedModel):
     """Mobil push bildirishnoma tokeni (FCM — kelajak BOSQICH 6)."""
     user = models.ForeignKey(

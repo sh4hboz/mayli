@@ -220,9 +220,10 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   });
 
-  // === CHAT WIDGET (bir tomonlama → Telegram) ===
-  // Mehmon xabar yozadi → /chat/send/ ga POST → admin Telegram botiga boradi.
-  // Real-time javob yo'q; admin Telegramdan javob beradi yoki qo'ng'iroq qiladi.
+  // === CHAT WIDGET (ikki tomonlama → Telegram) ===
+  // Mehmon → /chat/send/ → admin botga. Admin botda xabarga "Reply" qilsa →
+  // webhook → /chat/poll/ orqali sayt chatida ko'rinadi. Admin 30s javob bermasa,
+  // avto-javob poll'da paydo bo'ladi. Yangi xabar kelsa widget qayta ochiladi.
   const chatWidget = document.getElementById('chatWidget');
   const chatOpenBtn = document.getElementById('chatOpenBtn');
   const chatCloseBtn = document.getElementById('chatCloseBtn');
@@ -309,11 +310,11 @@ document.addEventListener('DOMContentLoaded', function () {
     })
     .then(r => r.json())
     .then(data => {
-      if (data && data.reply) {
-        appendChatMessage('bot', data.reply, '');
-      } else if (data && data.error) {
+      if (data && data.error) {
         appendChatMessage('system', data.error, '');
       }
+      // Muvaffaqiyatda darhol javob ko'rsatilmaydi — admin javobi yoki 30s
+      // avto-javob /chat/poll/ orqali keladi.
     })
     .catch(() => {
       const offlineMsgs = (window.SITE_MESSAGES || {}).chat_offline || {};
@@ -341,6 +342,36 @@ document.addEventListener('DOMContentLoaded', function () {
     chatInput.addEventListener('keydown', function(e) {
       if (e.key === 'Enter') sendChatMessage();
     });
+  }
+
+  // --- Polling: admin javobi / avto-javobni olib kelish ---
+  let chatLastId = parseInt(localStorage.getItem('mayli_chat_last_id') || '0', 10) || 0;
+
+  function pollChat() {
+    if (!visitorId) return;
+    fetch('/chat/poll/?visitor_id=' + encodeURIComponent(visitorId) + '&after=' + chatLastId, {
+      headers: { 'X-Requested-With': 'XMLHttpRequest' },
+    })
+    .then(r => r.json())
+    .then(data => {
+      const msgs = (data && data.messages) || [];
+      if (!msgs.length) return;
+      msgs.forEach(function(m) {
+        appendChatMessage('bot', m.text, m.time || '');
+        if (m.id > chatLastId) chatLastId = m.id;
+      });
+      localStorage.setItem('mayli_chat_last_id', String(chatLastId));
+      // Yangi xabar keldi — widget yopiq bo'lsa qayta ochamiz (talab #3).
+      if (chatWidget && !chatWidget.classList.contains('open')) {
+        openChat();
+      }
+    })
+    .catch(function () { /* tarmoq xatosi — keyingi poll'da qayta urinadi */ });
+  }
+
+  if (chatWidget) {
+    pollChat();                       // sahifa ochilishida — oldingi javoblarni ham olib keladi
+    setInterval(pollChat, 5000);      // har 5s
   }
 
   // === PROMO CARDS — klik bilan expand ===

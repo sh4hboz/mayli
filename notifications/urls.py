@@ -1,5 +1,9 @@
-from django.urls import path  # noqa: F401
+from django.urls import path
 
-# Hozircha public URL yo'q. Telegram outbound (marketing) funksiyalari
-# notifications/telegram.py orqali bevosita chaqiriladi.
-urlpatterns = []
+from . import views
+
+# Telegram webhook — admin reply'larini qabul qiladi (chat ko'prigi).
+# Secret URL'da: /telegram/webhook/<TELEGRAM_WEBHOOK_SECRET>/
+urlpatterns = [
+    path('telegram/webhook/<secret>/', views.telegram_webhook, name='telegram_webhook'),
+]
