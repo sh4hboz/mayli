@@ -3,7 +3,6 @@ from django.http import JsonResponse
 from django.utils.translation import gettext_lazy as _
 from django.contrib import messages
 from django.core.cache import cache
-from django.db.models import Q
 from menu.models import Dish, Category
 from .models import News, Promotion, GalleryItem, Vacancy, JobApplication, ContactMessage, Testimonial
 from notifications.telegram import notify_contact_form, notify_job_application, notify_chat_message
@@ -154,10 +153,9 @@ def about(request):
 
 
 def menu(request):
-    """To'liq menyu sahifasi — kategoriya filtri va qidiruv bilan."""
+    """To'liq menyu sahifasi — kategoriya filtri bilan."""
     categories = Category.objects.filter(is_active=True)
     active_category = request.GET.get('cat', '').strip()
-    search_query = request.GET.get('q', '').strip()[:100]
 
     dishes = (
         Dish.objects.filter(is_active=True, is_available=True)
@@ -165,16 +163,11 @@ def menu(request):
     )
     if active_category:
         dishes = dishes.filter(categories__slug=active_category, categories__is_active=True)
-    if search_query:
-        dishes = dishes.filter(
-            Q(name__icontains=search_query) | Q(description__icontains=search_query)
-        )
     dishes = dishes.distinct()
 
     return render(request, 'website/menu.html', {
         'categories': categories,
         'active_category': active_category,
-        'search_query': search_query,
         'dishes': dishes,
     })
 

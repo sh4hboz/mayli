@@ -185,19 +185,6 @@ document.addEventListener('DOMContentLoaded', function () {
   // === MENU FILTERS ===
   // <a href> teglar URL'ni o'zi boshqaradi — JS kerak emas.
 
-  // === MENU SEARCH ===
-  const searchForm = document.getElementById('menuSearchForm');
-  if (searchForm) {
-    searchForm.addEventListener('submit', function (e) {
-      e.preventDefault();
-      const q = this.querySelector('input').value.trim();
-      const searchParams = new URLSearchParams(window.location.search);
-      if (q) searchParams.set('q', q);
-      else searchParams.delete('q');
-      window.location.search = searchParams.toString();
-    });
-  }
-
   // === AJAX FORMS (contact & vacancy) ===
   document.querySelectorAll('.ajax-form').forEach(form => {
     form.addEventListener('submit', function (e) {

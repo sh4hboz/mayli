@@ -21,26 +21,17 @@
   <div class="container">
     <!-- Filterlar -->
     <div class="menu-filters">
-      <a href="{% url 'website:menu' %}{% if search_query %}?q={{ search_query }}{% endif %}"
+      <a href="{% url 'website:menu' %}"
          class="filter-btn {% if not active_category %}active{% endif %}">
         {% trans "Barchasi" %}
       </a>
       {% for cat in categories %}
-      <a href="{% url 'website:menu' %}?cat={{ cat.slug }}{% if search_query %}&q={{ search_query }}{% endif %}"
+      <a href="{% url 'website:menu' %}?cat={{ cat.slug }}"
           class="filter-btn {% if active_category == cat.slug %}active{% endif %}">
         {{ cat.name }}
       </a>
       {% endfor %}
     </div>
-
-    <!-- Qidiruv -->
-    <form class="menu-search" id="menuSearchForm" action="{% url 'website:menu' %}" method="get">
-      {% if active_category %}
-        <input type="hidden" name="cat" value="{{ active_category }}">
-      {% endif %}
-      <input type="text" name="q" value="{{ search_query }}" placeholder="{% trans "Taom qidirish..." %}">
-      <button type="submit"><i class="fa fa-search"></i></button>
-    </form>
 
     <!-- Taomlar -->
     {% if dishes %}
@@ -73,8 +64,8 @@
     </div>
     {% else %}
     <div class="no-dishes">
-      <i class="fa fa-search"></i>
-      <p>{% trans "Taom topilmadi. Boshqa kalit so'z yoki kategoriyani sinab ko'ring." %}</p>
+      <i class="fa fa-cutlery"></i>
+      <p>{% trans "Bu kategoriyada hozircha taom yo'q." %}</p>
       <a href="{% url 'website:menu' %}" class="btn btn-gold mt-16">{% trans "Hammasini ko'rish" %}</a>
     </div>
     {% endif %}

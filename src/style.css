@@ -1100,10 +1100,6 @@ footer p {
 .menu-filters { display:flex; flex-wrap:wrap; gap:10px; justify-content:center; margin-bottom:40px; }
 .filter-btn { padding:8px 20px; border-radius:30px; border:1px solid var(--border); background:transparent; color:var(--text-muted); font-size:.85rem; font-weight:600; cursor:pointer; transition:var(--transition); text-decoration:none; }
 .filter-btn:hover, .filter-btn.active { background:var(--gold); color:#000; border-color:var(--gold); }
-.menu-search { display:flex; max-width:400px; margin:0 auto 32px; background:var(--dark2); border:1px solid var(--border); border-radius:8px; overflow:hidden; }
-.menu-search input { flex:1; background:none; border:none; outline:none; padding:12px 16px; color:var(--text); font-size:.9rem; }
-.menu-search button { background:var(--gold); border:none; color:#000; padding:12px 16px; cursor:pointer; font-weight:700; transition:var(--transition); }
-.menu-search button:hover { background:var(--gold-light); }
 .no-dishes { text-align:center; padding:60px 0; color:var(--text-muted); }
 .no-dishes i { font-size:3rem; margin-bottom:16px; opacity:.3; display:block; }
 
