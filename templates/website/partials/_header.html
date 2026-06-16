@@ -9,6 +9,7 @@
 
     <nav class="nav-links" id="nav-links">
       <ul>
+        <li><a href="{% url 'website:menu' %}">{% trans "Menyu" %}</a></li>
         <li><a href="{% url 'website:about' %}">{% trans "Biz haqimizda" %}</a></li>
         <li><a href="{% url 'website:news_list' %}">{% trans "Yangiliklar" %}</a></li>
       </ul>
@@ -72,6 +73,7 @@
     <!-- Menu Links -->
     <nav class="mobile-menu-nav">
       <a href="{% url 'website:home' %}">{% trans "Bosh sahifa" %}</a>
+      <a href="{% url 'website:menu' %}">{% trans "Menyu" %}</a>
       <a href="{% url 'website:home' %}#why-us">{% trans "Nega Mayli?" %}</a>
       <a href="{% url 'website:home' %}#about-home">{% trans "Biz haqimizda" %}</a>
       <a href="{% url 'website:home' %}#promotions">{% trans "Aksiyalar" %}</a>
