@@ -500,3 +500,16 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 
 });
+
+/* === TELEFON INPUT MASK (barcha tel inputlar uchun umumiy) ===
+   O'zbekiston formati: +998 XX XXX-XX-XX. IMask kutubxonasi orqali.
+   Backend (clean_uz_phone) raqamdan boshqasini tozalaydi -> mask belgilar zararsiz.
+   website.js `defer` bilan yuklanadi -> DOM (modallar ham) tayyor bo'ladi. */
+(function () {
+  if (typeof IMask === 'undefined') return;
+  document.querySelectorAll('input[type="tel"], input[name="phone"]').forEach(function (el) {
+    if (el.dataset.maskInit) return;   // ikki marta init bo'lmasin
+    el.dataset.maskInit = '1';
+    IMask(el, { mask: '+{998} 00 000-00-00' });
+  });
+})();

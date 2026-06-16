@@ -1,0 +1,37 @@
+/* ==========================================================================
+   custom-management.css — Mayli Restobar boshqaruv paneli (dashboard)
+   --------------------------------------------------------------------------
+   MAQSAD:
+   - Dashboard'ning BARCHA sahifalari uchun yagona custom uslublar fayli.
+   - base.html (templates/management/base.html) da vendors.min.css va
+     app.min.css dan KEYIN ulanadi — shuning uchun bu yerdagi qoidalar
+     theme (tayyor mavzu) qoidalaridan kuchliroq (cascade bo'yicha g'olib).
+
+   QOIDALAR:
+   - app.min.css / vendors.min.css ga HECH QACHON tegmang — ular tayyor theme.
+     Har qanday o'zgartirish faqat SHU faylda.
+   - Iloji boricha `!important` ishlatmang; bu fayl keyin yuklangani uchun
+     bir xil specificity'da allaqachon g'olib bo'ladi. `!important` faqat
+     theme inline/utility qoidasini yengib bo'lmaganda, oxirgi chora sifatida.
+   - Yangi blok qo'shganda izoh bilan ajrating (quyidagi bo'limlar kabi).
+   ========================================================================== */
+
+
+/* --------------------------------------------------------------------------
+   1. Umumiy (global) tuzatishlar
+   -------------------------------------------------------------------------- */
+
+
+/* --------------------------------------------------------------------------
+   2. Topbar / Sidebar
+   -------------------------------------------------------------------------- */
+
+
+/* --------------------------------------------------------------------------
+   3. Kartalar / jadvallar / formalar
+   -------------------------------------------------------------------------- */
+
+
+/* --------------------------------------------------------------------------
+   4. Sahifaga xos tuzatishlar
+   -------------------------------------------------------------------------- */
