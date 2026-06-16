@@ -1,0 +1,93 @@
+/* ==========================================================================
+   custom-management.js — Mayli Restobar boshqaruv paneli (dashboard) JS
+   --------------------------------------------------------------------------
+   - data-toggle-url + data-field : is_active / is_available ni AJAX bilan
+     o'zgartiradi (toggle_active_ajax view). Sahifa qayta yuklanmaydi.
+   - data-confirm : o'chirish/xavfli amallardan oldin tasdiq so'raydi.
+   ========================================================================== */
+(function () {
+  "use strict";
+
+  // --- CSRF cookie ---
+  function getCookie(name) {
+    if (!document.cookie) return null;
+    var cookies = document.cookie.split(";");
+    for (var i = 0; i < cookies.length; i++) {
+      var c = cookies[i].trim();
+      if (c.substring(0, name.length + 1) === name + "=") {
+        return decodeURIComponent(c.substring(name.length + 1));
+      }
+    }
+    return null;
+  }
+
+  // --- Status badge matnini almashtirish (ma'lum juftliklar) ---
+  var TEXT_PAIRS = [
+    ["Faol", "Nofaol"],
+    ["Ha", "Yo'q"],
+    ["Yoqilgan", "O'chirilgan"],
+  ];
+  function swapBadgeText(badge) {
+    if (!badge) return;
+    var cur = badge.textContent.trim();
+    for (var i = 0; i < TEXT_PAIRS.length; i++) {
+      var p = TEXT_PAIRS[i];
+      if (cur === p[0]) { badge.textContent = p[1]; return; }
+      if (cur === p[1]) { badge.textContent = p[0]; return; }
+    }
+  }
+
+  function applyToggleState(btn, val) {
+    btn.classList.toggle("btn-success", !!val);
+    btn.classList.toggle("btn-secondary", !val);
+    swapBadgeText(btn.querySelector(".status-badge"));
+    var icon = btn.querySelector("i.ti");
+    if (icon && (icon.classList.contains("ti-eye") || icon.classList.contains("ti-eye-off"))) {
+      icon.classList.toggle("ti-eye", !!val);
+      icon.classList.toggle("ti-eye-off", !val);
+    }
+    var card = btn.closest(".gallery-item");
+    if (card) card.classList.toggle("gallery-item-inactive", !val);
+  }
+
+  // --- is_active / is_available toggle ---
+  document.addEventListener("click", function (e) {
+    var btn = e.target.closest("[data-toggle-url]");
+    if (!btn) return;
+    e.preventDefault();
+    if (btn.dataset.busy === "1") return;
+
+    var url = btn.getAttribute("data-toggle-url");
+    var field = btn.getAttribute("data-field") || "is_active";
+    btn.dataset.busy = "1";
+
+    fetch(url + "?field=" + encodeURIComponent(field), {
+      method: "POST",
+      headers: {
+        "X-CSRFToken": getCookie("csrftoken"),
+        "X-Requested-With": "XMLHttpRequest",
+      },
+    })
+      .then(function (r) { return r.json(); })
+      .then(function (data) {
+        if (data && data.success) {
+          applyToggleState(btn, data[field]);
+        } else {
+          window.alert((data && data.error) || "Amalni bajarib bo'lmadi.");
+        }
+      })
+      .catch(function () { window.alert("Tarmoq xatosi. Qayta urinib ko'ring."); })
+      .finally(function () { btn.dataset.busy = ""; });
+  });
+
+  // --- Tasdiq so'rash (o'chirish va h.k.) ---
+  document.addEventListener("click", function (e) {
+    var el = e.target.closest("[data-confirm]");
+    if (!el) return;
+    var msg = el.getAttribute("data-confirm") || "Ishonchingiz komilmi?";
+    if (!window.confirm(msg)) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+  });
+})();

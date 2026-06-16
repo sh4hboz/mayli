@@ -30,8 +30,12 @@
                             {% for item in promotion_list %}
                             <tr>
                                 <td>{{ forloop.counter }}</td>
-                                <td>{% if item.image %}<img src="{{ item.image.url }}" class="thumb-img" alt="">{% else %}—{% endif %}</td>
-                                <td>{{ item.title_uz|truncatechars:40 }}</td>
+                                <td>
+                                    <a href="{% url 'dashboard_promotion_edit' item.pk %}">
+                                        {% if item.image %}<img src="{{ item.image.url }}" class="thumb-img" alt="">{% else %}<i class="ti ti-photo text-muted fs-3"></i>{% endif %}
+                                    </a>
+                                </td>
+                                <td><a href="{% url 'dashboard_promotion_edit' item.pk %}" class="text-reset fw-semibold">{{ item.title_uz|truncatechars:40 }}</a></td>
                                 <td>{% if item.valid_until %}{{ item.valid_until|date:"d.m.Y" }}{% else %}—{% endif %}</td>
                                 <td>
                                     <button class="btn btn-sm {% if item.is_active %}btn-success{% else %}btn-secondary{% endif %}"

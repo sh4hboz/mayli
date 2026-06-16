@@ -30,7 +30,7 @@
                             {% for item in vacancy_list %}
                             <tr>
                                 <td>{{ forloop.counter }}</td>
-                                <td>{{ item.title_uz }}</td>
+                                <td><a href="{% url 'dashboard_vacancy_edit' item.pk %}" class="text-reset fw-semibold">{{ item.title_uz }}</a></td>
                                 <td>{{ item.title_ru }}</td>
                                 <td>{{ item.salary_uz|default:"—" }}</td>
                                 <td>

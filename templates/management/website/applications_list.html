@@ -27,7 +27,7 @@
                             {% for item in applications_list %}
                             <tr>
                                 <td>{{ forloop.counter }}</td>
-                                <td><strong>{{ item.full_name }}</strong></td>
+                                <td><a href="{% url 'dashboard_application_detail' item.pk %}" class="text-reset fw-semibold">{{ item.full_name }}</a></td>
                                 <td>{{ item.phone }}</td>
                                 <td>{{ item.vacancy.title_uz|default:"—" }}</td>
                                 <td>{{ item.message|truncatechars:50|default:"—" }}</td>

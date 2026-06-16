@@ -35,8 +35,12 @@
                             {% for item in news_list %}
                             <tr>
                                 <td>{{ forloop.counter }}</td>
-                                <td>{% if item.image %}<img src="{{ item.image.url }}" class="thumb-img" alt="">{% else %}—{% endif %}</td>
-                                <td>{{ item.title_uz|truncatechars:40 }}</td>
+                                <td>
+                                    <a href="{% url 'dashboard_news_edit' item.pk %}">
+                                        {% if item.image %}<img src="{{ item.image.url }}" class="thumb-img" alt="">{% else %}<i class="ti ti-photo text-muted fs-3"></i>{% endif %}
+                                    </a>
+                                </td>
+                                <td><a href="{% url 'dashboard_news_edit' item.pk %}" class="text-reset fw-semibold">{{ item.title_uz|truncatechars:40 }}</a></td>
                                 <td>{{ item.title_ru|truncatechars:40 }}</td>
                                 <td>
                                     <button class="btn btn-sm {% if item.is_active %}btn-success{% else %}btn-secondary{% endif %}"

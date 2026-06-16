@@ -63,9 +63,14 @@
                 {% if gallery_list %}
                 <div class="gallery-grid">
                     {% for item in gallery_list %}
-                    <div class="gallery-item">
+                    <div class="gallery-item {% if not item.is_active %}gallery-item-inactive{% endif %}">
                         <img src="{{ item.image.url }}" alt="{{ item.caption_uz }}">
                         <div class="gallery-item-actions">
+                            <button class="btn btn-sm {% if item.is_active %}btn-success{% else %}btn-secondary{% endif %}"
+                                    data-toggle-url="{% url 'dashboard_toggle_active' 'website' 'galleryitem' item.pk %}" data-field="is_active"
+                                    title="{% if item.is_active %}Faol{% else %}Nofaol{% endif %}">
+                                <i class="ti {% if item.is_active %}ti-eye{% else %}ti-eye-off{% endif %}"></i>
+                            </button>
                             <form method="post" action="{% url 'dashboard_gallery_delete' item.pk %}">
                                 {% csrf_token %}
                                 <button type="submit" class="btn btn-sm btn-danger" data-confirm="Rasmni o'chirasizmi?"><i class="ti ti-trash"></i></button>
@@ -81,10 +86,4 @@
         </div>
     </div>
 </div>
-
-<style>
-.form-control.is-invalid, .form-select.is-invalid { border-color: #dc3545; }
-.invalid-feedback { color: #dc3545; font-size: 0.875rem; margin-top: 0.25rem; }
-.alert-sm { padding: 0.5rem 0.75rem; font-size: 0.875rem; margin-bottom: 0.5rem; }
-</style>
 {% endblock %}

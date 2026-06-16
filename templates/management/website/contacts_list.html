@@ -28,7 +28,7 @@
                             <tr>
                                 <td>{{ forloop.counter }}</td>
                                 <td>
-                                    <strong>{{ item.name }}</strong>
+                                    <a href="{% url 'dashboard_contact_detail' item.pk %}" class="text-reset fw-semibold">{{ item.name }}</a>
                                     {% if item.kind == 'booking' %}
                                     <span class="badge bg-primary">Bron</span>
                                     {% endif %}

@@ -149,6 +149,17 @@
                     </a>
                 </li>
 
+                <!-- Tizim -->
+                {% if profile.role == 'owner' or profile.role == 'manager' or profile.role == 'admin' %}
+                <li class="side-nav-title mt-2">Tizim</li>
+                <li class="side-nav-item">
+                    <a href="{% url 'staff_management' %}" class="side-nav-link">
+                        <span class="menu-icon"><i class="ti ti-user-cog"></i></span>
+                        <span class="menu-text">Xodimlar</span>
+                    </a>
+                </li>
+                {% endif %}
+
             </ul>
         </div>
     </div>

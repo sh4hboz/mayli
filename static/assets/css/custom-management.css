@@ -31,7 +31,50 @@
    3. Kartalar / jadvallar / formalar
    -------------------------------------------------------------------------- */
 
+/* Taom formasidagi kategoriyalar (CheckboxSelectMultiple) — chiroyli quti */
+.dish-categories-box ul {
+    list-style: none;
+    margin: 0;
+    padding: .5rem .75rem;
+    border: 1px solid var(--bs-border-color, #dee2e6);
+    border-radius: .375rem;
+    max-height: 180px;
+    overflow-y: auto;
+}
+.dish-categories-box li {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+    padding: .15rem 0;
+}
+.dish-categories-box input[type="checkbox"] {
+    width: 1.05em;
+    height: 1.05em;
+}
+
+/* Jadvaldagi kichik rasm (thumbnail) */
+.thumb-img {
+    width: 48px;
+    height: 48px;
+    object-fit: cover;
+    border-radius: .375rem;
+}
+
+
+/* Kichik alert (galereya formasi va h.k.) */
+.alert-sm {
+    padding: .5rem .75rem;
+    font-size: .875rem;
+    margin-bottom: .5rem;
+}
+
 
 /* --------------------------------------------------------------------------
    4. Sahifaga xos tuzatishlar
    -------------------------------------------------------------------------- */
+
+/* Galereya: nofaol rasm xira ko'rsatiladi */
+.gallery-item-inactive img {
+    opacity: .4;
+    filter: grayscale(60%);
+}
