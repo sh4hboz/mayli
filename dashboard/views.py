@@ -88,6 +88,29 @@ class SuccessMessageMixin:
         return super().delete(request, *args, **kwargs)
 
 
+class WebPReportMixin:
+    """Forma `webp_report`idan rasm WebP siqish natijalarini message ko'rsatadi."""
+
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        for r in getattr(form, 'webp_report', []):
+            label = r.get('label') or 'Rasm'
+            orig_kb = round(r['original_size'] / 1024)
+            if r.get('reason') == 'converted':
+                webp_kb = round(r['webp_size'] / 1024)
+                messages.success(
+                    self.request,
+                    f"{label}: WebP'ga siqildi — {r['saved_pct']}% tejaldi "
+                    f"({orig_kb} KB → {webp_kb} KB).",
+                )
+            elif r.get('reason') == 'webp_larger':
+                messages.info(
+                    self.request,
+                    f"{label}: asl rasm saqlandi (WebP kattaroq chiqdi).",
+                )
+        return response
+
+
 # --- Sayt sozlamalari (Site Settings) ---
 class SiteSettingsUpdateView(CMSBaseMixin, SuccessMessageMixin, UpdateView):
     model = SiteSettings
@@ -106,14 +129,14 @@ class NewsListView(CMSBaseMixin, ListView):
     context_object_name = 'news_list'
 
 
-class NewsCreateView(CMSBaseMixin, SuccessMessageMixin, CreateView):
+class NewsCreateView(CMSBaseMixin, WebPReportMixin, SuccessMessageMixin, CreateView):
     model = News
     form_class = NewsForm
     template_name = 'management/website/news_form.html'
     success_url = reverse_lazy('dashboard_news_list')
 
 
-class NewsUpdateView(CMSBaseMixin, SuccessMessageMixin, UpdateView):
+class NewsUpdateView(CMSBaseMixin, WebPReportMixin, SuccessMessageMixin, UpdateView):
     model = News
     form_class = NewsForm
     template_name = 'management/website/news_form.html'
@@ -138,14 +161,14 @@ class PromotionListView(CMSBaseMixin, ListView):
         return ctx
 
 
-class PromotionCreateView(CMSBaseMixin, SuccessMessageMixin, CreateView):
+class PromotionCreateView(CMSBaseMixin, WebPReportMixin, SuccessMessageMixin, CreateView):
     model = Promotion
     form_class = PromotionForm
     template_name = 'management/website/promotion_form.html'
     success_url = reverse_lazy('dashboard_promotion_list')
 
 
-class PromotionUpdateView(CMSBaseMixin, SuccessMessageMixin, UpdateView):
+class PromotionUpdateView(CMSBaseMixin, WebPReportMixin, SuccessMessageMixin, UpdateView):
     model = Promotion
     form_class = PromotionForm
     template_name = 'management/website/promotion_form.html'
@@ -170,7 +193,7 @@ class GalleryItemListView(CMSBaseMixin, ListView):
         return ctx
 
 
-class GalleryItemCreateView(CMSBaseMixin, SuccessMessageMixin, CreateView):
+class GalleryItemCreateView(CMSBaseMixin, WebPReportMixin, SuccessMessageMixin, CreateView):
     model = GalleryItem
     form_class = GalleryItemForm
     template_name = 'management/website/gallery_list.html'
@@ -338,14 +361,14 @@ class DishListView(CMSBaseMixin, ListView):
     context_object_name = 'dish_list'
 
 
-class DishCreateView(CMSBaseMixin, SuccessMessageMixin, CreateView):
+class DishCreateView(CMSBaseMixin, WebPReportMixin, SuccessMessageMixin, CreateView):
     model = Dish
     form_class = DishForm
     template_name = 'management/menu/dish_form.html'
     success_url = reverse_lazy('dashboard_dish_list')
 
 
-class DishUpdateView(CMSBaseMixin, SuccessMessageMixin, UpdateView):
+class DishUpdateView(CMSBaseMixin, WebPReportMixin, SuccessMessageMixin, UpdateView):
     model = Dish
     form_class = DishForm
     template_name = 'management/menu/dish_form.html'

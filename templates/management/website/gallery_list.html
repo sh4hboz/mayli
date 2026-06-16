@@ -24,6 +24,13 @@
                     <div class="mb-2">
                         <label class="form-label">{{ form.image.label }}<span class="text-danger">*</span></label>{{ form.image }}
                         {% if form.image.errors %}<div class="invalid-feedback d-block">{% for e in form.image.errors %}{{ e }}{% endfor %}</div>{% endif %}
+                        {% if form.convert_webp %}
+                        <div class="form-check mt-2">
+                            {{ form.convert_webp }}
+                            <label class="form-check-label" for="{{ form.convert_webp.id_for_label }}">{{ form.convert_webp.label }}</label>
+                            <div class="form-text">{{ form.convert_webp.help_text }}</div>
+                        </div>
+                        {% endif %}
                     </div>
                     <div class="mb-2">
                         <label class="form-label">{{ form.caption_uz.label }}</label>{{ form.caption_uz }}

@@ -2,6 +2,8 @@ from django import forms
 from website.models import SiteSettings, News, Promotion, GalleryItem, Vacancy
 from menu.models import Category, Dish
 from crm.models import Customer, Campaign
+from .image_utils import convert_image_to_webp
+
 
 class BootstrapModelForm(forms.ModelForm):
     """
@@ -27,6 +29,47 @@ class BootstrapModelForm(forms.ModelForm):
                 current_class = field.widget.attrs.get('class', '')
                 field.widget.attrs['class'] = f'{current_class} is-invalid'
 
+
+class WebPModelForm(BootstrapModelForm):
+    """Rasm maydonli formalar uchun ixtiyoriy WebP siqish.
+
+    `convert_webp` — declared (sinf darajasidagi) checkbox; belgilansa, yangi
+    yuklangan rasmni saqlashdan oldin WebP'ga aylantiradi va faqat asl rasmdan
+    kichikroq bo'lsa almashtiradi. Natija `self.webp_report`da (view ko'rsatadi).
+    Mavjud (saqlangan) rasmlarga tegmaydi.
+    """
+    convert_webp = forms.BooleanField(
+        required=False,
+        initial=True,
+        label="Rasmni WebP'ga siqish (kichikroq bo'lsa)",
+        help_text="Yangi yuklangan rasm WebP'ga aylantiriladi; faqat asl rasmdan kichik bo'lsa almashtiriladi.",
+        widget=forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+    )
+
+    def __init__(self, *args, **kwargs):
+        # BootstrapModelForm.__init__ self.errors'ga murojaat qiladi → full_clean
+        # (clean) __init__ ichida ishga tushadi, shuning uchun report'ni oldin yaratamiz.
+        self.webp_report = []
+        super().__init__(*args, **kwargs)
+
+    def _webp_image_fields(self):
+        return [n for n, f in self.fields.items() if isinstance(f, forms.ImageField)]
+
+    def clean(self):
+        cleaned = super().clean()
+        if cleaned.get('convert_webp'):
+            for name in self._webp_image_fields():
+                f = cleaned.get(name)
+                # Faqat yangi yuklangan fayl (UploadedFile'da content_type bor) —
+                # mavjud saqlangan rasm (FieldFile) yoki bo'sh qiymatga tegmaymiz.
+                if f and hasattr(f, 'content_type'):
+                    result = convert_image_to_webp(f)
+                    cleaned[name] = result['file']
+                    result['label'] = self.fields[name].label or name
+                    self.webp_report.append(result)
+        return cleaned
+
+
 class SiteSettingsForm(BootstrapModelForm):
     class Meta:
         model = SiteSettings
@@ -48,7 +91,7 @@ class SiteSettingsForm(BootstrapModelForm):
             'about_text_en': forms.Textarea(attrs={'rows': 4}),
         }
 
-class NewsForm(BootstrapModelForm):
+class NewsForm(WebPModelForm):
     class Meta:
         model = News
         fields = [
@@ -62,7 +105,7 @@ class NewsForm(BootstrapModelForm):
             'body_en': forms.Textarea(attrs={'rows': 5}),
         }
 
-class PromotionForm(BootstrapModelForm):
+class PromotionForm(WebPModelForm):
     class Meta:
         model = Promotion
         fields = [
@@ -77,7 +120,7 @@ class PromotionForm(BootstrapModelForm):
             'description_en': forms.Textarea(attrs={'rows': 4}),
         }
 
-class GalleryItemForm(BootstrapModelForm):
+class GalleryItemForm(WebPModelForm):
     class Meta:
         model = GalleryItem
         fields = ['image', 'caption_uz', 'caption_ru', 'caption_en', 'order', 'is_active']
@@ -106,7 +149,7 @@ class CategoryForm(BootstrapModelForm):
         model = Category
         fields = ['name_uz', 'name_ru', 'name_en', 'order', 'is_active']
 
-class DishForm(BootstrapModelForm):
+class DishForm(WebPModelForm):
     class Meta:
         model = Dish
         fields = [
