@@ -4,8 +4,8 @@
 <footer id="footer">
   <div class="container footer-grid">
     <div class="footer-brand">
-      <a href="{% url 'website:home' %}" class="logo-shine">
-        <img src="{% static 'src/img/icons/logo-white.png' %}" alt="Mayli Restobar" width="140" loading="lazy">
+      <a href="{% url 'website:home' %}">
+        {% include 'website/partials/_logo_svg.html' with cls='logo-foot' %}
       </a>
       <p>{{ site.tagline }}</p>
     </div>

@@ -10,6 +10,7 @@ Kelajakda CRM marketing kampaniyalari (SMS/Email/Telegram) ham shu
 
 import html
 import logging
+import re
 import json as _json
 import urllib.request
 import urllib.error
@@ -18,6 +19,23 @@ from django.conf import settings
 logger = logging.getLogger(__name__)
 
 TELEGRAM_API = "https://api.telegram.org/bot{token}/{method}"
+
+
+def format_uz_phone(phone: str) -> str:
+    """Telefonni Telegram xabari uchun chiroyli formatga keltiradi.
+
+    Masalan: '+998 (90) 820-10-04' yoki '998908201004' -> '+998-90-820-10-04'.
+    Standart O'zbekiston raqami bo'lmasa, asl qiymatni o'zgartirmay qaytaradi.
+    """
+    if not phone:
+        return phone
+    digits = re.sub(r'\D', '', phone)
+    if len(digits) == 9:
+        digits = '998' + digits
+    if len(digits) == 12 and digits.startswith('998'):
+        d = digits[3:]
+        return f"+998-{d[0:2]}-{d[2:5]}-{d[5:7]}-{d[7:9]}"
+    return phone
 
 
 def _token() -> str:
@@ -100,7 +118,7 @@ def set_webhook(url: str, secret: str = '') -> dict | None:
 def notify_contact_form(name: str, phone: str, message: str, is_booking: bool = False) -> bool:
     # parse_mode=HTML — foydalanuvchi matnini escape qilamiz (HTML injection himoyasi).
     name = html.escape(name)
-    phone = html.escape(phone)
+    phone = html.escape(format_uz_phone(phone))
     message = html.escape(message)
     if is_booking:
         title = "📅 <b>Yangi bron so'rovi</b>"
@@ -139,7 +157,7 @@ def notify_chat_message(message: str, visitor_id: str = '', lang: str = '') -> i
 
 def notify_job_application(full_name: str, phone: str, vacancy_title: str = '') -> bool:
     full_name = html.escape(full_name)
-    phone = html.escape(phone)
+    phone = html.escape(format_uz_phone(phone))
     vacancy_title = html.escape(vacancy_title)
     text = (
         f"📋 <b>Yangi ish arizasi</b>\n"

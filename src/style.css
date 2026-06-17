@@ -562,7 +562,7 @@ footer p {
 .form-group {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 0;
 }
 
 .form-group label {
@@ -1209,6 +1209,11 @@ textarea.form-control { resize:vertical; min-height:120px; }
 .form-submit { margin-top:8px; }
 .form-success { background:rgba(20,80,20,.8); border:1px solid rgba(80,180,80,.3); border-radius:8px; padding:16px; text-align:center; color:#90ee90; font-weight:600; }
 .form-error { background:rgba(80,20,20,.8); border:1px solid rgba(180,80,80,.3); border-radius:8px; padding:16px; text-align:center; color:#ff9999; font-weight:600; margin-top:12px; }
+
+/* jQuery validate — maydon ostidagi xato matni + yaroqsiz maydon ramkasi */
+small.field-error { display:block; margin-top:6px; color:#ff9999; font-size:.82rem; font-weight:600; }
+.form-control.field-error { border-color:#c0392b; }
+.form-control.field-error:focus { box-shadow:0 0 0 3px rgba(192,57,43,.18); }
 
 /* ===== VACANCIES ===== */
 .vacancy-card { background:var(--dark2); border:1px solid var(--border); border-radius:var(--radius); padding:28px; margin-bottom:16px; transition:var(--transition); }
@@ -2065,40 +2070,42 @@ body.modal-open { overflow: hidden; }
 }
 .vacancies-cta { text-align: center; margin-top: 32px; }
 
-/* ════════════════════════════════════════════════════════════════
-   LOGO SHINE — 45° oltin yorqinlik (~18s da bir marta, ~0.2s)
-   ════════════════════════════════════════════════════════════════ */
-.logo-shine {
-  position: relative;
-  display: inline-block;
-  overflow: hidden;
-}
-.logo-shine::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    45deg,
-    transparent 42%,
-    var(--gold-light, #e0c07a) 50%,
-    transparent 58%
-  );
-  transform: translateX(-160%);
-  opacity: 0;
-  pointer-events: none;
-  mix-blend-mode: screen;
-  animation: logoShine 10s ease-in-out infinite;
-}
-@keyframes logoShine {
-  0%      { transform: translateX(-160%); opacity: 0; }
-  0.3%    { opacity: 0.9; }
-  50%     { transform: translateX(160%); opacity: 0; }
-  100%    { transform: translateX(160%); opacity: 0; }
+@media (prefers-reduced-motion: reduce) {
+  .site-modal-dialog { animation: none; }
 }
 
+/* ════════════════════════════════════════════════════════════════
+   LOGO — inline SVG + "qo'lda qalam bilan chizilgan" effekt
+   Har 5s da path'lar konturi chiziladi; rang navbatma-navbat:
+   --logo-ink (#ea6900 ↔ #fff) JS tomonidan beriladi.
+   ════════════════════════════════════════════════════════════════ */
+.logo-draw { display: block; width: auto; overflow: visible; }
+.logo-nav    { height: 40px; }
+.logo-foot   { height: 56px; }
+.logo-mobile { height: 32px; }
+
+.logo-draw path {
+  fill: var(--logo-ink, #fff);
+  stroke: var(--logo-ink, #fff);
+  stroke-width: 1;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+  paint-order: stroke;
+  stroke-dasharray: 1;     /* pathLength=1 JS'da o'rnatiladi → normallashtirilgan */
+  stroke-dashoffset: 0;    /* boshlang'ich: to'liq chizilgan (JS yo'q bo'lsa ham ko'rinadi) */
+  fill-opacity: 1;
+}
+.logo-draw.is-drawing path {
+  animation: logoPencil 5.2s ease forwards;     /* sekin, qo'lda chizilgandek (2x) */
+  animation-delay: calc(var(--pi, 0) * 0.09s);  /* harf-harf */
+}
+@keyframes logoPencil {
+  0%   { stroke-dashoffset: 1; fill-opacity: 0; }
+  55%  { stroke-dashoffset: 0; fill-opacity: 0; }  /* avval kontur "chiziladi" */
+  100% { stroke-dashoffset: 0; fill-opacity: 1; }  /* keyin ichi bo'yaladi */
+}
 @media (prefers-reduced-motion: reduce) {
-  .logo-shine::after { animation: none; }
-  .site-modal-dialog { animation: none; }
+  .logo-draw.is-drawing path { animation: none; }
 }
 
 /* ════════════════════════════════════════════════════════════════

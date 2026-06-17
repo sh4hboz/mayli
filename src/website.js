@@ -185,40 +185,78 @@ document.addEventListener('DOMContentLoaded', function () {
   // === MENU FILTERS ===
   // <a href> teglar URL'ni o'zi boshqaradi — JS kerak emas.
 
-  // === AJAX FORMS (contact & vacancy) ===
-  document.querySelectorAll('.ajax-form').forEach(form => {
-    form.addEventListener('submit', function (e) {
-      e.preventDefault();
-      const formData = new FormData(this);
-      const btn = this.querySelector('[type=submit]');
-      if (btn) { btn.disabled = true; btn.textContent = '...'; }
-      fetch(this.action || window.location.href, {
-        method: 'POST',
-        headers: { 'X-Requested-With': 'XMLHttpRequest' },
-        body: formData,
+  // === AJAX FORMS (contact, booking, vacancy) ===
+  // Yuborish logikasi — faqat forma yaroqli bo'lsa chaqiriladi.
+  function submitAjaxForm(form) {
+    const formData = new FormData(form);
+    const btn = form.querySelector('[type=submit]');
+    if (btn) { btn.disabled = true; btn.textContent = '...'; }
+    fetch(form.action || window.location.href, {
+      method: 'POST',
+      headers: { 'X-Requested-With': 'XMLHttpRequest' },
+      body: formData,
+    })
+      .then(r => r.json())
+      .then(data => {
+        const msgEl = form.querySelector('.form-result');
+        const msgs = window.SITE_MESSAGES || {};
+        if (data.success) {
+          form.reset();
+          if (msgEl) { msgEl.className = 'form-success'; msgEl.textContent = data.message || msgs.success || 'OK'; }
+          form.dispatchEvent(new CustomEvent('mayli:form-success'));
+        } else {
+          if (msgEl) { msgEl.className = 'form-error'; msgEl.textContent = data.error || msgs.error || 'Error'; }
+        }
       })
-        .then(r => r.json())
-        .then(data => {
-          const msgEl = form.querySelector('.form-result');
-          const msgs = window.SITE_MESSAGES || {};
-          if (data.success) {
-            form.reset();
-            if (msgEl) { msgEl.className = 'form-success'; msgEl.textContent = data.message || msgs.success || 'OK'; }
-            form.dispatchEvent(new CustomEvent('mayli:form-success'));
-          } else {
-            if (msgEl) { msgEl.className = 'form-error'; msgEl.textContent = data.error || msgs.error || 'Error'; }
-          }
-        })
-        .catch(() => {
-          const msgEl = form.querySelector('.form-result');
-          const msgs = window.SITE_MESSAGES || {};
-          if (msgEl) { msgEl.className = 'form-error'; msgEl.textContent = msgs.network || 'Network error'; }
-        })
-        .finally(() => {
-          if (btn) { btn.disabled = false; btn.textContent = btn.dataset.label || '→'; }
-        });
+      .catch(() => {
+        const msgEl = form.querySelector('.form-result');
+        const msgs = window.SITE_MESSAGES || {};
+        if (msgEl) { msgEl.className = 'form-error'; msgEl.textContent = msgs.network || 'Network error'; }
+      })
+      .finally(() => {
+        if (btn) { btn.disabled = false; btn.textContent = btn.dataset.label || '→'; }
+      });
+  }
+
+  // jQuery Validate mavjud bo'lsa — client-side tekshiruv (back-endga yuk kamayadi).
+  const hasValidate = window.jQuery && jQuery.fn && jQuery.fn.validate;
+  if (hasValidate) {
+    const VL = window.SITE_VALIDATION || {};
+    const lang = (document.documentElement.lang || 'uz').slice(0, 2);
+    const vmsg = VL[lang] || VL.uz || {};
+
+    // O'zbek telefon raqami: +998 + 9 raqam (IMask formatidan keyin)
+    jQuery.validator.addMethod('uzphone', function (value, element) {
+      if (this.optional(element)) return true;            // bo'sh va shart emas -> o'tadi
+      const d = (value || '').replace(/\D/g, '');
+      return d.length === 12 && d.indexOf('998') === 0;
+    }, vmsg.phone || 'Invalid phone');
+
+    jQuery('.ajax-form').each(function () {
+      jQuery(this).validate({
+        ignore: '.hp-field input, [type=hidden]',          // honeypot/yashirin maydonlar
+        errorClass: 'field-error',
+        errorElement: 'small',
+        rules: { phone: { uzphone: true } },               // required/maxlength HTML atributidan o'qiladi
+        messages: {
+          name:      { required: vmsg.required, maxlength: vmsg.maxlength },
+          full_name: { required: vmsg.required, maxlength: vmsg.maxlength },
+          message:   { required: vmsg.required, maxlength: vmsg.maxlength },
+          phone:     { required: vmsg.required }
+        },
+        errorPlacement: function (error, element) { error.insertAfter(element); },
+        submitHandler: function (form) { submitAjaxForm(form); return false; }
+      });
     });
-  });
+  } else {
+    // Fallback: plugin yo'q bo'lsa ham forma ishlaydi (faqat HTML5 + server tekshiruvi)
+    document.querySelectorAll('.ajax-form').forEach(form => {
+      form.addEventListener('submit', function (e) {
+        e.preventDefault();
+        submitAjaxForm(form);
+      });
+    });
+  }
 
   // === CHAT WIDGET (ikki tomonlama → Telegram) ===
   // Mehmon → /chat/send/ → admin botga. Admin botda xabarga "Reply" qilsa →
@@ -465,6 +503,75 @@ document.addEventListener('DOMContentLoaded', function () {
   document.querySelectorAll('input[type="tel"], input[name="phone"]').forEach(function (el) {
     if (el.dataset.maskInit) return;   // ikki marta init bo'lmasin
     el.dataset.maskInit = '1';
-    IMask(el, { mask: '+{998} 00 000-00-00' });
+    IMask(el, { mask: '+{998} (00) 000-00-00' });
   });
+})();
+
+/* === LOGO "QO'LDA QALAM BILAN CHIZILGAN" EFFEKTI ===
+   Inline SVG logodagi path'lar konturi chiziladi (pencil), so'ng ichi bo'yaladi.
+   Rang har chizilganda navbatma-navbat: #ea6900 / #fff. pathLength=1 -> dasharray normallashadi.
+   Quvvat tejash: faqat logo ekranda KO'RINGANDA va tab faol bo'lganda ishlaydi. */
+(function () {
+  const logos = document.querySelectorAll('.logo-draw');
+  if (!logos.length) return;
+
+  // Har path'ni normallashtir + harf-harf stagger uchun indeks ber
+  logos.forEach(function (svg) {
+    svg.querySelectorAll('path').forEach(function (p, i) {
+      p.setAttribute('pathLength', '1');
+      p.style.setProperty('--pi', i);
+    });
+  });
+
+  // Harakatni kamaytirish so'ralgan bo'lsa — statik (oq) logo qoladi
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+  const CYCLE_MS = 40000;   // ~40s da bir marta rang almashib qayta chiziladi
+  let turn = 0;
+  let timer = null;
+
+  function drawOnce() {
+    const ink = (turn % 2 === 0) ? '#ea6900' : '#ffffff';
+    logos.forEach(function (svg) {
+      svg.style.setProperty('--logo-ink', ink);
+      svg.classList.remove('is-drawing');
+    });
+    // MUHIM: SVG elementida offsetWidth yo'q -> reflow majburlamaydi.
+    // HTML element (body) orqali sinxron reflow -> animatsiya NOLDAN boshlanadi.
+    void document.body.offsetWidth;
+    logos.forEach(function (svg) { svg.classList.add('is-drawing'); });
+    turn++;
+  }
+
+  function start() {
+    if (timer !== null) return;                 // allaqachon ishlayapti
+    drawOnce();                                  // ko'ringan zahoti darrov chiz
+    timer = setInterval(drawOnce, CYCLE_MS);
+  }
+  function stop() {
+    if (timer === null) return;
+    clearInterval(timer);
+    timer = null;
+  }
+
+  let inView = false;
+  function sync() {
+    if (inView && document.visibilityState === 'visible') start();
+    else stop();                                  // ko'rinmasa yoki fon tab -> to'xta
+  }
+
+  // Logo viewport'ga kirsa boshlaydi, chiqsa to'xtaydi
+  if ('IntersectionObserver' in window) {
+    const io = new IntersectionObserver(function (entries) {
+      inView = entries.some(function (e) { return e.isIntersecting; });
+      sync();
+    });
+    logos.forEach(function (svg) { io.observe(svg); });
+  } else {
+    inView = true;                                // eski brauzer -> oddiy rejim
+    start();
+  }
+
+  // Tab fonga o'tsa to'xta, qaytsa davom etadi
+  document.addEventListener('visibilitychange', sync);
 })();

@@ -36,7 +36,7 @@
   <link rel="stylesheet" href="{% static 'src/libs/swiper-bundle.min.css' %}">
   <link rel="stylesheet" href="{% static 'src/libs/fancybox.css' %}">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-  <link rel="stylesheet" href="{% static 'src/style.css' %}?v=2.0">
+  <link rel="stylesheet" href="{% static 'src/style.css' %}?v=2.5">
 
 
   {% if site.google_verify %}<meta name="google-site-verification" content="{{ site.google_verify }}">{% endif %}
@@ -117,12 +117,19 @@ window.SITE_MESSAGES = {
     en: "💬 Our operator will contact you shortly."
   }
 };
+// jQuery validate — client-side validatsiya xabarlari (uz/ru/en)
+window.SITE_VALIDATION = {
+  uz: { required: "Bu maydon to‘ldirilishi shart.", phone: "Telefonni to‘liq kiriting: +998 XX XXX-XX-XX", maxlength: "Juda uzun." },
+  ru: { required: "Это поле обязательно для заполнения.", phone: "Введите номер полностью: +998 XX XXX-XX-XX", maxlength: "Слишком длинно." },
+  en: { required: "This field is required.", phone: "Enter the full phone number: +998 XX XXX-XX-XX", maxlength: "Too long." }
+};
 </script>
 <script src="{% static 'src/libs/jquery.min.js' %}" defer></script>
+<script src="{% static 'src/libs/jquery.validate.min.js' %}" defer></script>
 <script src="{% static 'src/libs/swiper-bundle.min.js' %}" defer></script>
 <script src="{% static 'src/libs/fancybox.umd.js' %}" defer></script>
 <script src="{% static 'src/libs/imask.js' %}" defer></script>
-<script src="{% static 'src/website.js' %}?v=2.0" defer></script>
+<script src="{% static 'src/website.js' %}?v=2.5" defer></script>
 {% block extra_js %}{% endblock %}
 
 </body>
