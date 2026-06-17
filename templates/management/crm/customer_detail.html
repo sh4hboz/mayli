@@ -49,8 +49,8 @@
                                 <span class="badge bg-{% if customer.email_consent %}success{% else %}secondary{% endif %}-subtle text-{% if customer.email_consent %}success{% else %}secondary{% endif %}">Email</span>
                                 <span class="badge bg-{% if customer.telegram_consent %}success{% else %}secondary{% endif %}-subtle text-{% if customer.telegram_consent %}success{% else %}secondary{% endif %}">Telegram</span>
                             </td></tr>
-                            <tr><th class="text-muted">Qo'shilgan</th><td>{{ customer.created_at|date:"d.m.Y H:i" }}{% if customer.created_by %} · {{ customer.created_by.full_name|default:customer.created_by.phone }}{% endif %}</td></tr>
-                            <tr><th class="text-muted">Akkaunt</th><td>{% if customer.user %}{{ customer.user.phone }}{% else %}—{% endif %}</td></tr>
+                            <tr><th class="text-muted">Qo'shilgan</th><td>{{ customer.created_at|date:"d.m.Y H:i" }}{% if customer.created_by %} · {{ customer.created_by.full_name|default:customer.created_by.username }}{% endif %}</td></tr>
+                            <tr><th class="text-muted">Akkaunt</th><td>{% if customer.user %}{{ customer.user.username }}{% else %}—{% endif %}</td></tr>
                         </table>
                     </div>
                 </div>

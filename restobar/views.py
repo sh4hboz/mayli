@@ -29,7 +29,7 @@ def clean_uz_phone(phone_str):
 def login_view(request):
     """
     Xodimlar uchun tizimga kirish portali.
-    Login (telefon) + parol/PIN orqali kiradi va boshqaruv paneliga o'tadi.
+    Oddiy login (username) + parol orqali kiradi va boshqaruv paneliga o'tadi.
     """
     if request.user.is_authenticated:
         return redirect('dashboard_home')
@@ -40,46 +40,22 @@ def login_view(request):
 
         if not username_input or not password_input:
             return render(request, 'registration/login.html', {
-                'error': "Iltimos, login va parolni/PINni kiriting!",
-            })
-
-        user_exists = User.objects.filter(phone=username_input).exists()
-
-        if user_exists:
-            user = User.objects.get(phone=username_input)
-            if user.role == Role.CUSTOMER:
-                return render(request, 'registration/login.html', {
-                    'error': "Ushbu hisob boshqaruv paneliga kira olmaydi!",
-                    'username': username_input,
-                })
-
-            role = user.role
-            if role in [Role.WAITER, Role.BARMAN]:
-                if len(password_input) != 4 or not password_input.isdigit():
-                    return render(request, 'registration/login.html', {
-                        'error': "Ofitsiant va Barmanlar faqat 4 xonali PIN kod kiritishlari shart!",
-                        'username': username_input,
-                    })
-
-            authenticated_user = authenticate(request, username=username_input, password=password_input)
-            if authenticated_user is not None:
-                login(request, authenticated_user)
-                remember = request.POST.get('remember') == 'on'
-                if remember:
-                    request.session.set_expiry(30 * 24 * 60 * 60)
-                return redirect('dashboard_home')
-            else:
-                return render(request, 'registration/login.html', {
-                    'error': "Foydalanuvchi nomi yoki parol/PIN noto'g'ri!",
-                    'username': username_input,
-                })
-        else:
-            # Tizimda mavjud bo'lmagan login — yangi xodim faqat boshqaruv
-            # panelidagi "Xodimlar" bo'limi orqali qo'shiladi (staff_management).
-            return render(request, 'registration/login.html', {
-                'error': "Foydalanuvchi nomi yoki parol/PIN noto'g'ri!",
+                'error': "Iltimos, login va parolni kiriting!",
                 'username': username_input,
             })
+
+        authenticated_user = authenticate(request, username=username_input, password=password_input)
+        if authenticated_user is not None:
+            login(request, authenticated_user)
+            remember = request.POST.get('remember') == 'on'
+            if remember:
+                request.session.set_expiry(30 * 24 * 60 * 60)
+            return redirect('dashboard_home')
+
+        return render(request, 'registration/login.html', {
+            'error': "Login yoki parol noto'g'ri!",
+            'username': username_input,
+        })
 
     return render(request, 'registration/login.html')
 
@@ -109,50 +85,33 @@ def staff_management_view(request):
     if request.method == 'POST':
         username_input = request.POST.get('username', '').strip()
         role_input = request.POST.get('role', '').strip()
-        pin_input = request.POST.get('pin', '').strip()
+        password_input = request.POST.get('password', '').strip()
 
-        # Telefon raqam ekanligini tozalab tekshiramiz
-        cleaned_phone = clean_uz_phone(username_input)
-
-        if not username_input or not role_input or not pin_input:
+        if not username_input or not role_input or not password_input:
             error_msg = "Iltimos, barcha maydonlarni to'ldiring!"
         elif role_input not in [Role.WAITER, Role.BARMAN, Role.ACCOUNTANT, Role.MANAGER, Role.ADMIN]:
             error_msg = "Roli noto'g'ri tanlandi!"
-        elif not cleaned_phone:
-            error_msg = "Login O'zbekiston telefon raqami formatida bo'lishi shart (+998XXXXXXXXX)!"
-        elif role_input in [Role.WAITER, Role.BARMAN] and (len(pin_input) != 4 or not pin_input.isdigit()):
-            error_msg = "PIN kod faqat 4 xonali raqam bo'lishi shart!"
-        elif role_input not in [Role.WAITER, Role.BARMAN] and len(pin_input) < 6:
-            error_msg = "Menejer, Admin va Bugalterlar uchun parol kamida 6 belgidan iborat bo'lishi shart!"
-        elif User.objects.filter(phone=cleaned_phone).exists():
-            error_msg = f"Ushbu '{cleaned_phone}' logini (telefon) tizimda allaqachon mavjud!"
+        elif len(password_input) < 6:
+            error_msg = "Parol kamida 6 belgidan iborat bo'lishi shart!"
+        elif User.objects.filter(username=username_input).exists():
+            error_msg = f"Ushbu '{username_input}' logini tizimda allaqachon mavjud!"
         else:
             try:
-                # Yangi foydalanuvchi yaratish
                 new_user = User.objects.create_user(
-                    phone=cleaned_phone,
-                    password=pin_input,
+                    username=username_input,
+                    password=password_input,
                     role=role_input,
-                    full_name=cleaned_phone
+                    full_name=username_input,
                 )
-
-                # StaffProfile yaratish
-                staff_prof = StaffProfile.objects.create(
-                    user=new_user,
-                    role=role_input
-                )
-                if role_input in [Role.WAITER, Role.BARMAN]:
-                    staff_prof.set_pin(pin_input)
-                    staff_prof.save()
-
-                success_msg = f"Yangi xodim '{cleaned_phone}' ({role_input}) muvaffaqiyatli qo'shildi!"
+                StaffProfile.objects.create(user=new_user, role=role_input)
+                success_msg = f"Yangi xodim '{username_input}' ({role_input}) muvaffaqiyatli qo'shildi!"
             except Exception as e:
                 error_msg = f"Xodimni saqlashda xatolik yuz berdi: {str(e)}"
 
-    # Barcha xodimlarni olish (Customer'dan tashqari)
-    staff_list = User.objects.exclude(role=Role.CUSTOMER).order_by('role', 'phone')
+    # Barcha xodimlar ro'yxati
+    staff_list = User.objects.all().order_by('role', 'username')
 
-    # Qo'shish formasi uchun tanlanadigan rollar (Mijoz va Egadan tashqari)
+    # Qo'shish formasi uchun tanlanadigan rollar (Egadan tashqari)
     assignable_roles = [
         (Role.WAITER, Role.WAITER.label),
         (Role.BARMAN, Role.BARMAN.label),
@@ -165,7 +124,6 @@ def staff_management_view(request):
         'staff_list': staff_list,
         'profile': user,
         'assignable_roles': assignable_roles,
-        'pin_roles': [Role.WAITER, Role.BARMAN],
         'error': error_msg,
         'success': success_msg
     })
@@ -180,8 +138,8 @@ def delete_staff_view(request, user_id):
 
     try:
         user_to_delete = User.objects.get(id=user_id)
-        # Superadmin o'zini o'chira olmaydi
-        if user_to_delete != user and user_to_delete.role != Role.CUSTOMER:
+        # Foydalanuvchi o'zini o'chira olmaydi
+        if user_to_delete != user:
             user_to_delete.delete()
     except User.DoesNotExist:
         pass
@@ -201,8 +159,6 @@ def staff_permissions_view(request, user_id):
         return redirect('dashboard_home')
 
     staff_user = get_object_or_404(User, id=user_id)
-    if staff_user.role == Role.CUSTOMER:
-        return redirect('staff_management')
 
     if request.method == 'POST':
         assigned_perms = request.POST.getlist('permissions')

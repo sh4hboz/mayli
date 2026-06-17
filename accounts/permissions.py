@@ -4,7 +4,7 @@ accounts/permissions.py
 BOSQICH 0.5 — DRF RBAC permission klasslari.
 
 Foydalanish:
-    from accounts.permissions import IsOwner, IsManager, IsStaff, IsCustomer
+    from accounts.permissions import IsOwner, IsManager, IsStaff
 
     class MyView(APIView):
         permission_classes = [IsAuthenticated, IsManager]
@@ -17,10 +17,11 @@ from .models import Role
 def _get_role(user) -> str:
     """
     Foydalanuvchi rolini qaytaradi (accounts.User.role).
+    Autentifikatsiyadan o'tmagan bo'lsa bo'sh rol ('').
     """
     if not user.is_authenticated:
-        return Role.CUSTOMER
-    return getattr(user, 'role', Role.CUSTOMER)
+        return ''
+    return getattr(user, 'role', '')
 
 
 class IsOwner(BasePermission):
@@ -54,13 +55,11 @@ class IsAccountant(BasePermission):
 
 
 class IsStaff(BasePermission):
-    """Har qanday xodim ruxsati (ofitsiant, barman, bugalter, menejer, ega)."""
+    """Har qanday xodim ruxsati. Barcha foydalanuvchilar xodim (mijoz roli yo'q)."""
     message = 'Faqat xodimlar uchun!'
 
     def has_permission(self, request, view):
-        if not request.user.is_authenticated:
-            return False
-        return _get_role(request.user) not in (Role.CUSTOMER,)
+        return request.user.is_authenticated
 
 
 class IsWaiter(BasePermission):
@@ -71,14 +70,6 @@ class IsWaiter(BasePermission):
         return request.user.is_authenticated and _get_role(request.user) in (
             Role.WAITER, Role.BARMAN, Role.ACCOUNTANT, Role.MANAGER, Role.OWNER, Role.ADMIN
         )
-
-
-class IsCustomer(BasePermission):
-    """Faqat mijoz ruxsati."""
-    message = 'Faqat mijozlar uchun!'
-
-    def has_permission(self, request, view):
-        return request.user.is_authenticated and _get_role(request.user) == Role.CUSTOMER
 
 
 class IsOwnerOrReadOnly(BasePermission):

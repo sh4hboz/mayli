@@ -58,7 +58,7 @@ class CMSBaseMixin(LoginRequiredMixin):
 
         allowed_roles = [Role.OWNER, Role.MANAGER, Role.ADMIN]
         if request.user.role not in allowed_roles:
-            raise PermissionDenied(f"Ruxsat yo'q! Faqat {', '.join([r[1] for r in Role.choices if r[0] in allowed_roles])} dashboard'ga kira oladi.")
+            raise PermissionDenied(f"Ruxsat yo'q! Faqat {', '.join([str(r[1]) for r in Role.choices if r[0] in allowed_roles])} dashboard'ga kira oladi.")
 
         return super().dispatch(request, *args, **kwargs)
 
@@ -302,9 +302,6 @@ def toggle_active_ajax(request, app_label, model_name, pk):
     """
     Istalgan modeldagi is_active yoki boshqa boolean maydonini AJAX orqali o'zgartiruvchi universal view.
     """
-    if request.user.role == Role.CUSTOMER:
-        return JsonResponse({'success': False, 'error': "Ruxsat berilmagan!"}, status=403)
-        
     if request.user.role == Role.ACCOUNTANT:
         return JsonResponse({'success': False, 'error': "Bugalter ma'lumotlarni o'zgartira olmaydi!"}, status=403)
         

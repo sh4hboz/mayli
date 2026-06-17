@@ -15,7 +15,7 @@ class CMSPermissionsTests(TestCase):
         
         # 1. Superadmin (Owner) yaratish
         self.superadmin = User.objects.create_user(
-            phone='+998991111111',
+            username='owner1',
             password='password123',
             role=Role.OWNER,
             full_name='Owner Super'
@@ -23,7 +23,7 @@ class CMSPermissionsTests(TestCase):
         
         # 2. Ofitsiant (Waiter) yaratish
         self.waiter = User.objects.create_user(
-            phone='+998992222222',
+            username='waiter1',
             password='password123',
             role=Role.WAITER,
             full_name='Ali Waiter'
@@ -32,7 +32,7 @@ class CMSPermissionsTests(TestCase):
 
         # 3. Bugalter (Accountant) yaratish
         self.accountant = User.objects.create_user(
-            phone='+998993333333',
+            username='accountant1',
             password='password123',
             role=Role.ACCOUNTANT,
             full_name='Vali Accountant'
