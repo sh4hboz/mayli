@@ -68,7 +68,7 @@ class CampaignSendService:
                         defaults={
                             'status': CampaignLogStatus.SENT if result['success'] else CampaignLogStatus.FAILED,
                             'message_text': message_text,
-                            'error_message': result.get('error', ''),
+                            'error_message': result.get('error') or '',
                             'sent_at': timezone.now() if result['success'] else None,
                         }
                     )
