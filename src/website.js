@@ -507,23 +507,15 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 })();
 
-/* === LOGO "QO'LDA QALAM BILAN CHIZILGAN" EFFEKTI ===
-   Inline SVG logodagi path'lar konturi chiziladi (pencil), so'ng ichi bo'yaladi.
-   Rang har chizilganda navbatma-navbat: #ea6900 / #fff. pathLength=1 -> dasharray normallashadi.
+/* === LOGO "CHAPDAN-O'NGGA BO'YASH" (MASK WIPE) EFFEKTI ===
+   Strokesiz: to'ldirilgan inline SVG logo CSS mask gradient bilan chapdan o'ngga ochiladi.
+   Rang har "bo'yalganda" navbatma-navbat: #ea6900 / #fff (--logo-ink).
    Quvvat tejash: faqat logo ekranda KO'RINGANDA va tab faol bo'lganda ishlaydi. */
 (function () {
   const logos = document.querySelectorAll('.logo-draw');
   if (!logos.length) return;
 
-  // Har path'ni normallashtir + harf-harf stagger uchun indeks ber
-  logos.forEach(function (svg) {
-    svg.querySelectorAll('path').forEach(function (p, i) {
-      p.setAttribute('pathLength', '1');
-      p.style.setProperty('--pi', i);
-    });
-  });
-
-  // Harakatni kamaytirish so'ralgan bo'lsa — statik (oq) logo qoladi
+  // Harakatni kamaytirish so'ralgan bo'lsa — statik logo qoladi
   if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
   const CYCLE_MS = 40000;   // ~40s da bir marta rang almashib qayta chiziladi

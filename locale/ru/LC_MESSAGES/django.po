@@ -436,3 +436,7 @@ msgstr "Имя и сообщение обязательны!"
 # === BOOKING CTA ===
 msgid "Hozir bron qilish"
 msgstr "Забронировать сейчас"
+
+# === TAKSI ===
+msgid "Taksi chaqirish"
+msgstr "Вызвать такси"

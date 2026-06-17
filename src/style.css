@@ -1881,6 +1881,34 @@ body.menu-open { overflow:hidden; }
   padding: 0 !important;
   margin: 0 !important;
 }
+
+/* Taksi chaqirish (Yandex Go) — xaritadan oldin */
+.taxi-cta {
+  display: flex;
+  justify-content: center;
+  padding: 24px 16px;
+  background: var(--dark, #0a0a0a);
+}
+.taxi-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: #fce000;
+  color: #1a1a1a;
+  font-weight: 700;
+  font-size: 16px;
+  padding: 13px 28px;
+  border-radius: 999px;
+  text-decoration: none;
+  transition: transform .15s ease, box-shadow .15s ease;
+}
+.taxi-btn i { font-size: 1.25em; }
+.taxi-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 22px rgba(252, 224, 0, .32);
+  color: #1a1a1a;
+}
+
 .yandex-map-widget-container {
   position: relative;
   overflow: hidden;
@@ -2075,9 +2103,9 @@ body.modal-open { overflow: hidden; }
 }
 
 /* ════════════════════════════════════════════════════════════════
-   LOGO — inline SVG + "qo'lda qalam bilan chizilgan" effekt
-   Har 5s da path'lar konturi chiziladi; rang navbatma-navbat:
-   --logo-ink (#ea6900 ↔ #fff) JS tomonidan beriladi.
+   LOGO — inline SVG + "chapdan-o'ngga bo'yash" (mask wipe) effekt
+   Strokesiz: to'ldirilgan logo CSS mask gradient bilan chapdan o'ngga
+   ochiladi. Rang navbatma-navbat: --logo-ink (#ea6900 ↔ #fff) JS'dan.
    ════════════════════════════════════════════════════════════════ */
 .logo-draw { display: block; width: auto; overflow: visible; }
 .logo-nav    { height: 40px; }
@@ -2086,26 +2114,26 @@ body.modal-open { overflow: hidden; }
 
 .logo-draw path {
   fill: var(--logo-ink, #fff);
-  stroke: var(--logo-ink, #fff);
-  stroke-width: 1;
-  stroke-linejoin: round;
-  stroke-linecap: round;
-  paint-order: stroke;
-  stroke-dasharray: 1;     /* pathLength=1 JS'da o'rnatiladi → normallashtirilgan */
-  stroke-dashoffset: 0;    /* boshlang'ich: to'liq chizilgan (JS yo'q bo'lsa ham ko'rinadi) */
-  fill-opacity: 1;
 }
-.logo-draw.is-drawing path {
-  animation: logoPencil 5.2s ease forwards;     /* sekin, qo'lda chizilgandek (2x) */
-  animation-delay: calc(var(--pi, 0) * 0.09s);  /* harf-harf */
+
+/* Yumshoq qirrali gradient niqob; mask-position 0% → to'liq ko'rinadi
+   (JS yo'q yoki reduced-motion bo'lsa ham logo statik ko'rinib turadi). */
+.logo-draw {
+  -webkit-mask-image: linear-gradient(to right, #000 40%, transparent 60%);
+          mask-image: linear-gradient(to right, #000 40%, transparent 60%);
+  -webkit-mask-size: 250% 100%;          mask-size: 250% 100%;
+  -webkit-mask-repeat: no-repeat;        mask-repeat: no-repeat;
+  -webkit-mask-position: 0% 0;           mask-position: 0% 0;
 }
-@keyframes logoPencil {
-  0%   { stroke-dashoffset: 1; fill-opacity: 0; }
-  55%  { stroke-dashoffset: 0; fill-opacity: 0; }  /* avval kontur "chiziladi" */
-  100% { stroke-dashoffset: 0; fill-opacity: 1; }  /* keyin ichi bo'yaladi */
+.logo-draw.is-drawing {
+  animation: logoWipe 1.8s ease forwards;
+}
+@keyframes logoWipe {
+  from { -webkit-mask-position: 100% 0; mask-position: 100% 0; }  /* yashirin */
+  to   { -webkit-mask-position: 0% 0;   mask-position: 0% 0;   }  /* to'liq ochilgan */
 }
 @media (prefers-reduced-motion: reduce) {
-  .logo-draw.is-drawing path { animation: none; }
+  .logo-draw.is-drawing { animation: none; }
 }
 
 /* ════════════════════════════════════════════════════════════════

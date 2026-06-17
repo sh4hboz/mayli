@@ -436,3 +436,7 @@ msgstr "Name and message are required!"
 # === BOOKING CTA ===
 msgid "Hozir bron qilish"
 msgstr "Book Now"
+
+# === TAKSI ===
+msgid "Taksi chaqirish"
+msgstr "Call a taxi"
