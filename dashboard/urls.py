@@ -69,6 +69,9 @@ urlpatterns = [
     path('campaigns/<int:pk>/test-send/', views.dashboard_campaign_test_send, name='dashboard_campaign_test_send'),
     path('campaigns/<int:pk>/send/', views.dashboard_campaign_send, name='dashboard_campaign_send'),
 
+    # Tug'ilgan kun SMS tabrigi (AJAX)
+    path('customers/birthday-congratulate/', views.dashboard_birthday_congratulate, name='dashboard_birthday_congratulate'),
+
     # Universal AJAX toggle active
     path('toggle-active/<str:app_label>/<str:model_name>/<int:pk>/', views.toggle_active_ajax, name='dashboard_toggle_active'),
 

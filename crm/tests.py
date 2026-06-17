@@ -6,7 +6,7 @@ from .models import Customer, Tag, Campaign, CampaignLog, CampaignLogStatus, Cam
 from .providers import (
     get_provider, render_template, SMSProvider, EmailProvider, TelegramProvider,
 )
-from .services import CampaignSendService
+from .services import CampaignSendService, BirthdayService
 from .integrations.textup import TextUpClient, normalize_phone, TextUpError
 
 
@@ -86,6 +86,29 @@ class TextUpClientTests(TestCase):
         self.assertEqual(sms_payload['userId'], 42)
         self.assertEqual(sms_payload['recipients'], ['+998908201004'])
 
+    @override_settings(TEXTUP_EMAIL='e@x.uz', TEXTUP_PASSWORD='pw')
+    @patch('crm.integrations.textup.TextUpClient._request')
+    def test_send_sms_with_template_id(self, mock_request):
+        mock_request.side_effect = [
+            {'accessToken': 'TKN', 'user': {'id': 42}},
+            {'smsId': 'sms-2'},
+        ]
+        out = TextUpClient().send_sms(['908201004'], 'salom', template_id='tpl-123')
+        self.assertTrue(out['success'])
+        sms_payload = mock_request.call_args_list[1].args[1]
+        self.assertEqual(sms_payload['templateId'], 'tpl-123')
+
+    @override_settings(TEXTUP_EMAIL='e@x.uz', TEXTUP_PASSWORD='pw')
+    @patch('crm.integrations.textup.TextUpClient._request')
+    def test_send_sms_without_template_id_omits_key(self, mock_request):
+        mock_request.side_effect = [
+            {'accessToken': 'TKN', 'user': {'id': 42}},
+            {'smsId': 'sms-3'},
+        ]
+        TextUpClient().send_sms(['908201004'], 'salom')
+        sms_payload = mock_request.call_args_list[1].args[1]
+        self.assertNotIn('templateId', sms_payload)
+
     @override_settings(TEXTUP_EMAIL='', TEXTUP_PASSWORD='')
     def test_send_sms_no_credentials(self):
         out = TextUpClient().send_sms(['908201004'], 'salom')
@@ -164,3 +187,58 @@ class CampaignServiceTests(TestCase):
         result = CampaignSendService.test_send(self.campaign.pk, customer_id=self.c1.pk)
         self.assertTrue(result['success'])
         self.assertEqual(result['message'], 'Salom Target')
+
+
+class BirthdayServiceTests(TestCase):
+
+    def setUp(self):
+        from django.utils import timezone
+        self.today = timezone.localdate()
+        # Bugun tug'ilgan kun — target
+        self.bday = Customer.objects.create(
+            first_name='Ali', phone='+998901110001', sms_consent=True, is_active=True,
+            birth_date=self.today.replace(year=1990),
+        )
+        # Bugun, lekin rozilik yo'q
+        Customer.objects.create(
+            first_name='NoConsent', phone='+998901110002', sms_consent=False, is_active=True,
+            birth_date=self.today.replace(year=1991),
+        )
+        # Boshqa kun
+        other = self.today.replace(year=1992) + __import__('datetime').timedelta(days=1)
+        Customer.objects.create(
+            first_name='Other', phone='+998901110003', sms_consent=True, is_active=True,
+            birth_date=other,
+        )
+
+    def test_todays_pending_filters(self):
+        pending = list(BirthdayService.todays_pending())
+        self.assertEqual(pending, [self.bday])
+
+    @override_settings(BIRTHDAY_SMS_TEXT='Tabrik {{first_name}}', BIRTHDAY_SMS_TEMPLATE_ID='tpl-x')
+    @patch('crm.services.get_provider')
+    def test_congratulate_success_marks_year(self, mock_get_provider):
+        mock_send = mock_get_provider.return_value.send
+        mock_send.return_value = {'success': True, 'error': None}
+        result = BirthdayService.congratulate()
+        self.assertEqual(result['sent'], 1)
+        self.assertEqual(result['failed'], 0)
+        # template_id va matn uzatilgan
+        args, kwargs = mock_send.call_args
+        self.assertEqual(args[1], 'Tabrik Ali')
+        self.assertEqual(kwargs['template_id'], 'tpl-x')
+        # Yil belgilandi -> qayta tabriklanmaydi
+        self.bday.refresh_from_db()
+        self.assertEqual(self.bday.birthday_sms_sent_year, self.today.year)
+        self.assertEqual(list(BirthdayService.todays_pending()), [])
+
+    @patch('crm.services.get_provider')
+    def test_congratulate_failure_keeps_pending(self, mock_get_provider):
+        mock_get_provider.return_value.send.return_value = {'success': False, 'error': 'xato'}
+        result = BirthdayService.congratulate()
+        self.assertEqual(result['sent'], 0)
+        self.assertEqual(result['failed'], 1)
+        self.bday.refresh_from_db()
+        self.assertIsNone(self.bday.birthday_sms_sent_year)
+        # Hali pending — keyin qayta urinish mumkin
+        self.assertEqual(list(BirthdayService.todays_pending()), [self.bday])

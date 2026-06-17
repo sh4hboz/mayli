@@ -73,6 +73,10 @@ class Customer(TimeStampedModel):
     sms_consent = models.BooleanField(_('SMS rozilik'), default=True)
     email_consent = models.BooleanField(_('Email rozilik'), default=True)
     telegram_consent = models.BooleanField(_('Telegram rozilik'), default=True)
+    birthday_sms_sent_year = models.IntegerField(
+        _('Tug\'ilgan kun SMS yuborilgan yil'), null=True, blank=True,
+        help_text=_('Bir yilda ikki marta tabriklamaslik uchun: oxirgi tabrik yuborilgan yil.'),
+    )
     notes = models.TextField(_('Izoh'), blank=True)
     is_active = models.BooleanField(_('Faol'), default=True)
 
@@ -132,6 +136,11 @@ class Campaign(TimeStampedModel):
     template = models.TextField(
         _('Shablon'),
         help_text=_('{{first_name}}, {{full_name}}, {{phone}} ishlatish mumkin'),
+    )
+    sms_template_id = models.CharField(
+        _('SMS shablon ID (TextUp)'), max_length=64, blank=True,
+        help_text=_('Faqat SMS uchun: TextUp kabinetida tasdiqlangan shablonning templateId\'si. '
+                    'Bo\'sh bo\'lsa, matn TextUp moderatsiyasidan o\'tmasa rad etilishi mumkin.'),
     )
     tags = models.ManyToManyField(
         Tag, blank=True, related_name='campaigns', verbose_name=_('Teglar (filtr)'),

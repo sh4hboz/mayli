@@ -185,7 +185,7 @@ class CampaignForm(BootstrapModelForm):
     class Meta:
         model = Campaign
         fields = [
-            'name', 'description', 'channel', 'template',
+            'name', 'description', 'channel', 'template', 'sms_template_id',
             'tags', 'status', 'scheduled_at',
         ]
         widgets = {
@@ -195,4 +195,5 @@ class CampaignForm(BootstrapModelForm):
         }
         help_texts = {
             'template': 'Shablon: {{first_name}}, {{full_name}}, {{phone}} ishlatish mumkin',
+            'sms_template_id': 'Faqat SMS uchun: TextUp kabinetidagi tasdiqlangan shablonning templateId\'si.',
         }

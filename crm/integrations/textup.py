@@ -131,13 +131,16 @@ class TextUpClient:
         return _token_cache['token'], _token_cache.get('user_id')
 
     # ── SMS ─────────────────────────────────────────────────────────────────
-    def send_sms(self, recipients, message, name=''):
+    def send_sms(self, recipients, message, name='', template_id=''):
         """Bir yoki bir nechta raqamga SMS yuboradi.
 
         Args:
             recipients: list[str] yoki str — E.164 raqam(lar) (+998...).
             message: str — SMS matni.
             name: str — yuboruvchi nomi (ixtiyoriy).
+            template_id: str — TextUp'da tasdiqlangan shablon ID'si (ixtiyoriy).
+                Berilsa, payload'ga `templateId` qo'shiladi. TextUp ixtiyoriy matnni
+                rad etadi — real yuborish uchun tasdiqlangan shablon kerak.
 
         Returns:
             dict: {'success': bool, 'error': str|None, 'sms_id': str|None}
@@ -158,6 +161,8 @@ class TextUpClient:
                 'recipients': recipients,
                 'name': name or '',
             }
+            if template_id:
+                payload['templateId'] = template_id
             if self.nickname_id:
                 payload['nicknameId'] = self.nickname_id
 

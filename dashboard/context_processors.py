@@ -63,7 +63,29 @@ def topbar_notifications(request):
     except Exception:
         items, count = [], 0
 
+    # ── Bugungi tug'ilgan kunlar (qisman avtomatik SMS tabrik) ──────────────
+    birthday = None
+    try:
+        from crm.services import BirthdayService
+
+        pending = list(BirthdayService.todays_pending()[:10])
+        bcount = len(pending)
+        if bcount:
+            if bcount == 1:
+                label = f"Bugun {pending[0].full_name or pending[0].phone}ning tug'ilgan kuni 🎂"
+            else:
+                label = f"Bugun {bcount} kishining tug'ilgan kuni 🎂"
+            birthday = {
+                'count': bcount,
+                'label': label,
+                'url': reverse('dashboard_birthday_congratulate'),
+            }
+            count += bcount
+    except Exception:
+        birthday = None
+
     return {
         'topbar_notifications': items,
         'topbar_notifications_count': count,
+        'topbar_birthday': birthday,
     }

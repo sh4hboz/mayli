@@ -12,13 +12,14 @@ class MarketingProvider(ABC):
     """Barcha provider'lar uchun tayanch sinf."""
 
     @abstractmethod
-    def send(self, customer, message_text):
+    def send(self, customer, message_text, template_id=''):
         """
         Xabar jo'natish.
 
         Args:
             customer: Customer instance
             message_text: Jo'natiladigan xabar matn
+            template_id: Provider shablon ID'si (faqat SMS ishlatadi; boshqalar e'tiborsiz)
 
         Returns:
             dict: {'success': bool, 'error': str or None}
@@ -29,7 +30,7 @@ class MarketingProvider(ABC):
 class SMSProvider(MarketingProvider):
     """SMS provider (TextUp — textup.uz)."""
 
-    def send(self, customer, message_text):
+    def send(self, customer, message_text, template_id=''):
         """TextUp API orqali SMS jo'natish."""
         from crm.integrations.textup import TextUpClient, normalize_phone
 
@@ -37,15 +38,15 @@ class SMSProvider(MarketingProvider):
         if not phone:
             return {'success': False, 'error': 'Telefon raqami yo\'q yoki yaroqsiz'}
 
-        result = TextUpClient().send_sms([phone], message_text, name='Mayli')
+        result = TextUpClient().send_sms([phone], message_text, name='Mayli', template_id=template_id)
         return {'success': result['success'], 'error': result['error']}
 
 
 class EmailProvider(MarketingProvider):
     """Email provider (Django email backend)."""
 
-    def send(self, customer, message_text):
-        """Django email orqali jo'natish."""
+    def send(self, customer, message_text, template_id=''):
+        """Django email orqali jo'natish (template_id e'tiborsiz)."""
         if not customer.email:
             return {'success': False, 'error': 'Email manzili yo\'q'}
 
@@ -71,8 +72,8 @@ class EmailProvider(MarketingProvider):
 class TelegramProvider(MarketingProvider):
     """Telegram provider (notifications.telegram orqali)."""
 
-    def send(self, customer, message_text):
-        """Telegram orqali jo'natish."""
+    def send(self, customer, message_text, template_id=''):
+        """Telegram orqali jo'natish (template_id e'tiborsiz)."""
         if not customer.telegram_user_id:
             return {'success': False, 'error': 'Telegram user ID yo\'q'}
 

@@ -614,6 +614,30 @@ def dashboard_campaign_send(request, pk):
     return redirect('dashboard_campaign_detail', pk=pk)
 
 
+@login_required(login_url='/login/')
+@require_POST
+def dashboard_birthday_congratulate(request):
+    """Bugun tug'ilgan kuni bo'lgan mijozlarga SMS tabrik yuboradi (AJAX, JSON)."""
+    from crm.services import BirthdayService
+
+    result = BirthdayService.congratulate()
+    sent, failed = result.get('sent', 0), result.get('failed', 0)
+    if sent and not failed:
+        msg = f"{sent} ta mijoz SMS bilan tabriklandi 🎉"
+    elif sent and failed:
+        msg = f"{sent} ta yuborildi, {failed} ta xato."
+    elif failed:
+        msg = "Tabrik yuborilmadi: " + "; ".join(result.get('errors', [])[:2])
+    else:
+        msg = "Bugun tabriklanadigan mijoz qolmadi."
+    return JsonResponse({
+        'success': bool(sent) or (sent == 0 and failed == 0),
+        'sent': sent,
+        'failed': failed,
+        'message': msg,
+    })
+
+
 # --- Lock Screen ---
 @login_required(login_url='/login/')
 def lock_screen(request):

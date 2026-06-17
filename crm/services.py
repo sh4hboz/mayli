@@ -3,6 +3,7 @@ crm/services.py — Campaign send logic.
 """
 
 from datetime import datetime
+from django.conf import settings
 from django.db import transaction
 from django.utils import timezone
 
@@ -58,7 +59,7 @@ class CampaignSendService:
                 message_text = render_template(campaign.template, customer)
 
                 # Jo'natish
-                result = provider.send(customer, message_text)
+                result = provider.send(customer, message_text, template_id=campaign.sms_template_id)
 
                 # Log yaratish
                 with transaction.atomic():
@@ -176,7 +177,7 @@ class CampaignSendService:
 
         try:
             message_text = render_template(campaign.template, customer)
-            result = provider.send(customer, message_text)
+            result = provider.send(customer, message_text, template_id=campaign.sms_template_id)
 
             return {
                 'success': result['success'],
@@ -186,3 +187,69 @@ class CampaignSendService:
             }
         except Exception as e:
             return {'success': False, 'message': str(e)}
+
+
+class BirthdayService:
+    """Bugun tug'ilgan kuni bo'lgan mijozlarga SMS tabrik (qisman avtomatik).
+
+    Tizim aniqlaydi va topbarda bildiradi; xodim "SMS tabriklash" tugmasini bosadi.
+    `birthday_sms_sent_year` orqali bir yilda ikki marta tabriklanmaydi.
+    Hozircha faqat SMS kanali.
+    """
+
+    @staticmethod
+    def todays_pending():
+        """Bugun tug'ilgan kuni bo'lgan, shu yil hali tabriklanmagan, SMS yuborsa bo'ladigan mijozlar."""
+        today = timezone.localdate()
+        return (
+            Customer.objects
+            .filter(
+                is_active=True,
+                sms_consent=True,
+                birth_date__month=today.month,
+                birth_date__day=today.day,
+            )
+            .exclude(phone='')
+            .exclude(birthday_sms_sent_year=today.year)
+            .order_by('first_name')
+        )
+
+    @staticmethod
+    def congratulate(customer_ids=None):
+        """Bugungi tug'ilgan kunlik mijozlarga SMS tabrik yuboradi.
+
+        Args:
+            customer_ids: ixtiyoriy list — faqat shu mijozlarga (bo'lmasa hammasiga).
+
+        Returns:
+            dict: {'sent': int, 'failed': int, 'errors': list[str]}
+        """
+        today = timezone.localdate()
+        qs = BirthdayService.todays_pending()
+        if customer_ids:
+            qs = qs.filter(pk__in=customer_ids)
+
+        provider = get_provider('sms')
+        template = getattr(settings, 'BIRTHDAY_SMS_TEXT', '') or ''
+        template_id = getattr(settings, 'BIRTHDAY_SMS_TEMPLATE_ID', '') or ''
+
+        sent = failed = 0
+        errors = []
+        for customer in qs:
+            message_text = render_template(template, customer)
+            try:
+                result = provider.send(customer, message_text, template_id=template_id)
+            except Exception as e:  # noqa: BLE001
+                result = {'success': False, 'error': str(e)}
+
+            if result.get('success'):
+                sent += 1
+                # Faqat muvaffaqiyatda belgilaymiz — xatolik bo'lsa keyin qayta urinish mumkin
+                customer.birthday_sms_sent_year = today.year
+                customer.save(update_fields=['birthday_sms_sent_year'])
+            else:
+                failed += 1
+                errors.append(f"{customer.full_name or customer.phone}: {result.get('error', 'xato')}")
+
+        logger.info("Tug'ilgan kun tabriklari: yuborildi=%s, xato=%s", sent, failed)
+        return {'sent': sent, 'failed': failed, 'errors': errors}

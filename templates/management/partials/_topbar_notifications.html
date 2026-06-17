@@ -21,7 +21,28 @@
                 </div>
             </div>
 
-            <div style="max-height: 300px" data-simplebar="">
+            <div class="notif-scroll" data-simplebar="">
+                {% if topbar_birthday %}
+                <div class="dropdown-item notification-item py-2 text-wrap" id="birthday-notification">
+                    <span class="d-flex align-items-center gap-3">
+                        <span class="flex-shrink-0 position-relative">
+                            <span class="avatar-md rounded-circle bg-danger-subtle d-flex align-items-center justify-content-center">
+                                <i class="ti ti-cake fs-4 text-danger"></i>
+                            </span>
+                        </span>
+                        <span class="flex-grow-1 text-muted">
+                            <span class="fw-medium text-body">Tug'ilgan kun</span>
+                            <span class="d-block text-wrap">{{ topbar_birthday.label }}</span>
+                            <button type="button" class="btn btn-sm btn-danger mt-2"
+                                    data-birthday-congratulate
+                                    data-url="{{ topbar_birthday.url }}"
+                                    data-confirm-msg="Bugungi {{ topbar_birthday.count }} ta mijozga SMS tabrik yuborilsinmi?">
+                                <i class="ti ti-send me-1"></i>SMS tabriklash
+                            </button>
+                        </span>
+                    </span>
+                </div>
+                {% endif %}
                 {% for n in topbar_notifications %}
                 {% if n.url %}<a href="{{ n.url }}" class="dropdown-item notification-item py-2 text-wrap text-reset">{% else %}<div class="dropdown-item notification-item py-2 text-wrap">{% endif %}
                     <span class="d-flex align-items-center gap-3">

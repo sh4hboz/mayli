@@ -175,3 +175,11 @@ TEXTUP_PASSWORD = env('TEXTUP_PASSWORD', default='')
 TEXTUP_LOGIN_URL = env('TEXTUP_LOGIN_URL', default='')
 TEXTUP_SMS_URL = env('TEXTUP_SMS_URL', default='')
 TEXTUP_NICKNAME_ID = env('TEXTUP_NICKNAME_ID', default='')
+
+# --- Tug'ilgan kun SMS tabrigi (qisman avtomatik) ---
+# Matn TextUp'da tasdiqlangan shablonga mos kelishi shart; templateId bo'lmasa rad etiladi.
+BIRTHDAY_SMS_TEXT = env(
+    'BIRTHDAY_SMS_TEXT',
+    default="Hurmatli {{first_name}}, tug'ilgan kuningiz muborak! Mayli Restobar jamoasi.",
+)
+BIRTHDAY_SMS_TEMPLATE_ID = env('BIRTHDAY_SMS_TEMPLATE_ID', default='')

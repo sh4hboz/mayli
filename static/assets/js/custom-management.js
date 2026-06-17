@@ -80,6 +80,40 @@
       .finally(function () { btn.dataset.busy = ""; });
   });
 
+  // --- Tug'ilgan kun SMS tabrigi (topbar tugmasi) ---
+  document.addEventListener("click", function (e) {
+    var btn = e.target.closest("[data-birthday-congratulate]");
+    if (!btn) return;
+    e.preventDefault();
+    if (btn.dataset.busy === "1") return;
+
+    var msg = btn.getAttribute("data-confirm-msg");
+    if (msg && !window.confirm(msg)) return;
+
+    var url = btn.getAttribute("data-url");
+    btn.dataset.busy = "1";
+    btn.disabled = true;
+
+    fetch(url, {
+      method: "POST",
+      headers: {
+        "X-CSRFToken": getCookie("csrftoken"),
+        "X-Requested-With": "XMLHttpRequest",
+      },
+    })
+      .then(function (r) { return r.json(); })
+      .then(function (data) {
+        window.alert((data && data.message) || "Bajarildi.");
+        if (data && data.sent) {
+          // Yuborilgach bildirishnomani yashiramiz
+          var note = document.getElementById("birthday-notification");
+          if (note) note.remove();
+        }
+      })
+      .catch(function () { window.alert("Tarmoq xatosi. Qayta urinib ko'ring."); })
+      .finally(function () { btn.dataset.busy = ""; btn.disabled = false; });
+  });
+
   // --- Tasdiq so'rash (o'chirish va h.k.) ---
   document.addEventListener("click", function (e) {
     var el = e.target.closest("[data-confirm]");
