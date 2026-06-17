@@ -66,6 +66,8 @@ urlpatterns = [
     path('campaigns/<int:pk>/', views.CampaignDetailView.as_view(), name='dashboard_campaign_detail'),
     path('campaigns/<int:pk>/edit/', views.CampaignUpdateView.as_view(), name='dashboard_campaign_edit'),
     path('campaigns/<int:pk>/delete/', views.CampaignDeleteView.as_view(), name='dashboard_campaign_delete'),
+    path('campaigns/<int:pk>/test-send/', views.dashboard_campaign_test_send, name='dashboard_campaign_test_send'),
+    path('campaigns/<int:pk>/send/', views.dashboard_campaign_send, name='dashboard_campaign_send'),
 
     # Universal AJAX toggle active
     path('toggle-active/<str:app_label>/<str:model_name>/<int:pk>/', views.toggle_active_ajax, name='dashboard_toggle_active'),

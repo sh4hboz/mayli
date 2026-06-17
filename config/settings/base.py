@@ -168,3 +168,10 @@ TELEGRAM_WEBHOOK_SECRET = env('TELEGRAM_WEBHOOK_SECRET', default='changeme')
 
 # --- Yandex Maps ---
 YANDEX_MAPS_API_KEY = env('YANDEX_MAPS_API_KEY', default='')
+
+# --- TextUp SMS (textup.uz) ---
+TEXTUP_EMAIL = env('TEXTUP_EMAIL', default='')
+TEXTUP_PASSWORD = env('TEXTUP_PASSWORD', default='')
+TEXTUP_LOGIN_URL = env('TEXTUP_LOGIN_URL', default='')
+TEXTUP_SMS_URL = env('TEXTUP_SMS_URL', default='')
+TEXTUP_NICKNAME_ID = env('TEXTUP_NICKNAME_ID', default='')

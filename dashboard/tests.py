@@ -279,3 +279,48 @@ class DashboardFormSubmitTests(TestCase):
         self.assertEqual(resp.status_code, 200)
         d.refresh_from_db()
         self.assertFalse(d.is_active)
+
+
+# ════════════════════════════════════════════════════════════════════
+# Kampaniya yuborish view'lari (TextUp SMS) — provider mock bilan
+# ════════════════════════════════════════════════════════════════════
+from unittest.mock import patch
+
+
+class CampaignSendViewTests(TestCase):
+
+    def setUp(self):
+        self.owner = User.objects.create_user(
+            username='owner1', password='pass12345', role=Role.OWNER, full_name='Ega',
+        )
+        self.client.force_login(self.owner)
+        self.customer = Customer.objects.create(
+            first_name='Ali', phone='+998901112233', sms_consent=True, is_active=True,
+        )
+        self.campaign = Campaign.objects.create(
+            name='SMS test', channel='sms', template='Salom {{first_name}}',
+        )
+
+    @patch('crm.services.get_provider')
+    def test_test_send_redirects_with_message(self, mock_get_provider):
+        mock_get_provider.return_value.send.return_value = {'success': True, 'error': None}
+        url = reverse('dashboard_campaign_test_send', kwargs={'pk': self.campaign.pk})
+        resp = self.client.post(url)
+        self.assertRedirects(
+            resp, reverse('dashboard_campaign_detail', kwargs={'pk': self.campaign.pk}),
+            fetch_redirect_response=False,
+        )
+
+    @patch('crm.services.get_provider')
+    def test_send_all_creates_logs(self, mock_get_provider):
+        mock_get_provider.return_value.send.return_value = {'success': True, 'error': None}
+        url = reverse('dashboard_campaign_send', kwargs={'pk': self.campaign.pk})
+        resp = self.client.post(url)
+        self.assertEqual(resp.status_code, 302)
+        self.campaign.refresh_from_db()
+        self.assertEqual(self.campaign.sent_count, 1)
+
+    def test_send_requires_post(self):
+        url = reverse('dashboard_campaign_send', kwargs={'pk': self.campaign.pk})
+        resp = self.client.get(url)
+        self.assertEqual(resp.status_code, 405)

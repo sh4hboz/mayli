@@ -27,25 +27,18 @@ class MarketingProvider(ABC):
 
 
 class SMSProvider(MarketingProvider):
-    """SMS provider (Eskiz.uz)."""
+    """SMS provider (TextUp — textup.uz)."""
 
     def send(self, customer, message_text):
-        """Eskiz API orqali SMS jo'natish."""
-        if not customer.phone:
-            return {'success': False, 'error': 'Telefon raqami yo\'q'}
+        """TextUp API orqali SMS jo'natish."""
+        from crm.integrations.textup import TextUpClient, normalize_phone
 
-        try:
-            # TODO: Eskiz.uz API integratsiyasi
-            # from crm.integrations.eskiz import send_sms
-            # result = send_sms(customer.phone, message_text)
+        phone = normalize_phone(customer.phone)
+        if not phone:
+            return {'success': False, 'error': 'Telefon raqami yo\'q yoki yaroqsiz'}
 
-            # Hozircha stub
-            logger.info(f"SMS jo'natish (stub): {customer.phone} → {message_text[:50]}...")
-            return {'success': True, 'error': None}
-        except Exception as e:
-            error_msg = str(e)
-            logger.error(f"SMS xatosi: {error_msg}")
-            return {'success': False, 'error': error_msg}
+        result = TextUpClient().send_sms([phone], message_text, name='Mayli')
+        return {'success': result['success'], 'error': result['error']}
 
 
 class EmailProvider(MarketingProvider):

@@ -26,6 +26,15 @@
                     </span>
                 </h5>
                 <div class="d-flex gap-2">
+                    <form method="post" action="{% url 'dashboard_campaign_test_send' campaign.pk %}" class="d-inline">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-info btn-sm"><i class="ti ti-send me-1"></i>Test yuborish</button>
+                    </form>
+                    <form method="post" action="{% url 'dashboard_campaign_send' campaign.pk %}" class="d-inline"
+                          onsubmit="return confirm('Kampaniyani barcha target mijozlarga yuborishni tasdiqlaysizmi?');">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-success btn-sm"><i class="ti ti-mail-forward me-1"></i>Hammasiga yuborish</button>
+                    </form>
                     <a href="{% url 'dashboard_campaign_edit' campaign.pk %}" class="btn btn-warning btn-sm"><i class="ti ti-edit me-1"></i>Tahrirlash</a>
                     <a href="{% url 'dashboard_campaign_list' %}" class="btn btn-secondary btn-sm"><i class="ti ti-arrow-left me-1"></i>Orqaga</a>
                 </div>

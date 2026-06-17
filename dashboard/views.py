@@ -575,6 +575,45 @@ class CampaignDeleteView(CMSBaseMixin, SuccessMessageMixin, DeleteView):
     success_url = reverse_lazy('dashboard_campaign_list')
 
 
+# --- Kampaniya yuborish (TextUp SMS) ---
+_CAMPAIGN_SEND_ROLES = (Role.OWNER, Role.MANAGER, Role.ADMIN)
+
+
+@login_required(login_url='/login/')
+@require_POST
+def dashboard_campaign_test_send(request, pk):
+    """Kampaniyani bitta mijozga test sifatida yuboradi."""
+    from crm.services import CampaignSendService
+
+    if request.user.role not in _CAMPAIGN_SEND_ROLES:
+        raise PermissionDenied("Ruxsat yo'q!")
+
+    result = CampaignSendService.test_send(pk)
+    if result.get('success'):
+        messages.success(request, f"Test yuborildi: {result.get('customer', '')} — «{result.get('message', '')[:60]}»")
+    else:
+        messages.error(request, f"Test yuborilmadi: {result.get('error') or result.get('message', 'Nomaʼlum xato')}")
+    return redirect('dashboard_campaign_detail', pk=pk)
+
+
+@login_required(login_url='/login/')
+@require_POST
+def dashboard_campaign_send(request, pk):
+    """Kampaniyani barcha target mijozlarga yuboradi."""
+    from crm.services import CampaignSendService
+
+    if request.user.role not in _CAMPAIGN_SEND_ROLES:
+        raise PermissionDenied("Ruxsat yo'q!")
+
+    result = CampaignSendService.send_campaign(pk)
+    sent, failed = result.get('sent', 0), result.get('failed', 0)
+    if sent:
+        messages.success(request, f"Yuborildi: {sent} ta. Xato: {failed} ta.")
+    if not sent and result.get('errors'):
+        messages.error(request, "; ".join(result['errors'][:3]))
+    return redirect('dashboard_campaign_detail', pk=pk)
+
+
 # --- Lock Screen ---
 @login_required(login_url='/login/')
 def lock_screen(request):

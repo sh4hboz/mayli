@@ -1,12 +1,13 @@
 from unittest.mock import patch
 
-from django.test import TestCase
+from django.test import TestCase, override_settings
 
 from .models import Customer, Tag, Campaign, CampaignLog, CampaignLogStatus, CampaignStatus
 from .providers import (
     get_provider, render_template, SMSProvider, EmailProvider, TelegramProvider,
 )
 from .services import CampaignSendService
+from .integrations.textup import TextUpClient, normalize_phone, TextUpError
 
 
 class CustomerModelTest(TestCase):
@@ -42,6 +43,58 @@ class ProviderTests(TestCase):
         c = Customer(first_name="X", phone="")
         result = SMSProvider().send(c, "test")
         self.assertFalse(result['success'])
+
+    @patch('crm.integrations.textup.TextUpClient.send_sms')
+    def test_sms_provider_calls_textup(self, mock_send):
+        mock_send.return_value = {'success': True, 'error': None, 'sms_id': 'X1'}
+        c = Customer(first_name="Ali", phone="908201004")
+        result = SMSProvider().send(c, "salom")
+        self.assertTrue(result['success'])
+        # Telefon E.164 ga normalizatsiya qilinib uzatiladi
+        args, kwargs = mock_send.call_args
+        self.assertEqual(args[0], ['+998908201004'])
+
+
+class TextUpClientTests(TestCase):
+
+    def setUp(self):
+        # Modul darajasidagi token keshini har test oldidan tozalaymiz
+        from crm.integrations import textup
+        textup._token_cache['token'] = None
+        textup._token_cache['user_id'] = None
+
+    def test_normalize_phone(self):
+        self.assertEqual(normalize_phone('+998 (90) 820-10-04'), '+998908201004')
+        self.assertEqual(normalize_phone('908201004'), '+998908201004')
+        self.assertEqual(normalize_phone('998908201004'), '+998908201004')
+        self.assertIsNone(normalize_phone('12345'))
+        self.assertIsNone(normalize_phone(''))
+
+    @override_settings(TEXTUP_EMAIL='e@x.uz', TEXTUP_PASSWORD='pw')
+    @patch('crm.integrations.textup.TextUpClient._request')
+    def test_send_sms_success(self, mock_request):
+        # 1-chi chaqiruv: login javobi; 2-chi: SMS javobi
+        mock_request.side_effect = [
+            {'accessToken': 'TKN', 'user': {'id': 42}},
+            {'smsId': 'sms-1'},
+        ]
+        out = TextUpClient().send_sms(['908201004'], 'salom', name='Mayli')
+        self.assertTrue(out['success'])
+        self.assertEqual(out['sms_id'], 'sms-1')
+        # SMS so'rovida userId va normalizatsiyalangan raqam bo'lishi kerak
+        sms_payload = mock_request.call_args_list[1].args[1]
+        self.assertEqual(sms_payload['userId'], 42)
+        self.assertEqual(sms_payload['recipients'], ['+998908201004'])
+
+    @override_settings(TEXTUP_EMAIL='', TEXTUP_PASSWORD='')
+    def test_send_sms_no_credentials(self):
+        out = TextUpClient().send_sms(['908201004'], 'salom')
+        self.assertFalse(out['success'])
+        self.assertIn('sozlanmagan', out['error'])
+
+    def test_send_sms_invalid_phone(self):
+        out = TextUpClient(email='e', password='p').send_sms(['12345'], 'salom')
+        self.assertFalse(out['success'])
 
 
 class CampaignServiceTests(TestCase):
