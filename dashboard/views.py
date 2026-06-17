@@ -7,7 +7,10 @@ from django.shortcuts import get_object_or_404
 from django.http import JsonResponse
 from django.contrib import messages
 from django.core.exceptions import PermissionDenied
-from django.db.models import Q
+from django.db.models import Q, Count
+from django.db.models.functions import TruncMonth, ExtractDay
+from django.utils import timezone
+from datetime import date
 
 from accounts.models import Role
 from website.models import SiteSettings, News, Promotion, GalleryItem, Vacancy, JobApplication, ContactMessage
@@ -31,10 +34,64 @@ def dashboard_home(request):
         'customers_count': Customer.objects.count(),
     }
     recent_contacts = ContactMessage.objects.order_by('-created_at')[:5]
+
+    # ── Analitika (apexcharts uchun) ──────────────────────────────
+    today = timezone.localdate()
+
+    # 1) Oxirgi 6 oydagi yangi mijozlar
+    months = []
+    yy, mm = today.year, today.month
+    for _ in range(6):
+        months.append((yy, mm))
+        mm -= 1
+        if mm == 0:
+            mm, yy = 12, yy - 1
+    months.reverse()
+    start_y, start_m = months[0]
+    monthly_raw = (
+        Customer.objects
+        .filter(created_at__date__gte=date(start_y, start_m, 1))
+        .annotate(mon=TruncMonth('created_at'))
+        .values('mon').annotate(c=Count('id'))
+    )
+    monthly_map = {(r['mon'].year, r['mon'].month): r['c'] for r in monthly_raw}
+    uz_months = ['Yan', 'Fev', 'Mar', 'Apr', 'May', 'Iyn', 'Iyl', 'Avg', 'Sen', 'Okt', 'Noy', 'Dek']
+    monthly = {
+        'labels': [f"{uz_months[m - 1]} {y}" for (y, m) in months],
+        'data': [monthly_map.get((y, m), 0) for (y, m) in months],
+    }
+
+    # 2) Mijoz manbalari taqsimoti
+    source_labels = dict(CustomerSource.choices)
+    src_raw = Customer.objects.values('source').annotate(c=Count('id')).order_by('-c')
+    sources = {
+        'labels': [str(source_labels.get(r['source'], r['source'])) for r in src_raw],
+        'data': [r['c'] for r in src_raw],
+    }
+
+    # 3) So'nggi 6 kampaniya samarasi
+    camp_qs = list(Campaign.objects.order_by('-created_at')[:6])[::-1]
+    campaigns = {
+        'labels': [c.name for c in camp_qs],
+        'sent': [c.sent_count for c in camp_qs],
+        'failed': [c.failed_count for c in camp_qs],
+    }
+
+    analytics = {'monthly': monthly, 'sources': sources, 'campaigns': campaigns}
+
+    # 4) Shu oyda tug'ilgan mijozlar
+    birthdays = (
+        Customer.objects
+        .filter(birth_date__month=today.month, is_active=True)
+        .annotate(bday=ExtractDay('birth_date')).order_by('bday')
+    )
+
     return render(request, 'management/dashboard.html', {
         'profile': request.user,
         'stats': stats,
         'recent_contacts': recent_contacts,
+        'analytics': analytics,
+        'birthdays': birthdays,
     })
 
 
@@ -535,4 +592,4 @@ def unlock_screen(request):
             return redirect('dashboard_home')
         else:
             messages.error(request, "Noto'g'ri parol.")
-    return redirect('lock_screen')
+    return redirect('dashboard_lock_screen')

@@ -74,6 +74,7 @@ TEMPLATES = [
                 'django.contrib.messages.context_processors.messages',
                 'django.template.context_processors.i18n',
                 'website.context_processors.site_settings',
+                'dashboard.context_processors.topbar_notifications',
             ],
         },
     },
