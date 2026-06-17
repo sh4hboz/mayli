@@ -58,12 +58,12 @@
                     </button>
                     <div class="dropdown-menu dropdown-menu-end" data-thememode="dropdown">
                         <label class="dropdown-item cursor-pointer">
-                            <input class="form-check-input" type="radio" name="data-bs-theme" value="light" style="display: none" />
+                            <input class="form-check-input d-none" type="radio" name="data-bs-theme" value="light" />
                             <i class="ti ti-sun align-middle me-1 fs-16"></i>
                             <span class="align-middle">Light</span>
                         </label>
                         <label class="dropdown-item cursor-pointer">
-                            <input class="form-check-input" type="radio" name="data-bs-theme" value="dark" style="display: none" />
+                            <input class="form-check-input d-none" type="radio" name="data-bs-theme" value="dark" />
                             <i class="ti ti-moon align-middle me-1 fs-16"></i>
                             <span class="align-middle">Dark</span>
                         </label>
@@ -85,7 +85,7 @@
             <div id="user-dropdown-detailed" class="topbar-item nav-user">
                 <div class="dropdown">
                     <a class="topbar-link dropdown-toggle drop-arrow-none px-2" data-bs-toggle="dropdown" href="#!" aria-haspopup="false" aria-expanded="false">
-                        <div class="avatar-sm rounded-circle me-lg-2 d-flex align-items-center justify-content-center bg-primary text-white fw-bold" style="width: 32px; height: 32px; font-size: 14px;">
+                        <div class="avatar-sm avatar-32 rounded-circle me-lg-2 d-flex align-items-center justify-content-center bg-primary text-white fw-bold">
                             {{ profile.user.first_name|first|upper }}{{ profile.user.last_name|first|upper }}
                         </div>
                         <div class="d-lg-flex align-items-center gap-1 d-none">

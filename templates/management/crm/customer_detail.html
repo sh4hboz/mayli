@@ -31,7 +31,7 @@
                 <div class="row">
                     <div class="col-md-6">
                         <table class="table table-borderless mb-0">
-                            <tr><th class="text-muted" style="width:40%">Telefon</th><td>{{ customer.phone }}</td></tr>
+                            <tr><th class="text-muted th-40">Telefon</th><td>{{ customer.phone }}</td></tr>
                             <tr><th class="text-muted">Jins</th><td>{{ customer.get_gender_display|default:"—" }}</td></tr>
                             <tr><th class="text-muted">Tug'ilgan kun</th><td>{% if customer.birth_date %}{{ customer.birth_date|date:"d.m.Y" }}{% if customer.age %} ({{ customer.age }} yosh){% endif %}{% else %}—{% endif %}</td></tr>
                             <tr><th class="text-muted">Manba</th><td>{{ customer.get_source_display }}</td></tr>
@@ -42,7 +42,7 @@
                     </div>
                     <div class="col-md-6">
                         <table class="table table-borderless mb-0">
-                            <tr><th class="text-muted" style="width:40%">Email</th><td>{{ customer.email|default:"—" }}</td></tr>
+                            <tr><th class="text-muted th-40">Email</th><td>{{ customer.email|default:"—" }}</td></tr>
                             <tr><th class="text-muted">Telegram</th><td>{{ customer.telegram_username|default:"—" }}</td></tr>
                             <tr><th class="text-muted">Reklama roziligi</th><td>
                                 <span class="badge bg-{% if customer.sms_consent %}success{% else %}secondary{% endif %}-subtle text-{% if customer.sms_consent %}success{% else %}secondary{% endif %}">SMS</span>

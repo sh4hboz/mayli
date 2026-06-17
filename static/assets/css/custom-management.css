@@ -73,8 +73,63 @@
    4. Sahifaga xos tuzatishlar
    -------------------------------------------------------------------------- */
 
+/* Galereya: responsiv grid + kartochka */
+.gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 16px;
+}
+.gallery-item {
+    position: relative;
+    border-radius: 8px;
+    overflow: hidden;
+    background: var(--ct-card-bg, #1e2330);
+    border: 1px solid var(--ct-border-color, rgba(255, 255, 255, .08));
+}
+.gallery-item img {
+    display: block;
+    width: 100%;
+    height: 160px;
+    object-fit: cover;
+}
+.gallery-item-actions {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+.gallery-item-actions form {
+    margin: 0;
+}
 /* Galereya: nofaol rasm xira ko'rsatiladi */
 .gallery-item-inactive img {
     opacity: .4;
     filter: grayscale(60%);
+}
+
+/* Inline style o'rniga klasslar (loyiha qoidasi: HTML'da style="" yo'q) */
+/* Sidebar foydalanuvchi profili fon naqshi (yo'l CSS'ga nisbatan — 404 tuzatildi) */
+.sidenav-user {
+    background: url(../images/user-bg-pattern.svg);
+}
+/* Ruxsatlar ro'yxati skroll (staff_permissions) */
+.perm-list-scroll {
+    max-height: 480px;
+    overflow-y: auto;
+}
+/* Topbar bildirishnomalar skroll balandligi */
+.notif-scroll {
+    max-height: 300px;
+}
+/* Topbar kichik avatar (doira) */
+.avatar-32 {
+    width: 32px;
+    height: 32px;
+    font-size: 14px;
+}
+/* customer_detail jadval sarlavha kengligi */
+.th-40 {
+    width: 40%;
 }
