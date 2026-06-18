@@ -1,5 +1,5 @@
 from django.conf import settings as django_settings
-from .models import SiteSettings
+from .models import SiteSettings, Feature, StatItem
 
 
 def site_settings(request):
@@ -34,8 +34,17 @@ def site_settings(request):
     # Add to site object
     site.social_links = social_links
 
+    why_us_features = Feature.objects.filter(is_active=True).order_by('order', 'pk')
+
+    stat_qs = StatItem.objects.filter(is_active=True).order_by('order', 'pk')
+    hero_stats = stat_qs.filter(placement__in=['hero', 'both'])
+    section_stats = stat_qs.filter(placement__in=['stats', 'both'])
+
     return {
         'site': site,
+        'why_us_features': why_us_features,
+        'hero_stats': hero_stats,
+        'section_stats': section_stats,
         'YANDEX_MAPS_API_KEY': getattr(django_settings, 'YANDEX_MAPS_API_KEY', ''),
         'unread_contacts_count': unread_count,
     }

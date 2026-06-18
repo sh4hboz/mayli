@@ -13,10 +13,10 @@ from django.utils import timezone
 from datetime import date
 
 from accounts.models import Role
-from website.models import SiteSettings, News, Promotion, GalleryItem, Vacancy, JobApplication, ContactMessage
+from website.models import SiteSettings, News, Promotion, GalleryItem, Vacancy, JobApplication, ContactMessage, Feature, StatItem
 from menu.models import Category, Dish
 from crm.models import Customer, Tag, Gender, CustomerSource, Campaign, CampaignLog
-from .forms import SiteSettingsForm, NewsForm, PromotionForm, GalleryItemForm, VacancyForm, CategoryForm, DishForm, CustomerForm, CampaignForm
+from .forms import SiteSettingsForm, NewsForm, PromotionForm, GalleryItemForm, VacancyForm, CategoryForm, DishForm, CustomerForm, CampaignForm, FeatureForm, StatItemForm
 
 
 @login_required(login_url='/login/')
@@ -656,3 +656,89 @@ def unlock_screen(request):
         else:
             messages.error(request, "Noto'g'ri parol.")
     return redirect('dashboard_lock_screen')
+
+
+# ── Statistika — StatItem CRUD ──────────────────────────────────────────────
+
+class StatItemListView(CMSBaseMixin, ListView):
+    model = StatItem
+    template_name = 'management/website/statitem_list.html'
+    context_object_name = 'statitem_list'
+    queryset = StatItem.objects.order_by('order', 'pk')
+
+
+class StatItemCreateView(CMSBaseMixin, SuccessMessageMixin, CreateView):
+    model = StatItem
+    form_class = StatItemForm
+    template_name = 'management/website/statitem_form.html'
+    success_url = reverse_lazy('dashboard_statitem_list')
+    success_message_create = "Statistika muvaffaqiyatli qo'shildi."
+
+    def form_valid(self, form):
+        messages.success(self.request, self.success_message_create)
+        return super().form_valid(form)
+
+
+class StatItemUpdateView(CMSBaseMixin, SuccessMessageMixin, UpdateView):
+    model = StatItem
+    form_class = StatItemForm
+    template_name = 'management/website/statitem_form.html'
+    success_url = reverse_lazy('dashboard_statitem_list')
+    success_message_update = "Statistika muvaffaqiyatli yangilandi."
+
+    def form_valid(self, form):
+        messages.success(self.request, self.success_message_update)
+        return super().form_valid(form)
+
+
+class StatItemDeleteView(CMSBaseMixin, SuccessMessageMixin, DeleteView):
+    model = StatItem
+    success_url = reverse_lazy('dashboard_statitem_list')
+    success_message_delete = "Statistika muvaffaqiyatli o'chirildi."
+
+    def post(self, request, *args, **kwargs):
+        messages.success(request, self.success_message_delete)
+        return super().post(request, *args, **kwargs)
+
+
+# ── "Nega biz?" — Feature CRUD ──────────────────────────────────────────────
+
+class FeatureListView(CMSBaseMixin, ListView):
+    model = Feature
+    template_name = 'management/website/feature_list.html'
+    context_object_name = 'feature_list'
+    queryset = Feature.objects.order_by('order', 'pk')
+
+
+class FeatureCreateView(CMSBaseMixin, SuccessMessageMixin, CreateView):
+    model = Feature
+    form_class = FeatureForm
+    template_name = 'management/website/feature_form.html'
+    success_url = reverse_lazy('dashboard_feature_list')
+    success_message_create = "Xususiyat muvaffaqiyatli qo'shildi."
+
+    def form_valid(self, form):
+        messages.success(self.request, self.success_message_create)
+        return super().form_valid(form)
+
+
+class FeatureUpdateView(CMSBaseMixin, SuccessMessageMixin, UpdateView):
+    model = Feature
+    form_class = FeatureForm
+    template_name = 'management/website/feature_form.html'
+    success_url = reverse_lazy('dashboard_feature_list')
+    success_message_update = "Xususiyat muvaffaqiyatli yangilandi."
+
+    def form_valid(self, form):
+        messages.success(self.request, self.success_message_update)
+        return super().form_valid(form)
+
+
+class FeatureDeleteView(CMSBaseMixin, SuccessMessageMixin, DeleteView):
+    model = Feature
+    success_url = reverse_lazy('dashboard_feature_list')
+    success_message_delete = "Xususiyat muvaffaqiyatli o'chirildi."
+
+    def post(self, request, *args, **kwargs):
+        messages.success(request, self.success_message_delete)
+        return super().post(request, *args, **kwargs)

@@ -7,6 +7,24 @@ document.addEventListener('DOMContentLoaded', function () {
     header && header.classList.toggle('scrolled', window.scrollY > 60);
   });
 
+  // === HERO VIDEO (lazy) ===
+  // Sahifa to'liq yuklangach (window load) video data-src'dan yuklanadi va
+  // play bo'lganda rasm ustida yumshoq paydo bo'ladi. Video bo'lmasa — rasm turaveradi.
+  const heroVideo = document.querySelector('.hero-bg-video[data-src]');
+  if (heroVideo) {
+    window.addEventListener('load', function () {
+      heroVideo.src = heroVideo.dataset.src;
+      heroVideo.load();
+      const reveal = function () { heroVideo.classList.add('is-ready'); };
+      heroVideo.addEventListener('playing', reveal, { once: true });
+      const playPromise = heroVideo.play();
+      // Avto-play bloklansa (ba'zi brauzerlar) — rasm ko'rinib qolaveradi.
+      if (playPromise && typeof playPromise.catch === 'function') {
+        playPromise.catch(function () { /* rasm fallback */ });
+      }
+    });
+  }
+
   // === MOBILE MENU ===
   const menuBtn = document.getElementById('mobileMenuBtn');
   const navLinks = document.getElementById('nav-links');
@@ -332,6 +350,10 @@ document.addEventListener('DOMContentLoaded', function () {
     chatInput.value = '';
     if (chatSendBtn) chatSendBtn.disabled = true;
 
+    // Mehmon yozdi — sessiyani belgilaymiz va aqlli polling'ni yoqamiz/yangilaymiz.
+    localStorage.setItem('mayli_chat_active', '1');
+    startChatPolling();
+
     const body = new URLSearchParams();
     body.append('message', text);
     body.append('visitor_id', visitorId);
@@ -382,8 +404,15 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }
 
-  // --- Polling: admin javobi / avto-javobni olib kelish ---
+  // --- Aqlli polling: admin javobi / avto-javobni olib kelish ---
+  // Poll FAQAT mehmon xabar yuborgandan keyin ishlaydi (sahifa ochilishida emas).
+  // Ikkala tomondan ham 1 daqiqa yangi xabar bo'lmasa — so'rovlar to'xtaydi.
   let chatLastId = parseInt(localStorage.getItem('mayli_chat_last_id') || '0', 10) || 0;
+  let chatPollTimer = null;            // setInterval handle (null = to'xtagan)
+  let chatLastActivity = 0;            // oxirgi xabar vaqti (ms) — ikkala tomon ham
+  const CHAT_POLL_MS = 5000;           // poll oralig'i
+  const CHAT_IDLE_LIMIT = 60000;       // 1 daqiqa jimlik → to'xta
+  const CHAT_SESSION_KEY = 'mayli_chat_active';  // mehmon ilgari yozganmi
 
   function pollChat() {
     if (!visitorId) return;
@@ -393,23 +422,45 @@ document.addEventListener('DOMContentLoaded', function () {
     .then(r => r.json())
     .then(data => {
       const msgs = (data && data.messages) || [];
-      if (!msgs.length) return;
-      msgs.forEach(function(m) {
-        appendChatMessage('bot', m.text, m.time || '');
-        if (m.id > chatLastId) chatLastId = m.id;
-      });
-      localStorage.setItem('mayli_chat_last_id', String(chatLastId));
-      // Yangi xabar keldi — widget yopiq bo'lsa qayta ochamiz (talab #3).
-      if (chatWidget && !chatWidget.classList.contains('open')) {
-        openChat();
+      if (msgs.length) {
+        // Admin/avto-javob keldi — bu ham "faollik", taymerni yangilaymiz.
+        chatLastActivity = Date.now();
+        msgs.forEach(function(m) {
+          appendChatMessage('bot', m.text, m.time || '');
+          if (m.id > chatLastId) chatLastId = m.id;
+        });
+        localStorage.setItem('mayli_chat_last_id', String(chatLastId));
+        // Yangi xabar keldi — widget yopiq bo'lsa qayta ochamiz (talab #3).
+        if (chatWidget && !chatWidget.classList.contains('open')) {
+          openChat();
+        }
+      } else if (Date.now() - chatLastActivity > CHAT_IDLE_LIMIT) {
+        // Ikki tomondan ham 1 daqiqa yangi xabar yo'q — pollni to'xtatamiz.
+        stopChatPolling();
       }
     })
     .catch(function () { /* tarmoq xatosi — keyingi poll'da qayta urinadi */ });
   }
 
-  if (chatWidget) {
-    pollChat();                       // sahifa ochilishida — oldingi javoblarni ham olib keladi
-    setInterval(pollChat, 5000);      // har 5s
+  function startChatPolling() {
+    chatLastActivity = Date.now();        // faollik hisoblagichini yangilaymiz
+    if (chatPollTimer === null) {
+      pollChat();                         // darhol bitta — 5s kutib turmaymiz
+      chatPollTimer = setInterval(pollChat, CHAT_POLL_MS);
+    }
+  }
+
+  function stopChatPolling() {
+    if (chatPollTimer !== null) {
+      clearInterval(chatPollTimer);
+      chatPollTimer = null;
+    }
+  }
+
+  if (chatWidget && localStorage.getItem(CHAT_SESSION_KEY) === '1') {
+    // Ilgari yozgan mehmon: u yo'qligida kelgan javobni olish uchun bitta
+    // "catch-up" poll — keyin faollik bo'lmasa 1 daqiqada o'zi to'xtaydi.
+    startChatPolling();
   }
 
   // === PROMO CARDS — klik bilan expand ===

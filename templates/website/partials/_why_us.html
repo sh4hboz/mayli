@@ -4,9 +4,17 @@
 <section class="section section-dark2" id="why-us">
   <div class="container">
     <div class="section-header reveal">
-      <h2 class="section-title">{% trans "Nega aynan biz?" %}</h2>
+      <h2 class="section-title">{{ site.why_us_title|default:_("Nega aynan biz?") }}</h2>
     </div>
     <div class="why-grid">
+      {% for feature in why_us_features %}
+      <div class="why-item reveal">
+        <div class="why-icon"><i class="fa {{ feature.icon }}"></i></div>
+        <h3>{{ feature.title }}</h3>
+        <p>{{ feature.text }}</p>
+      </div>
+      {% empty %}
+      {# Bazada hech narsa yo'q bo'lsa — default hardcoded qatorlar #}
       <div class="why-item reveal">
         <div class="why-icon"><i class="fa fa-leaf"></i></div>
         <h3>{% trans "Yangi ingredientlar" %}</h3>
@@ -27,6 +35,7 @@
         <h3>{% trans "Ajoyib atmosfera" %}</h3>
         <p>{% trans "Premium interior, musiqa va kalyan — unutilmas kecha uchun." %}</p>
       </div>
+      {% endfor %}
     </div>
     <div class="section-footer">
       <button type="button" class="btn btn-primary booking-cta-btn" data-booking-open>

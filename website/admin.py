@@ -1,7 +1,7 @@
 from django.contrib import admin
 from modeltranslation.admin import TranslationAdmin
 from .models import (SiteSettings, News, Promotion, GalleryItem,
-                     TeamMember, Testimonial, Vacancy, JobApplication, ContactMessage)
+                     TeamMember, Testimonial, Vacancy, JobApplication, ContactMessage, Feature, StatItem)
 
 
 @admin.register(SiteSettings)
@@ -73,3 +73,15 @@ class ContactMessageAdmin(admin.ModelAdmin):
     list_display = ('name', 'phone', 'is_read', 'created_at')
     list_editable = ('is_read',)
     readonly_fields = ('created_at',)
+
+
+@admin.register(Feature)
+class FeatureAdmin(TranslationAdmin):
+    list_display = ('title', 'icon', 'order', 'is_active')
+    list_editable = ('order', 'is_active')
+
+
+@admin.register(StatItem)
+class StatItemAdmin(TranslationAdmin):
+    list_display = ('value', 'label', 'placement', 'order', 'is_active')
+    list_editable = ('order', 'is_active')

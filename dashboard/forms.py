@@ -1,5 +1,5 @@
 from django import forms
-from website.models import SiteSettings, News, Promotion, GalleryItem, Vacancy
+from website.models import SiteSettings, News, Promotion, GalleryItem, Vacancy, Feature, StatItem
 from menu.models import Category, Dish
 from crm.models import Customer, Campaign
 from .image_utils import convert_image_to_webp
@@ -76,12 +76,28 @@ class SiteSettingsForm(BootstrapModelForm):
         fields = [
             'name', 'tagline_uz', 'tagline_ru', 'tagline_en',
             'logo', 'logo_dark', 'favicon', 'about_image',
+            'hero_bg_image', 'hero_video',
+            'hero_title_uz', 'hero_title_ru', 'hero_title_en',
+            'hero_title_accent_uz', 'hero_title_accent_ru', 'hero_title_accent_en',
+            'hero_subtitle_uz', 'hero_subtitle_ru', 'hero_subtitle_en',
+            'why_us_title_uz', 'why_us_title_ru', 'why_us_title_en',
             'phone_main', 'phone_secondary', 'email',
             'address_uz', 'address_ru', 'address_en', 'city',
             'working_hours_uz', 'working_hours_ru', 'working_hours_en',
             'instagram_url', 'telegram_channel_url', 'telegram_bot_url',
             'latitude', 'longitude', 'map_embed_code',
             'about_text_uz', 'about_text_ru', 'about_text_en',
+            'about_title_uz', 'about_title_ru', 'about_title_en',
+            'about_badge_value',
+            'about_badge_label_uz', 'about_badge_label_ru', 'about_badge_label_en',
+            'about_features_uz', 'about_features_ru', 'about_features_en',
+            'booking_cta_title_uz', 'booking_cta_title_ru', 'booking_cta_title_en',
+            'booking_cta_desc_uz', 'booking_cta_desc_ru', 'booking_cta_desc_en',
+            'about_page_badge_uz', 'about_page_badge_ru', 'about_page_badge_en',
+            'about_page_title_uz', 'about_page_title_ru', 'about_page_title_en',
+            'home_seo_body_uz', 'home_seo_body_ru', 'home_seo_body_en',
+            'about_seo_title_uz', 'about_seo_title_ru', 'about_seo_title_en',
+            'about_seo_body_uz', 'about_seo_body_ru', 'about_seo_body_en',
             'google_verify', 'yandex_verify', 'google_analytics_id'
         ]
         widgets = {
@@ -89,6 +105,22 @@ class SiteSettingsForm(BootstrapModelForm):
             'about_text_uz': forms.Textarea(attrs={'rows': 4}),
             'about_text_ru': forms.Textarea(attrs={'rows': 4}),
             'about_text_en': forms.Textarea(attrs={'rows': 4}),
+            'hero_subtitle_uz': forms.Textarea(attrs={'rows': 2}),
+            'hero_subtitle_ru': forms.Textarea(attrs={'rows': 2}),
+            'hero_subtitle_en': forms.Textarea(attrs={'rows': 2}),
+            'hero_video': forms.ClearableFileInput(attrs={'accept': 'video/mp4,video/webm'}),
+            'home_seo_body_uz': forms.Textarea(attrs={'rows': 12}),
+            'home_seo_body_ru': forms.Textarea(attrs={'rows': 12}),
+            'home_seo_body_en': forms.Textarea(attrs={'rows': 12}),
+            'about_seo_body_uz': forms.Textarea(attrs={'rows': 12}),
+            'about_seo_body_ru': forms.Textarea(attrs={'rows': 12}),
+            'about_seo_body_en': forms.Textarea(attrs={'rows': 12}),
+            'about_features_uz': forms.Textarea(attrs={'rows': 5}),
+            'about_features_ru': forms.Textarea(attrs={'rows': 5}),
+            'about_features_en': forms.Textarea(attrs={'rows': 5}),
+            'booking_cta_desc_uz': forms.Textarea(attrs={'rows': 2}),
+            'booking_cta_desc_ru': forms.Textarea(attrs={'rows': 2}),
+            'booking_cta_desc_en': forms.Textarea(attrs={'rows': 2}),
         }
 
 class NewsForm(WebPModelForm):
@@ -197,3 +229,38 @@ class CampaignForm(BootstrapModelForm):
             'template': 'Shablon: {{first_name}}, {{full_name}}, {{phone}} ishlatish mumkin',
             'sms_template_id': 'Faqat SMS uchun: TextUp kabinetidagi tasdiqlangan shablonning templateId\'si.',
         }
+
+
+class StatItemForm(BootstrapModelForm):
+    class Meta:
+        model = StatItem
+        fields = [
+            'value',
+            'label_uz', 'label_ru', 'label_en',
+            'placement', 'order', 'is_active',
+        ]
+        help_texts = {
+            'value': 'Raqam qiymati (masalan: 5+, 200+, 10 000+, 24/7)',
+            'placement': 'Qayerda ko\'rsatilsin',
+        }
+
+
+class FeatureForm(BootstrapModelForm):
+    class Meta:
+        model = Feature
+        fields = [
+            'icon',
+            'title_uz', 'title_ru', 'title_en',
+            'text_uz', 'text_ru', 'text_en',
+            'order', 'is_active',
+        ]
+        widgets = {
+            'text_uz': forms.Textarea(attrs={'rows': 3}),
+            'text_ru': forms.Textarea(attrs={'rows': 3}),
+            'text_en': forms.Textarea(attrs={'rows': 3}),
+            'icon': forms.TextInput(attrs={'placeholder': 'fa-leaf'}),
+        }
+        help_texts = {
+            'icon': 'Font Awesome icon class (masalan: fa-leaf, fa-trophy, fa-smile-o, fa-music)',
+        }
+

@@ -5,27 +5,38 @@
   <div class="container">
     <div class="about-grid">
       <div class="about-img-wrap reveal">
-        <img src="{% static 'src/img/about.png' %}" alt="{% trans "Mayli Restobar Interior" %}" loading="lazy">
+        <img src="{% if site.about_image %}{{ site.about_image.url }}{% else %}{% static 'src/img/about.png' %}{% endif %}" alt="{% trans "Mayli Restobar Interior" %}" loading="lazy">
         <div class="about-img-badge">
-          <strong>5+</strong>
-          <span>{% trans "Yil tajriba" %}</span>
+          <strong>{{ site.about_badge_value|default:"5+" }}</strong>
+          <span>{{ site.about_badge_label|default:_("Yil tajriba") }}</span>
         </div>
       </div>
       <div class="about-text reveal">
-        <h2 class="section-title">{% trans "Mayli — sifat va lazzat markazi" %}</h2>
+        <h2 class="section-title">{{ site.about_title|default:_("Mayli — sifat va lazzat markazi") }}</h2>
         <p class="text-muted-lh17">
-          {{ site.about_text|default:_("Termiz shahrida joylashgan Mayli Restobar sizga turli xil taomlar, tetiklashtiruvchi ichimliklar va premium kalyan xizmatini taklif etadi.") }}
+          {{ site.about_text|default:_("Termiz shahrida joylashgan Mayli Restobar sizga turli xil taomlar, tetiklashtiruvchi ichimliklar va premium kalyan xizmatini taklif etada.") }}
         </p>
         <div class="about-features">
-          <div class="about-feature"><i class="fa fa-check-circle"></i> {% trans "Halol va sifatli taomlar" %}</div>
-          <div class="about-feature"><i class="fa fa-check-circle"></i> {% trans "Premium kalyan xizmati" %}</div>
-          <div class="about-feature"><i class="fa fa-check-circle"></i> {% trans "Xususiy zal va tadbir" %}</div>
-          <div class="about-feature"><i class="fa fa-check-circle"></i> {% trans "Qulay bron qilish tizimi" %}</div>
+          {% if site.about_features %}
+            {% for line in site.about_features.splitlines %}
+              {% if line.strip %}
+              <div class="about-feature"><i class="fa fa-check-circle"></i> {{ line.strip }}</div>
+              {% endif %}
+            {% endfor %}
+          {% else %}
+            <div class="about-feature"><i class="fa fa-check-circle"></i> {% trans "Halol va sifatli taomlar" %}</div>
+            <div class="about-feature"><i class="fa fa-check-circle"></i> {% trans "Premium kalyan xizmati" %}</div>
+            <div class="about-feature"><i class="fa fa-check-circle"></i> {% trans "Xususiy zal va tadbir" %}</div>
+            <div class="about-feature"><i class="fa fa-check-circle"></i> {% trans "Qulay bron qilish tizimi" %}</div>
+          {% endif %}
         </div>
         <a href="{% url 'website:about' %}" class="btn btn-gold mt-24-inline">
           {% trans "Batafsil o'qish" %} <i class="fa fa-arrow-right"></i>
         </a>
       </div>
     </div>
+
+    {% comment %} SEO matni — about-grid'dan keyin, h2 section-title'siz {% endcomment %}
+    {% include 'website/partials/_seo_content.html' %}
   </div>
 </section>

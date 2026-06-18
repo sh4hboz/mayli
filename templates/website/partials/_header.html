@@ -8,11 +8,13 @@
     </a>
 
     <nav class="nav-links" id="nav-links">
+      {% with cur_url=request.resolver_match.url_name %}
       <ul>
-        <li><a href="{% url 'website:menu' %}">{% trans "Menyu" %}</a></li>
-        <li><a href="{% url 'website:about' %}">{% trans "Biz haqimizda" %}</a></li>
-        <li><a href="{% url 'website:news_list' %}">{% trans "Yangiliklar" %}</a></li>
+        <li><a href="{% url 'website:menu' %}" class="{% if cur_url == 'menu' %}active{% endif %}">{% trans "Menyu" %}</a></li>
+        <li><a href="{% url 'website:about' %}" class="{% if cur_url == 'about' %}active{% endif %}">{% trans "Biz haqimizda" %}</a></li>
+        <li><a href="{% url 'website:news_list' %}" class="{% if cur_url == 'news_list' or cur_url == 'news_detail' %}active{% endif %}">{% trans "Yangiliklar" %}</a></li>
       </ul>
+      {% endwith %}
     </nav>
 
     <div class="nav-right">
@@ -72,15 +74,17 @@
   <div class="mobile-menu-content">
     <!-- Menu Links -->
     <nav class="mobile-menu-nav">
-      <a href="{% url 'website:home' %}">{% trans "Bosh sahifa" %}</a>
-      <a href="{% url 'website:menu' %}">{% trans "Menyu" %}</a>
+      {% with cur_url=request.resolver_match.url_name %}
+      <a href="{% url 'website:home' %}" class="{% if cur_url == 'home' %}active{% endif %}">{% trans "Bosh sahifa" %}</a>
+      <a href="{% url 'website:menu' %}" class="{% if cur_url == 'menu' %}active{% endif %}">{% trans "Menyu" %}</a>
       <a href="{% url 'website:home' %}#why-us">{% trans "Nega Mayli?" %}</a>
       <a href="{% url 'website:home' %}#about-home">{% trans "Biz haqimizda" %}</a>
       <a href="{% url 'website:home' %}#promotions">{% trans "Aksiyalar" %}</a>
       <a href="{% url 'website:home' %}#gallery">{% trans "Galereya" %}</a>
       <a href="{% url 'website:home' %}#testimonials">{% trans "Sharhlar" %}</a>
-      <a href="{% url 'website:news_list' %}">{% trans "Yangiliklar" %}</a>
-      <a href="{% url 'website:about' %}">{% trans "Batafsil" %}</a>
+      <a href="{% url 'website:news_list' %}" class="{% if cur_url == 'news_list' or cur_url == 'news_detail' %}active{% endif %}">{% trans "Yangiliklar" %}</a>
+      <a href="{% url 'website:about' %}" class="{% if cur_url == 'about' %}active{% endif %}">{% trans "Batafsil" %}</a>
+      {% endwith %}
     </nav>
 
     <!-- Bottom Section -->

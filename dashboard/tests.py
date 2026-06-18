@@ -16,6 +16,7 @@ from restobar.views import staff_permissions_view
 
 from website.models import (
     News, Promotion, GalleryItem, Vacancy, JobApplication, ContactMessage,
+    SiteSettings, Feature, StatItem,
 )
 from menu.models import Category, Dish
 from crm.models import Customer, Campaign
@@ -118,6 +119,12 @@ class DashboardRenderTests(TestCase):
         cls.campaign = Campaign.objects.create(
             name='Bayram', channel='sms', template='Salom {{first_name}}',
         )
+        cls.feature = Feature.objects.create(
+            icon='fa-leaf', title='Yangi ingredientlar', text='Tavsif', order=0,
+        )
+        cls.statitem = StatItem.objects.create(
+            value='5+', label='Yil tajriba', placement='both', order=0,
+        )
 
     def setUp(self):
         self.client.force_login(self.owner)
@@ -155,6 +162,12 @@ class DashboardRenderTests(TestCase):
             ('dashboard_campaign_create', {}),
             ('dashboard_campaign_detail', {'pk': self.campaign.pk}),
             ('dashboard_campaign_edit', {'pk': self.campaign.pk}),
+            ('dashboard_feature_list', {}),
+            ('dashboard_feature_create', {}),
+            ('dashboard_feature_edit', {'pk': self.feature.pk}),
+            ('dashboard_statitem_list', {}),
+            ('dashboard_statitem_create', {}),
+            ('dashboard_statitem_edit', {'pk': self.statitem.pk}),
             ('dashboard_lock_screen', {}),
         ]
         for name, kwargs in routes:
@@ -324,3 +337,313 @@ class CampaignSendViewTests(TestCase):
         url = reverse('dashboard_campaign_send', kwargs={'pk': self.campaign.pk})
         resp = self.client.get(url)
         self.assertEqual(resp.status_code, 405)
+
+
+# ════════════════════════════════════════════════════════════════════
+# Feature CRUD testlari
+# ════════════════════════════════════════════════════════════════════
+class FeatureCRUDTests(TestCase):
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.owner = User.objects.create_user(
+            username='feat_owner', password='pass12345',
+            role=Role.OWNER, full_name='Feature Owner',
+        )
+
+    def setUp(self):
+        self.client.force_login(self.owner)
+
+    def test_create_feature(self):
+        resp = self.client.post(reverse('dashboard_feature_create'), {
+            'icon': 'fa-leaf',
+            'title_uz': 'Yangi ingredientlar',
+            'title_ru': 'Свежие ингредиенты',
+            'title_en': 'Fresh ingredients',
+            'text_uz': 'Tavsif matni',
+            'order': '0',
+            'is_active': 'on',
+        })
+        self.assertEqual(resp.status_code, 302)
+        self.assertRedirects(resp, reverse('dashboard_feature_list'), fetch_redirect_response=False)
+        self.assertTrue(Feature.objects.filter(title='Yangi ingredientlar').exists())
+
+    def test_create_feature_invalid_missing_icon(self):
+        resp = self.client.post(reverse('dashboard_feature_create'), {
+            'icon': '',
+            'title_uz': 'Sarlavha',
+            'order': '0',
+        })
+        self.assertEqual(resp.status_code, 200)
+        self.assertFalse(Feature.objects.exists())
+
+    def test_update_feature(self):
+        f = Feature.objects.create(icon='fa-leaf', title='Eski nom', order=0)
+        resp = self.client.post(reverse('dashboard_feature_edit', kwargs={'pk': f.pk}), {
+            'icon': 'fa-trophy',
+            'title_uz': 'Yangi nom',
+            'order': '1',
+            'is_active': 'on',
+        })
+        self.assertEqual(resp.status_code, 302)
+        f.refresh_from_db()
+        self.assertEqual(f.title_uz, 'Yangi nom')
+        self.assertEqual(f.icon, 'fa-trophy')
+        self.assertEqual(f.order, 1)
+
+    def test_delete_feature(self):
+        f = Feature.objects.create(icon='fa-leaf', title='O\'chiriladi', order=0)
+        resp = self.client.post(reverse('dashboard_feature_delete', kwargs={'pk': f.pk}))
+        self.assertEqual(resp.status_code, 302)
+        self.assertFalse(Feature.objects.filter(pk=f.pk).exists())
+
+    def test_toggle_active_feature(self):
+        f = Feature.objects.create(icon='fa-leaf', title='Toggle', is_active=True, order=0)
+        url = reverse('dashboard_toggle_active', kwargs={
+            'app_label': 'website', 'model_name': 'feature', 'pk': f.pk,
+        })
+        resp = self.client.post(url + '?field=is_active')
+        self.assertEqual(resp.status_code, 200)
+        f.refresh_from_db()
+        self.assertFalse(f.is_active)
+
+    def test_feature_list_shows_items(self):
+        Feature.objects.create(icon='fa-leaf', title_uz='Yangi xususiyat', order=0)
+        resp = self.client.get(reverse('dashboard_feature_list'))
+        self.assertEqual(resp.status_code, 200)
+        self.assertContains(resp, 'Yangi xususiyat')
+
+    def test_feature_order_preserved(self):
+        Feature.objects.create(icon='fa-leaf', title='Birinchi', order=1)
+        Feature.objects.create(icon='fa-trophy', title='Ikkinchi', order=2)
+        Feature.objects.create(icon='fa-smile-o', title='Uchinchi', order=0)
+        qs = list(Feature.objects.order_by('order').values_list('title', flat=True))
+        self.assertEqual(qs[0], 'Uchinchi')
+
+    def test_anon_redirected(self):
+        self.client.logout()
+        resp = self.client.get(reverse('dashboard_feature_list'))
+        self.assertEqual(resp.status_code, 302)
+
+    def test_waiter_cannot_access(self):
+        waiter = User.objects.create_user(
+            username='feat_waiter', password='pass', role=Role.WAITER,
+        )
+        self.client.force_login(waiter)
+        from django.core.exceptions import PermissionDenied
+        from dashboard.views import FeatureListView
+        from django.test import RequestFactory
+        factory = RequestFactory()
+        req = factory.get('/dashboard/website/features/')
+        req.user = waiter
+        with self.assertRaises(PermissionDenied):
+            FeatureListView.as_view()(req)
+
+
+# ════════════════════════════════════════════════════════════════════
+# StatItem CRUD testlari
+# ════════════════════════════════════════════════════════════════════
+class StatItemCRUDTests(TestCase):
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.owner = User.objects.create_user(
+            username='stat_owner', password='pass12345',
+            role=Role.OWNER, full_name='Stat Owner',
+        )
+
+    def setUp(self):
+        self.client.force_login(self.owner)
+
+    def test_create_statitem(self):
+        resp = self.client.post(reverse('dashboard_statitem_create'), {
+            'value': '200+',
+            'label_uz': 'Taom turi',
+            'label_ru': 'Видов блюд',
+            'label_en': 'Dish types',
+            'placement': 'both',
+            'order': '0',
+            'is_active': 'on',
+        })
+        self.assertEqual(resp.status_code, 302)
+        self.assertRedirects(resp, reverse('dashboard_statitem_list'), fetch_redirect_response=False)
+        self.assertTrue(StatItem.objects.filter(value='200+').exists())
+
+    def test_create_statitem_hero_only(self):
+        resp = self.client.post(reverse('dashboard_statitem_create'), {
+            'value': '100%',
+            'label_uz': 'Sifat kafolati',
+            'placement': 'hero',
+            'order': '3',
+            'is_active': 'on',
+        })
+        self.assertEqual(resp.status_code, 302)
+        s = StatItem.objects.get(value='100%')
+        self.assertEqual(s.placement, 'hero')
+
+    def test_create_statitem_stats_only(self):
+        resp = self.client.post(reverse('dashboard_statitem_create'), {
+            'value': '24/7',
+            'label_uz': 'Qo\'llab-quvvatlash',
+            'placement': 'stats',
+            'order': '3',
+            'is_active': 'on',
+        })
+        self.assertEqual(resp.status_code, 302)
+        s = StatItem.objects.get(value='24/7')
+        self.assertEqual(s.placement, 'stats')
+
+    def test_create_statitem_invalid_no_value(self):
+        resp = self.client.post(reverse('dashboard_statitem_create'), {
+            'label_uz': 'Yorliq',
+            'placement': 'both',
+            'order': '0',
+        })
+        self.assertEqual(resp.status_code, 200)
+        self.assertFalse(StatItem.objects.exists())
+
+    def test_update_statitem(self):
+        s = StatItem.objects.create(value='5+', label='Yil tajriba', placement='both', order=0)
+        resp = self.client.post(reverse('dashboard_statitem_edit', kwargs={'pk': s.pk}), {
+            'value': '10+',
+            'label_uz': 'Yil tajriba',
+            'placement': 'hero',
+            'order': '0',
+            'is_active': 'on',
+        })
+        self.assertEqual(resp.status_code, 302)
+        s.refresh_from_db()
+        self.assertEqual(s.value, '10+')
+        self.assertEqual(s.placement, 'hero')
+
+    def test_delete_statitem(self):
+        s = StatItem.objects.create(value='999', label='O\'chiriladi', placement='both', order=0)
+        resp = self.client.post(reverse('dashboard_statitem_delete', kwargs={'pk': s.pk}))
+        self.assertEqual(resp.status_code, 302)
+        self.assertFalse(StatItem.objects.filter(pk=s.pk).exists())
+
+    def test_toggle_active_statitem(self):
+        s = StatItem.objects.create(value='5+', label='Yil tajriba', placement='both', is_active=True, order=0)
+        url = reverse('dashboard_toggle_active', kwargs={
+            'app_label': 'website', 'model_name': 'statitem', 'pk': s.pk,
+        })
+        resp = self.client.post(url + '?field=is_active')
+        self.assertEqual(resp.status_code, 200)
+        s.refresh_from_db()
+        self.assertFalse(s.is_active)
+
+    def test_statitem_list_shows_items(self):
+        StatItem.objects.create(value='5+', label='Yil tajriba', placement='both', order=0)
+        resp = self.client.get(reverse('dashboard_statitem_list'))
+        self.assertEqual(resp.status_code, 200)
+        self.assertContains(resp, '5+')
+        self.assertContains(resp, 'Yil tajriba')
+
+    def test_placement_badge_in_list(self):
+        StatItem.objects.create(value='5+', label='Hero stat', placement='hero', order=0)
+        StatItem.objects.create(value='24/7', label='Stats stat', placement='stats', order=1)
+        StatItem.objects.create(value='200+', label='Both stat', placement='both', order=2)
+        resp = self.client.get(reverse('dashboard_statitem_list'))
+        self.assertContains(resp, 'Hero')
+        self.assertContains(resp, 'Stats')
+        self.assertContains(resp, 'Ikkalasi')
+
+
+# ════════════════════════════════════════════════════════════════════
+# SiteSettings yangi maydonlar testlari
+# ════════════════════════════════════════════════════════════════════
+class SiteSettingsNewFieldsTests(TestCase):
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.owner = User.objects.create_user(
+            username='settings_owner', password='pass12345',
+            role=Role.OWNER, full_name='Settings Owner',
+        )
+
+    def setUp(self):
+        self.client.force_login(self.owner)
+        SiteSettings.objects.filter(pk=1).delete()
+
+    def _post_settings(self, extra=None):
+        data = {
+            'name': 'Mayli Restobar',
+            'city': 'Termiz',
+            'tagline_uz': '', 'tagline_ru': '', 'tagline_en': '',
+            'address_uz': '', 'address_ru': '', 'address_en': '',
+            'working_hours_uz': '', 'working_hours_ru': '', 'working_hours_en': '',
+            'latitude': '37.224', 'longitude': '67.278',
+            'about_text_uz': '', 'about_text_ru': '', 'about_text_en': '',
+        }
+        if extra:
+            data.update(extra)
+        return self.client.post(reverse('dashboard_settings_website'), data)
+
+    def test_hero_fields_saved(self):
+        resp = self._post_settings({
+            'hero_title_uz': 'Mazali ta\'mlar',
+            'hero_title_accent_uz': 'Unutilmas lahzalar',
+            'hero_subtitle_uz': 'Termiz shahridagi eng shinam maskan',
+        })
+        self.assertEqual(resp.status_code, 302)
+        site = SiteSettings.get()
+        self.assertEqual(site.hero_title_uz, 'Mazali ta\'mlar')
+        self.assertEqual(site.hero_title_accent_uz, 'Unutilmas lahzalar')
+        self.assertEqual(site.hero_subtitle_uz, 'Termiz shahridagi eng shinam maskan')
+
+    def test_why_us_title_saved(self):
+        resp = self._post_settings({
+            'why_us_title_uz': 'Nima uchun biz?',
+            'why_us_title_ru': 'Почему мы?',
+        })
+        self.assertEqual(resp.status_code, 302)
+        site = SiteSettings.get()
+        self.assertEqual(site.why_us_title_uz, 'Nima uchun biz?')
+        self.assertEqual(site.why_us_title_ru, 'Почему мы?')
+
+    def test_about_teaser_fields_saved(self):
+        resp = self._post_settings({
+            'about_title_uz': 'Biz haqimizda',
+            'about_badge_value': '10+',
+            'about_badge_label_uz': 'Yil tajriba',
+            'about_features_uz': 'Halol taomlar\nPremium kalyan\nXususiy zal',
+        })
+        self.assertEqual(resp.status_code, 302)
+        site = SiteSettings.get()
+        self.assertEqual(site.about_title_uz, 'Biz haqimizda')
+        self.assertEqual(site.about_badge_value, '10+')
+        self.assertEqual(site.about_badge_label_uz, 'Yil tajriba')
+        self.assertIn('Halol taomlar', site.about_features_uz)
+
+    def test_booking_cta_fields_saved(self):
+        resp = self._post_settings({
+            'booking_cta_title_uz': 'Joyni band qiling',
+            'booking_cta_desc_uz': 'Bir necha soniyada bron qiling.',
+        })
+        self.assertEqual(resp.status_code, 302)
+        site = SiteSettings.get()
+        self.assertEqual(site.booking_cta_title_uz, 'Joyni band qiling')
+        self.assertEqual(site.booking_cta_desc_uz, 'Bir necha soniyada bron qiling.')
+
+    def test_about_page_hero_fields_saved(self):
+        resp = self._post_settings({
+            'about_page_badge_uz': 'Biz haqimizda',
+            'about_page_title_uz': 'Mayli Restobar',
+        })
+        self.assertEqual(resp.status_code, 302)
+        site = SiteSettings.get()
+        self.assertEqual(site.about_page_badge_uz, 'Biz haqimizda')
+        self.assertEqual(site.about_page_title_uz, 'Mayli Restobar')
+
+    def test_seo_content_fields_saved(self):
+        seo_body = '<h3>Sarlavha</h3><p>Matn</p>'
+        resp = self._post_settings({
+            'home_seo_body_uz': seo_body,
+            'about_seo_title_uz': 'About SEO sarlavha',
+            'about_seo_body_uz': '<p>About matni</p>',
+        })
+        self.assertEqual(resp.status_code, 302)
+        site = SiteSettings.get()
+        self.assertEqual(site.home_seo_body_uz, seo_body)
+        self.assertEqual(site.about_seo_title_uz, 'About SEO sarlavha')
+        self.assertEqual(site.about_seo_body_uz, '<p>About matni</p>')

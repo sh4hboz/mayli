@@ -3,15 +3,19 @@
 <!-- HERO -->
 <section id="hero">
   <img src="{% if site.hero_bg_image %}{{ site.hero_bg_image.url }}{% else %}{% static 'src/img/hero-bg.png' %}{% endif %}" alt="Hero Background" class="hero-bg-img">
+  {% if site.hero_video %}
+  {# Sahifa to'liq yuklangach JS data-src'ni o'qib videoni yuklaydi va rasm ustida ko'rsatadi #}
+  <video class="hero-bg-video" autoplay muted loop playsinline preload="none" data-src="{{ site.hero_video.url }}"></video>
+  {% endif %}
   <div class="hero-overlay"></div>
   <div class="container hero-content">
 
     <h1 class="hero-title">
-      {% trans "Mazali ta'mlar," %}<br>
-      <span>{% trans "Unutilmas lahzalar" %}</span>
+      {{ site.hero_title|default:_("Mazali ta'mlar,") }}<br>
+      <span>{{ site.hero_title_accent|default:_("Unutilmas lahzalar") }}</span>
     </h1>
     <p class="hero-desc">
-      {% trans "Termiz shahrining eng shinam maskanida premium taomlar, ichimliklar va kalyan xizmatidan bahramand bo'ling." %}
+      {{ site.hero_subtitle|default:_("Termiz shahrining eng shinam maskanida premium taomlar, ichimliklar va kalyan xizmatidan bahramand bo'ling.") }}
     </p>
     <div class="hero-btns">
       <button type="button" class="btn btn-primary" data-booking-open>
@@ -19,10 +23,14 @@
       </button>
     </div>
     <div class="hero-stats">
+      {% for stat in hero_stats %}
+      <div class="hero-stat"><strong>{{ stat.value }}</strong><span>{{ stat.label }}</span></div>
+      {% empty %}
       <div class="hero-stat"><strong>5+</strong><span>{% trans "Yil tajriba" %}</span></div>
       <div class="hero-stat"><strong>200+</strong><span>{% trans "Taom turi" %}</span></div>
       <div class="hero-stat"><strong>10 000+</strong><span>{% trans "Mamnun mehmon" %}</span></div>
       <div class="hero-stat"><strong>100%</strong><span>{% trans "Sifat kafolati" %}</span></div>
+      {% endfor %}
     </div>
   </div>
 </section>

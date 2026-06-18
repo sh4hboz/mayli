@@ -10,6 +10,14 @@ class SiteSettings(models.Model):
     logo_dark = models.ImageField(upload_to='site/', blank=True, null=True)
     favicon = models.ImageField(upload_to='site/', blank=True, null=True)
     hero_bg_image = models.ImageField(upload_to='site/', blank=True, null=True)
+    # Hero video (mp4): sahifa to'liq yuklangach rasm o'rniga auto-play bo'ladi.
+    # Bo'sh bo'lsa — faqat hero_bg_image (rasm) ko'rinadi.
+    hero_video = models.FileField(upload_to='site/', blank=True, null=True)
+    # Hero matnlari (uch tilli — modeltranslation). Bo'sh bo'lsa template default'i ishlaydi.
+    hero_title = models.CharField(max_length=200, blank=True)
+    hero_title_accent = models.CharField(max_length=200, blank=True)
+    hero_subtitle = models.TextField(blank=True)
+    why_us_title = models.CharField(max_length=200, blank=True)
 
     phone_main = models.CharField(max_length=20, blank=True)
     phone_secondary = models.CharField(max_length=20, blank=True)
@@ -37,6 +45,20 @@ class SiteSettings(models.Model):
 
     about_text = models.TextField(blank=True)
     about_image = models.ImageField(upload_to='site/', blank=True, null=True)
+    about_title = models.CharField(max_length=200, blank=True)
+    about_badge_value = models.CharField(max_length=20, blank=True)
+    about_badge_label = models.CharField(max_length=100, blank=True)
+    about_features = models.TextField(
+        blank=True,
+        help_text='Har qator bitta xususiyat (checkmark qatori). Bo\'sh qoldirilsa — default 4 ta qator.'
+    )
+    booking_cta_title = models.CharField(max_length=200, blank=True)
+    booking_cta_desc = models.TextField(blank=True)
+    about_page_badge = models.CharField(max_length=100, blank=True)
+    about_page_title = models.CharField(max_length=200, blank=True)
+    home_seo_body = models.TextField(blank=True)
+    about_seo_title = models.CharField(max_length=300, blank=True)
+    about_seo_body = models.TextField(blank=True)
 
     google_verify = models.CharField(max_length=200, blank=True)
     yandex_verify = models.CharField(max_length=200, blank=True)
@@ -169,6 +191,50 @@ class JobApplication(TimeStampedModel):
 
     def __str__(self):
         return f'{self.full_name} — {self.phone}'
+
+
+class StatItem(TimeStampedModel):
+    PLACEMENT_HERO = 'hero'
+    PLACEMENT_STATS = 'stats'
+    PLACEMENT_BOTH = 'both'
+    PLACEMENT_CHOICES = [
+        (PLACEMENT_HERO, 'Faqat Hero (bosh ekran)'),
+        (PLACEMENT_STATS, 'Faqat Statistika seksiyasi'),
+        (PLACEMENT_BOTH, 'Ikkalasida ham'),
+    ]
+
+    value = models.CharField(max_length=50)
+    label = models.CharField(max_length=100)
+    placement = models.CharField(max_length=10, choices=PLACEMENT_CHOICES, default=PLACEMENT_BOTH)
+    order = models.PositiveIntegerField(default=0)
+    is_active = models.BooleanField(default=True)
+
+    class Meta:
+        verbose_name = 'Statistika'
+        verbose_name_plural = 'Statistikalar'
+        ordering = ['order']
+
+    def __str__(self):
+        return f'{self.value} — {self.label}'
+
+
+class Feature(TimeStampedModel):
+    icon = models.CharField(
+        max_length=100, default='fa-check-circle',
+        help_text='Font Awesome icon class (masalan: fa-leaf, fa-trophy)'
+    )
+    title = models.CharField(max_length=200)
+    text = models.TextField(blank=True)
+    order = models.PositiveIntegerField(default=0)
+    is_active = models.BooleanField(default=True)
+
+    class Meta:
+        verbose_name = 'Xususiyat (Nega biz?)'
+        verbose_name_plural = 'Xususiyatlar (Nega biz?)'
+        ordering = ['order']
+
+    def __str__(self):
+        return self.title
 
 
 class ContactMessage(TimeStampedModel):

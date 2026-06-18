@@ -1,0 +1,129 @@
+{% extends 'management/base.html' %}
+{% load static %}
+{% block title %}{% if object %}Xususiyatni tahrirlash{% else %}Xususiyat qo'shish{% endif %} | Mayli Restobar{% endblock %}
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="page-title-box d-flex align-items-center justify-content-between">
+            <h4 class="page-title">{% if object %}Xususiyatni tahrirlash{% else %}Xususiyat qo'shish{% endif %}</h4>
+            <ol class="breadcrumb m-0">
+                <li class="breadcrumb-item"><a href="{% url 'dashboard_home' %}">Dashboard</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'dashboard_feature_list' %}">Xususiyatlar</a></li>
+                <li class="breadcrumb-item active">{% if object %}Tahrirlash{% else %}Qo'shish{% endif %}</li>
+            </ol>
+        </div>
+    </div>
+</div>
+
+{% if form.non_field_errors %}
+<div class="row justify-content-center">
+    <div class="col-lg-9">
+        <div class="alert alert-danger alert-dismissible fade show">
+            {% for error in form.non_field_errors %}<div>{{ error }}</div>{% endfor %}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<div class="row justify-content-center">
+    <div class="col-lg-9">
+        <div class="card">
+            <div class="card-header"><h5 class="card-title mb-0">{% if object %}{{ object.title_uz }}{% else %}Yangi xususiyat{% endif %}</h5></div>
+            <div class="card-body">
+                <form method="post" novalidate>
+                    {% csrf_token %}
+
+                    <!-- Ikon -->
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label">{{ form.icon.label }}<span class="text-danger">*</span></label>
+                            {{ form.icon }}
+                            {% if form.icon.help_text %}<div class="form-text">{{ form.icon.help_text }}</div>{% endif %}
+                            {% if form.icon.errors %}<div class="invalid-feedback d-block">{% for e in form.icon.errors %}{{ e }}{% endfor %}</div>{% endif %}
+                        </div>
+                        {% if object %}
+                        <div class="col-md-6 d-flex align-items-end">
+                            <div class="p-3 rounded" style="background: #1a1a2e; min-width: 80px; text-align: center;">
+                                <i class="fa {{ object.icon }} fa-2x text-warning"></i>
+                                <div class="mt-1 text-muted" style="font-size:11px;">Ko'rinish</div>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Sarlavhalar -->
+                    <div class="row g-3 mb-3">
+                        <h6 class="col-12 text-muted">Sarlavhalar</h6>
+                        <div class="col-md-4">
+                            <label class="form-label">{{ form.title_uz.label }}<span class="text-danger">*</span></label>
+                            {{ form.title_uz }}
+                            {% if form.title_uz.errors %}<div class="invalid-feedback d-block">{% for e in form.title_uz.errors %}{{ e }}{% endfor %}</div>{% endif %}
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">{{ form.title_ru.label }}</label>
+                            {{ form.title_ru }}
+                            {% if form.title_ru.errors %}<div class="invalid-feedback d-block">{% for e in form.title_ru.errors %}{{ e }}{% endfor %}</div>{% endif %}
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">{{ form.title_en.label }}</label>
+                            {{ form.title_en }}
+                            {% if form.title_en.errors %}<div class="invalid-feedback d-block">{% for e in form.title_en.errors %}{{ e }}{% endfor %}</div>{% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Matnlar -->
+                    <div class="row g-3 mb-3">
+                        <h6 class="col-12 text-muted">Tavsif matni</h6>
+                        <div class="col-md-4">
+                            <label class="form-label">{{ form.text_uz.label }}</label>
+                            {{ form.text_uz }}
+                            {% if form.text_uz.errors %}<div class="invalid-feedback d-block">{% for e in form.text_uz.errors %}{{ e }}{% endfor %}</div>{% endif %}
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">{{ form.text_ru.label }}</label>
+                            {{ form.text_ru }}
+                            {% if form.text_ru.errors %}<div class="invalid-feedback d-block">{% for e in form.text_ru.errors %}{{ e }}{% endfor %}</div>{% endif %}
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">{{ form.text_en.label }}</label>
+                            {{ form.text_en }}
+                            {% if form.text_en.errors %}<div class="invalid-feedback d-block">{% for e in form.text_en.errors %}{{ e }}{% endfor %}</div>{% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Tartib va Holat -->
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-4">
+                            <label class="form-label">{{ form.order.label }}</label>
+                            {{ form.order }}
+                            {% if form.order.errors %}<div class="invalid-feedback d-block">{% for e in form.order.errors %}{{ e }}{% endfor %}</div>{% endif %}
+                        </div>
+                        <div class="col-md-4 d-flex align-items-end">
+                            <div class="form-check">
+                                {{ form.is_active }}
+                                <label class="form-check-label" for="{{ form.is_active.id_for_label }}">{{ form.is_active.label }}</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tugmalar -->
+                    <div class="d-flex gap-2 mt-4">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="ti ti-device-floppy me-1"></i>Saqlash
+                        </button>
+                        <a href="{% url 'dashboard_feature_list' %}" class="btn btn-secondary">
+                            <i class="ti ti-arrow-left me-1"></i>Orqaga
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.form-control.is-invalid, .form-select.is-invalid, .form-check-input.is-invalid { border-color: #dc3545; }
+.invalid-feedback { color: #dc3545; font-size: 0.875rem; margin-top: 0.25rem; }
+</style>
+{% endblock %}

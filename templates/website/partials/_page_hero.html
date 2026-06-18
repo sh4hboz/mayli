@@ -3,11 +3,11 @@
 <!-- PAGE HERO -->
 <section class="page-hero">
   <div class="container">
-    <span class="section-badge">{% trans "Biz haqimizda" %}</span>
-    <h1 class="section-title">{% trans "Mayli Restobar" %}</h1>
+    <span class="section-badge">{{ site.about_page_badge|default:_("Biz haqimizda") }}</span>
+    <h1 class="section-title">{{ site.about_page_title|default:_("Mayli Restobar") }}</h1>
     <div class="breadcrumb">
       <a href="{% url 'website:home' %}">{% trans "Bosh sahifa" %}</a> /
-      <span>{% trans "Biz haqimizda" %}</span>
+      <span>{{ site.about_page_badge|default:_("Biz haqimizda") }}</span>
     </div>
   </div>
 </section>

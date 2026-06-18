@@ -72,6 +72,18 @@ urlpatterns = [
     # Tug'ilgan kun SMS tabrigi (AJAX)
     path('customers/birthday-congratulate/', views.dashboard_birthday_congratulate, name='dashboard_birthday_congratulate'),
 
+    # Statistika
+    path('website/stats/', views.StatItemListView.as_view(), name='dashboard_statitem_list'),
+    path('website/stats/add/', views.StatItemCreateView.as_view(), name='dashboard_statitem_create'),
+    path('website/stats/<int:pk>/edit/', views.StatItemUpdateView.as_view(), name='dashboard_statitem_edit'),
+    path('website/stats/<int:pk>/delete/', views.StatItemDeleteView.as_view(), name='dashboard_statitem_delete'),
+
+    # "Nega biz?" xususiyatlari
+    path('website/features/', views.FeatureListView.as_view(), name='dashboard_feature_list'),
+    path('website/features/add/', views.FeatureCreateView.as_view(), name='dashboard_feature_create'),
+    path('website/features/<int:pk>/edit/', views.FeatureUpdateView.as_view(), name='dashboard_feature_edit'),
+    path('website/features/<int:pk>/delete/', views.FeatureDeleteView.as_view(), name='dashboard_feature_delete'),
+
     # Universal AJAX toggle active
     path('toggle-active/<str:app_label>/<str:model_name>/<int:pk>/', views.toggle_active_ajax, name='dashboard_toggle_active'),
 

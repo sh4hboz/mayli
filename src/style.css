@@ -103,6 +103,21 @@ header.scrolled {
     color: var(--primary-color);
 }
 
+/* Joriy sahifa linki (active) */
+.nav-links a.active {
+    color: var(--gold) !important;
+    position: relative;
+}
+.nav-links a.active::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -6px;
+    height: 2px;
+    background: var(--gold);
+}
+
 .mobile-menu-btn {
     display: none;
     font-size: 1.5rem;
@@ -163,6 +178,23 @@ header.scrolled {
     z-index: 0;
 }
 
+/* Hero video — rasm ustida, tayyor bo'lganda yumshoq paydo bo'ladi */
+.hero-bg-video {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 0;
+    opacity: 0;
+    transition: opacity .6s ease;
+    pointer-events: none;
+}
+.hero-bg-video.is-ready {
+    opacity: 1;
+}
+
 .hero-overlay {
     position: absolute;
     top: 0;
@@ -213,7 +245,7 @@ header.scrolled {
 
 /* Sections */
 section {
-    padding: 100px 0;
+    padding: 70px 0;
 }
 
 .section-title {
@@ -1330,7 +1362,6 @@ small.field-error { display:block; margin-top:6px; color:#ff9999; font-size:.82r
 .footer-bottom p { font-size:.82rem; color:var(--text-muted); text-align:center; }
 
 /* ===== SPACING ===== */
-.section { padding:80px 0; }
 .section-sm { padding:48px 0; }
 .mb-0{margin-bottom:0} .mt-0{margin-top:0}
 .text-center { text-align:center; }
@@ -1418,6 +1449,11 @@ small.field-error { display:block; margin-top:6px; color:#ff9999; font-size:.82r
 
 .mobile-menu-nav a:hover {
   color: var(--gold);
+}
+
+.mobile-menu-nav a.active {
+  color: var(--gold);
+  font-weight: 700;
 }
 
 .mobile-menu-bottom {
@@ -1563,7 +1599,7 @@ body.menu-open { overflow:hidden; }
 /* ===== UTILITY & CLEANUP CLASSES ===== */
 .text-muted-lh { color: var(--text-muted); line-height: 1.8; margin-bottom: 16px; }
 .section-dark2 { background: var(--dark2); }
-.stats-clean { padding: 0 !important; border: none !important; justify-content: space-around !important; }
+.stats-clean { padding: 0 !important; border: none !important; margin: 0 !important; justify-content: space-around !important; }
 .mb-12 { margin-bottom: 12px; }
 .mb-8 { margin-bottom: 8px; }
 .mt-32 { margin-top: 32px; }
@@ -2142,6 +2178,8 @@ body.modal-open { overflow: hidden; }
 .seo-content { background: var(--dark, #0a0a0a); }
 .seo-content .section-title { text-align: center; margin-bottom: 32px; }
 .seo-content-body { max-width: 880px; margin: 0 auto; }
+/* about-home seksiyasi ichida (about-grid'dan keyin) — yuqoridan bo'shliq */
+.about-section .seo-content-body { margin-top: 48px; }
 .seo-content-body h3 {
   color: var(--gold-light, #e0c07a);
   font-size: 1.15rem;
