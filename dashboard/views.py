@@ -16,7 +16,12 @@ from accounts.models import Role
 from website.models import SiteSettings, News, Promotion, GalleryItem, Vacancy, JobApplication, ContactMessage, Feature, StatItem
 from menu.models import Category, Dish
 from crm.models import Customer, Tag, Gender, CustomerSource, Campaign, CampaignLog
-from .forms import SiteSettingsForm, NewsForm, PromotionForm, GalleryItemForm, VacancyForm, CategoryForm, DishForm, CustomerForm, CampaignForm, FeatureForm, StatItemForm
+from .forms import (
+    SiteSettingsGeneralForm, SiteSettingsLocationForm, SiteSettingsHeroForm,
+    SiteSettingsHomeContentForm, SiteSettingsSeoForm,
+    NewsForm, PromotionForm, GalleryItemForm, VacancyForm, CategoryForm,
+    DishForm, CustomerForm, CampaignForm, FeatureForm, StatItemForm,
+)
 
 
 @login_required(login_url='/login/')
@@ -168,15 +173,63 @@ class WebPReportMixin:
         return response
 
 
-# --- Sayt sozlamalari (Site Settings) ---
-class SiteSettingsUpdateView(CMSBaseMixin, SuccessMessageMixin, UpdateView):
+# --- Sayt sozlamalari (Site Settings) — 5 ta alohida bo'lim ---
+class SiteSettingsSectionView(CMSBaseMixin, SuccessMessageMixin, UpdateView):
+    """Sayt sozlamalarining bitta bo'limi uchun tayanch view.
+
+    Hammasi bitta SiteSettings (singleton) ni tahrirlaydi; har bo'lim faqat
+    o'z formasidagi maydonlarni saqlaydi. `active_tab` — yuqoridagi bo'lim
+    navigatsiyasida joriy bo'limni belgilash uchun.
+    """
     model = SiteSettings
-    form_class = SiteSettingsForm
-    template_name = 'management/website/settings.html'
-    success_url = reverse_lazy('dashboard_settings_website')
+    active_tab = ''
+    success_message_update = "Sozlamalar saqlandi."
 
     def get_object(self, queryset=None):
         return SiteSettings.get()
+
+    def get_success_message(self, cleaned_data=None):
+        return self.success_message_update
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        ctx['active_tab'] = self.active_tab
+        return ctx
+
+
+class SiteSettingsGeneralView(SiteSettingsSectionView):
+    form_class = SiteSettingsGeneralForm
+    template_name = 'management/website/settings.html'
+    success_url = reverse_lazy('dashboard_settings_website')
+    active_tab = 'general'
+
+
+class SiteSettingsLocationView(SiteSettingsSectionView):
+    form_class = SiteSettingsLocationForm
+    template_name = 'management/website/settings_location.html'
+    success_url = reverse_lazy('dashboard_settings_location')
+    active_tab = 'location'
+
+
+class SiteSettingsHeroView(SiteSettingsSectionView):
+    form_class = SiteSettingsHeroForm
+    template_name = 'management/website/settings_hero.html'
+    success_url = reverse_lazy('dashboard_settings_hero')
+    active_tab = 'hero'
+
+
+class SiteSettingsHomeContentView(SiteSettingsSectionView):
+    form_class = SiteSettingsHomeContentForm
+    template_name = 'management/website/settings_home.html'
+    success_url = reverse_lazy('dashboard_settings_home')
+    active_tab = 'home'
+
+
+class SiteSettingsSeoView(SiteSettingsSectionView):
+    form_class = SiteSettingsSeoForm
+    template_name = 'management/website/settings_seo.html'
+    success_url = reverse_lazy('dashboard_settings_seo')
+    active_tab = 'seo'
 
 
 # --- Yangiliklar (News) ---

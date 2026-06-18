@@ -1,0 +1,50 @@
+{% extends 'management/website/settings_base.html' %}
+{% block settings_inner %}
+<div class="card mb-3">
+    <div class="card-header"><h5 class="card-title mb-0">Manzil va ish vaqti</h5></div>
+    <div class="card-body">
+        <div class="row g-3">
+            <div class="col-md-4">
+                <label class="form-label">{{ form.address_uz.label }}</label>{{ form.address_uz }}
+                {% if form.address_uz.errors %}<div class="invalid-feedback d-block">{% for e in form.address_uz.errors %}{{ e }}{% endfor %}</div>{% endif %}
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">{{ form.address_ru.label }}</label>{{ form.address_ru }}
+                {% if form.address_ru.errors %}<div class="invalid-feedback d-block">{% for e in form.address_ru.errors %}{{ e }}{% endfor %}</div>{% endif %}
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">{{ form.address_en.label }}</label>{{ form.address_en }}
+                {% if form.address_en.errors %}<div class="invalid-feedback d-block">{% for e in form.address_en.errors %}{{ e }}{% endfor %}</div>{% endif %}
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Shahar<span class="text-danger">*</span></label>{{ form.city }}
+                {% if form.city.errors %}<div class="invalid-feedback d-block">{% for e in form.city.errors %}{{ e }}{% endfor %}</div>{% endif %}
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">{{ form.working_hours_uz.label }}</label>{{ form.working_hours_uz }}
+                {% if form.working_hours_uz.errors %}<div class="invalid-feedback d-block">{% for e in form.working_hours_uz.errors %}{{ e }}{% endfor %}</div>{% endif %}
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">{{ form.working_hours_ru.label }}</label>{{ form.working_hours_ru }}
+                {% if form.working_hours_ru.errors %}<div class="invalid-feedback d-block">{% for e in form.working_hours_ru.errors %}{{ e }}{% endfor %}</div>{% endif %}
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">{{ form.working_hours_en.label }}</label>{{ form.working_hours_en }}
+                {% if form.working_hours_en.errors %}<div class="invalid-feedback d-block">{% for e in form.working_hours_en.errors %}{{ e }}{% endfor %}</div>{% endif %}
+            </div>
+            <div class="col-md-6">
+                <label class="form-label">{{ form.latitude.label }}</label>{{ form.latitude }}
+                {% if form.latitude.errors %}<div class="invalid-feedback d-block">{% for e in form.latitude.errors %}{{ e }}{% endfor %}</div>{% endif %}
+            </div>
+            <div class="col-md-6">
+                <label class="form-label">{{ form.longitude.label }}</label>{{ form.longitude }}
+                {% if form.longitude.errors %}<div class="invalid-feedback d-block">{% for e in form.longitude.errors %}{{ e }}{% endfor %}</div>{% endif %}
+            </div>
+            <div class="col-12">
+                <label class="form-label">{{ form.map_embed_code.label }}</label>{{ form.map_embed_code }}
+                {% if form.map_embed_code.errors %}<div class="invalid-feedback d-block">{% for e in form.map_embed_code.errors %}{{ e }}{% endfor %}</div>{% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,89 @@
+{% extends 'management/website/settings_base.html' %}
+{% block settings_inner %}
+<div class="card mb-3">
+    <div class="card-header"><h5 class="card-title mb-0">SEO — Texnik</h5></div>
+    <div class="card-body">
+        <div class="row g-3">
+            <div class="col-md-4">
+                <label class="form-label">{{ form.google_verify.label }}</label>{{ form.google_verify }}
+                {% if form.google_verify.errors %}<div class="invalid-feedback d-block">{% for e in form.google_verify.errors %}{{ e }}{% endfor %}</div>{% endif %}
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">{{ form.yandex_verify.label }}</label>{{ form.yandex_verify }}
+                {% if form.yandex_verify.errors %}<div class="invalid-feedback d-block">{% for e in form.yandex_verify.errors %}{{ e }}{% endfor %}</div>{% endif %}
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">{{ form.google_analytics_id.label }}</label>{{ form.google_analytics_id }}
+                {% if form.google_analytics_id.errors %}<div class="invalid-feedback d-block">{% for e in form.google_analytics_id.errors %}{{ e }}{% endfor %}</div>{% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card mb-3">
+    <div class="card-header"><h5 class="card-title mb-0">SEO — Bosh sahifa matni <small class="text-muted fw-normal">(about seksiyasi ichida)</small></h5></div>
+    <div class="card-body">
+        <p class="text-muted small mb-3">HTML teglari ishlatish mumkin: <code>&lt;h3&gt;</code>, <code>&lt;p&gt;</code>, <code>&lt;strong&gt;</code>. Bo'sh qoldirilsa — default matn ko'rinadi.</p>
+        <ul class="nav nav-tabs mb-3" id="homeSeoTab">
+            <li class="nav-item"><a class="nav-link active" data-bs-toggle="tab" href="#homeSeoUz">UZ</a></li>
+            <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#homeSeoRu">RU</a></li>
+            <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#homeSeoEn">EN</a></li>
+        </ul>
+        <div class="tab-content">
+            <div class="tab-pane fade show active" id="homeSeoUz">
+                {{ form.home_seo_body_uz }}
+                {% if form.home_seo_body_uz.errors %}<div class="invalid-feedback d-block">{% for e in form.home_seo_body_uz.errors %}{{ e }}{% endfor %}</div>{% endif %}
+            </div>
+            <div class="tab-pane fade" id="homeSeoRu">
+                {{ form.home_seo_body_ru }}
+                {% if form.home_seo_body_ru.errors %}<div class="invalid-feedback d-block">{% for e in form.home_seo_body_ru.errors %}{{ e }}{% endfor %}</div>{% endif %}
+            </div>
+            <div class="tab-pane fade" id="homeSeoEn">
+                {{ form.home_seo_body_en }}
+                {% if form.home_seo_body_en.errors %}<div class="invalid-feedback d-block">{% for e in form.home_seo_body_en.errors %}{{ e }}{% endfor %}</div>{% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card mb-3">
+    <div class="card-header"><h5 class="card-title mb-0">SEO — Biz haqimizda sahifasi matni</h5></div>
+    <div class="card-body">
+        <p class="text-muted small mb-3">HTML teglari ishlatish mumkin: <code>&lt;h3&gt;</code>, <code>&lt;p&gt;</code>, <code>&lt;strong&gt;</code>. Bo'sh qoldirilsa — default matn ko'rinadi.</p>
+        <div class="row g-3 mb-3">
+            <h6 class="col-12 text-muted">Sarlavha (h2)</h6>
+            <div class="col-md-4">
+                <label class="form-label">Sarlavha (uz)</label>{{ form.about_seo_title_uz }}
+                {% if form.about_seo_title_uz.errors %}<div class="invalid-feedback d-block">{% for e in form.about_seo_title_uz.errors %}{{ e }}{% endfor %}</div>{% endif %}
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Sarlavha (ru)</label>{{ form.about_seo_title_ru }}
+                {% if form.about_seo_title_ru.errors %}<div class="invalid-feedback d-block">{% for e in form.about_seo_title_ru.errors %}{{ e }}{% endfor %}</div>{% endif %}
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Sarlavha (en)</label>{{ form.about_seo_title_en }}
+                {% if form.about_seo_title_en.errors %}<div class="invalid-feedback d-block">{% for e in form.about_seo_title_en.errors %}{{ e }}{% endfor %}</div>{% endif %}
+            </div>
+        </div>
+        <ul class="nav nav-tabs mb-3" id="aboutSeoTab">
+            <li class="nav-item"><a class="nav-link active" data-bs-toggle="tab" href="#aboutSeoUz">UZ</a></li>
+            <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#aboutSeoRu">RU</a></li>
+            <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#aboutSeoEn">EN</a></li>
+        </ul>
+        <div class="tab-content">
+            <div class="tab-pane fade show active" id="aboutSeoUz">
+                {{ form.about_seo_body_uz }}
+                {% if form.about_seo_body_uz.errors %}<div class="invalid-feedback d-block">{% for e in form.about_seo_body_uz.errors %}{{ e }}{% endfor %}</div>{% endif %}
+            </div>
+            <div class="tab-pane fade" id="aboutSeoRu">
+                {{ form.about_seo_body_ru }}
+                {% if form.about_seo_body_ru.errors %}<div class="invalid-feedback d-block">{% for e in form.about_seo_body_ru.errors %}{{ e }}{% endfor %}</div>{% endif %}
+            </div>
+            <div class="tab-pane fade" id="aboutSeoEn">
+                {{ form.about_seo_body_en }}
+                {% if form.about_seo_body_en.errors %}<div class="invalid-feedback d-block">{% for e in form.about_seo_body_en.errors %}{{ e }}{% endfor %}</div>{% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

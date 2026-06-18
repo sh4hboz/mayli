@@ -4,8 +4,12 @@ from . import views
 urlpatterns = [
     path('', views.dashboard_home, name='dashboard_home'),
 
-    # Sayt sozlamalari
-    path('settings/website/', views.SiteSettingsUpdateView.as_view(), name='dashboard_settings_website'),
+    # Sayt sozlamalari — 5 ta alohida bo'lim
+    path('settings/website/', views.SiteSettingsGeneralView.as_view(), name='dashboard_settings_website'),
+    path('settings/website/location/', views.SiteSettingsLocationView.as_view(), name='dashboard_settings_location'),
+    path('settings/website/hero/', views.SiteSettingsHeroView.as_view(), name='dashboard_settings_hero'),
+    path('settings/website/home/', views.SiteSettingsHomeContentView.as_view(), name='dashboard_settings_home'),
+    path('settings/website/seo/', views.SiteSettingsSeoView.as_view(), name='dashboard_settings_seo'),
 
     # Yangiliklar
     path('website/news/', views.NewsListView.as_view(), name='dashboard_news_list'),

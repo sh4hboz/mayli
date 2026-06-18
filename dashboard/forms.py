@@ -70,57 +70,104 @@ class WebPModelForm(BootstrapModelForm):
         return cleaned
 
 
-class SiteSettingsForm(BootstrapModelForm):
+# ─────────────────────────────────────────────────────────────────────
+# Sayt sozlamalari — bitta katta forma o'rniga 5 ta alohida bo'lim.
+# Har biri bitta SiteSettings (singleton) ni tahrirlaydi; har bo'lim faqat
+# o'z maydonlarini validatsiya qiladi (shu bois bir bo'limdagi majburiy
+# maydon boshqa bo'limni saqlashga to'sqinlik qilmaydi).
+# ─────────────────────────────────────────────────────────────────────
+
+class SiteSettingsGeneralForm(BootstrapModelForm):
+    """1-bo'lim — Asosiy / Kontakt: nom, tagline, telefon, email, ijtimoiy, favicon."""
     class Meta:
         model = SiteSettings
         fields = [
             'name', 'tagline_uz', 'tagline_ru', 'tagline_en',
-            'logo', 'logo_dark', 'favicon', 'about_image',
+            'phone_main', 'phone_secondary', 'email',
+            'instagram_url', 'telegram_channel_url', 'telegram_bot_url',
+            'favicon',
+        ]
+
+
+class SiteSettingsLocationForm(BootstrapModelForm):
+    """2-bo'lim — Manzil va xarita."""
+    class Meta:
+        model = SiteSettings
+        fields = [
+            'address_uz', 'address_ru', 'address_en', 'city',
+            'working_hours_uz', 'working_hours_ru', 'working_hours_en',
+            'latitude', 'longitude', 'map_embed_code',
+        ]
+        widgets = {
+            'map_embed_code': forms.Textarea(attrs={'rows': 3}),
+        }
+
+
+class SiteSettingsHeroForm(BootstrapModelForm):
+    """3-bo'lim — Bosh sahifa Hero + "Biz haqimizda" sahifasi hero."""
+    class Meta:
+        model = SiteSettings
+        fields = [
             'hero_bg_image', 'hero_video',
             'hero_title_uz', 'hero_title_ru', 'hero_title_en',
             'hero_title_accent_uz', 'hero_title_accent_ru', 'hero_title_accent_en',
             'hero_subtitle_uz', 'hero_subtitle_ru', 'hero_subtitle_en',
-            'why_us_title_uz', 'why_us_title_ru', 'why_us_title_en',
-            'phone_main', 'phone_secondary', 'email',
-            'address_uz', 'address_ru', 'address_en', 'city',
-            'working_hours_uz', 'working_hours_ru', 'working_hours_en',
-            'instagram_url', 'telegram_channel_url', 'telegram_bot_url',
-            'latitude', 'longitude', 'map_embed_code',
-            'about_text_uz', 'about_text_ru', 'about_text_en',
+            'about_page_badge_uz', 'about_page_badge_ru', 'about_page_badge_en',
+            'about_page_title_uz', 'about_page_title_ru', 'about_page_title_en',
+        ]
+        widgets = {
+            'hero_subtitle_uz': forms.Textarea(attrs={'rows': 2}),
+            'hero_subtitle_ru': forms.Textarea(attrs={'rows': 2}),
+            'hero_subtitle_en': forms.Textarea(attrs={'rows': 2}),
+            'hero_video': forms.ClearableFileInput(attrs={'accept': 'video/mp4,video/webm'}),
+        }
+
+
+class SiteSettingsHomeContentForm(BootstrapModelForm):
+    """4-bo'lim — Bosh sahifa kontenti: about seksiyasi, Bron CTA, "Nega biz?"."""
+    class Meta:
+        model = SiteSettings
+        fields = [
+            'about_image',
             'about_title_uz', 'about_title_ru', 'about_title_en',
+            'about_text_uz', 'about_text_ru', 'about_text_en',
             'about_badge_value',
             'about_badge_label_uz', 'about_badge_label_ru', 'about_badge_label_en',
             'about_features_uz', 'about_features_ru', 'about_features_en',
             'booking_cta_title_uz', 'booking_cta_title_ru', 'booking_cta_title_en',
             'booking_cta_desc_uz', 'booking_cta_desc_ru', 'booking_cta_desc_en',
-            'about_page_badge_uz', 'about_page_badge_ru', 'about_page_badge_en',
-            'about_page_title_uz', 'about_page_title_ru', 'about_page_title_en',
-            'home_seo_body_uz', 'home_seo_body_ru', 'home_seo_body_en',
-            'about_seo_title_uz', 'about_seo_title_ru', 'about_seo_title_en',
-            'about_seo_body_uz', 'about_seo_body_ru', 'about_seo_body_en',
-            'google_verify', 'yandex_verify', 'google_analytics_id'
+            'why_us_title_uz', 'why_us_title_ru', 'why_us_title_en',
         ]
         widgets = {
-            'map_embed_code': forms.Textarea(attrs={'rows': 3}),
             'about_text_uz': forms.Textarea(attrs={'rows': 4}),
             'about_text_ru': forms.Textarea(attrs={'rows': 4}),
             'about_text_en': forms.Textarea(attrs={'rows': 4}),
-            'hero_subtitle_uz': forms.Textarea(attrs={'rows': 2}),
-            'hero_subtitle_ru': forms.Textarea(attrs={'rows': 2}),
-            'hero_subtitle_en': forms.Textarea(attrs={'rows': 2}),
-            'hero_video': forms.ClearableFileInput(attrs={'accept': 'video/mp4,video/webm'}),
-            'home_seo_body_uz': forms.Textarea(attrs={'rows': 12}),
-            'home_seo_body_ru': forms.Textarea(attrs={'rows': 12}),
-            'home_seo_body_en': forms.Textarea(attrs={'rows': 12}),
-            'about_seo_body_uz': forms.Textarea(attrs={'rows': 12}),
-            'about_seo_body_ru': forms.Textarea(attrs={'rows': 12}),
-            'about_seo_body_en': forms.Textarea(attrs={'rows': 12}),
             'about_features_uz': forms.Textarea(attrs={'rows': 5}),
             'about_features_ru': forms.Textarea(attrs={'rows': 5}),
             'about_features_en': forms.Textarea(attrs={'rows': 5}),
             'booking_cta_desc_uz': forms.Textarea(attrs={'rows': 2}),
             'booking_cta_desc_ru': forms.Textarea(attrs={'rows': 2}),
             'booking_cta_desc_en': forms.Textarea(attrs={'rows': 2}),
+        }
+
+
+class SiteSettingsSeoForm(BootstrapModelForm):
+    """5-bo'lim — SEO: verifikatsiya, GA4, SEO matnlari."""
+    class Meta:
+        model = SiteSettings
+        fields = [
+            'google_verify', 'yandex_verify', 'google_analytics_id',
+            'home_seo_body_uz', 'home_seo_body_ru', 'home_seo_body_en',
+            'about_seo_title_uz', 'about_seo_title_ru', 'about_seo_title_en',
+            'about_seo_body_uz', 'about_seo_body_ru', 'about_seo_body_en',
+        ]
+        widgets = {
+            'home_seo_body_uz': forms.Textarea(attrs={'rows': 12}),
+            'home_seo_body_ru': forms.Textarea(attrs={'rows': 12}),
+            'home_seo_body_en': forms.Textarea(attrs={'rows': 12}),
+            'about_seo_body_uz': forms.Textarea(attrs={'rows': 12}),
+            'about_seo_body_ru': forms.Textarea(attrs={'rows': 12}),
+            'about_seo_body_en': forms.Textarea(attrs={'rows': 12}),
         }
 
 class NewsForm(WebPModelForm):

@@ -1,0 +1,93 @@
+{% extends 'management/website/settings_base.html' %}
+{% block settings_inner %}
+<div class="card mb-3">
+    <div class="card-header"><h5 class="card-title mb-0">Hero (Bosh sahifa bosh ekrani)</h5></div>
+    <div class="card-body">
+        <div class="row g-3">
+            <div class="col-md-6">
+                <label class="form-label">{{ form.hero_bg_image.label }} <small class="text-muted">(rasm yoki GIF)</small></label>{{ form.hero_bg_image }}
+                {% if site.hero_bg_image %}<small class="text-muted d-block mt-1">Joriy: <a href="{{ site.hero_bg_image.url }}" target="_blank">{{ site.hero_bg_image.name }}</a></small>{% endif %}
+                {% if form.hero_bg_image.errors %}<div class="invalid-feedback d-block">{% for e in form.hero_bg_image.errors %}{{ e }}{% endfor %}</div>{% endif %}
+            </div>
+            <div class="col-md-6">
+                <label class="form-label">{{ form.hero_video.label }} <small class="text-muted">(ixtiyoriy mp4 — sahifa yuklangach avto-play; bo'lmasa rasm turadi)</small></label>{{ form.hero_video }}
+                {% if site.hero_video %}<small class="text-muted d-block mt-1">Joriy: <a href="{{ site.hero_video.url }}" target="_blank">{{ site.hero_video.name }}</a></small>{% endif %}
+                {% if form.hero_video.errors %}<div class="invalid-feedback d-block">{% for e in form.hero_video.errors %}{{ e }}{% endfor %}</div>{% endif %}
+            </div>
+            <div class="col-12"><hr class="my-1"></div>
+            <div class="col-md-4">
+                <label class="form-label">Sarlavha (uz)</label>{{ form.hero_title_uz }}
+                {% if form.hero_title_uz.errors %}<div class="invalid-feedback d-block">{% for e in form.hero_title_uz.errors %}{{ e }}{% endfor %}</div>{% endif %}
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Sarlavha (ru)</label>{{ form.hero_title_ru }}
+                {% if form.hero_title_ru.errors %}<div class="invalid-feedback d-block">{% for e in form.hero_title_ru.errors %}{{ e }}{% endfor %}</div>{% endif %}
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Sarlavha (en)</label>{{ form.hero_title_en }}
+                {% if form.hero_title_en.errors %}<div class="invalid-feedback d-block">{% for e in form.hero_title_en.errors %}{{ e }}{% endfor %}</div>{% endif %}
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Sarlavha — oltin qism (uz)</label>{{ form.hero_title_accent_uz }}
+                {% if form.hero_title_accent_uz.errors %}<div class="invalid-feedback d-block">{% for e in form.hero_title_accent_uz.errors %}{{ e }}{% endfor %}</div>{% endif %}
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Sarlavha — oltin qism (ru)</label>{{ form.hero_title_accent_ru }}
+                {% if form.hero_title_accent_ru.errors %}<div class="invalid-feedback d-block">{% for e in form.hero_title_accent_ru.errors %}{{ e }}{% endfor %}</div>{% endif %}
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Sarlavha — oltin qism (en)</label>{{ form.hero_title_accent_en }}
+                {% if form.hero_title_accent_en.errors %}<div class="invalid-feedback d-block">{% for e in form.hero_title_accent_en.errors %}{{ e }}{% endfor %}</div>{% endif %}
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Tavsif (uz)</label>{{ form.hero_subtitle_uz }}
+                {% if form.hero_subtitle_uz.errors %}<div class="invalid-feedback d-block">{% for e in form.hero_subtitle_uz.errors %}{{ e }}{% endfor %}</div>{% endif %}
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Tavsif (ru)</label>{{ form.hero_subtitle_ru }}
+                {% if form.hero_subtitle_ru.errors %}<div class="invalid-feedback d-block">{% for e in form.hero_subtitle_ru.errors %}{{ e }}{% endfor %}</div>{% endif %}
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Tavsif (en)</label>{{ form.hero_subtitle_en }}
+                {% if form.hero_subtitle_en.errors %}<div class="invalid-feedback d-block">{% for e in form.hero_subtitle_en.errors %}{{ e }}{% endfor %}</div>{% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card mb-3">
+    <div class="card-header"><h5 class="card-title mb-0">"Biz haqimizda" sahifasi hero</h5></div>
+    <div class="card-body">
+        <div class="row g-3 mb-3">
+            <h6 class="col-12 text-muted">Badge <small class="text-muted fw-normal">(kichik yorliq, bo'sh: "Biz haqimizda")</small></h6>
+            <div class="col-md-4">
+                <label class="form-label">UZ</label>{{ form.about_page_badge_uz }}
+                {% if form.about_page_badge_uz.errors %}<div class="invalid-feedback d-block">{% for e in form.about_page_badge_uz.errors %}{{ e }}{% endfor %}</div>{% endif %}
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">RU</label>{{ form.about_page_badge_ru }}
+                {% if form.about_page_badge_ru.errors %}<div class="invalid-feedback d-block">{% for e in form.about_page_badge_ru.errors %}{{ e }}{% endfor %}</div>{% endif %}
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">EN</label>{{ form.about_page_badge_en }}
+                {% if form.about_page_badge_en.errors %}<div class="invalid-feedback d-block">{% for e in form.about_page_badge_en.errors %}{{ e }}{% endfor %}</div>{% endif %}
+            </div>
+        </div>
+        <div class="row g-3">
+            <h6 class="col-12 text-muted">H1 sarlavha <small class="text-muted fw-normal">(bo'sh: "Mayli Restobar")</small></h6>
+            <div class="col-md-4">
+                <label class="form-label">UZ</label>{{ form.about_page_title_uz }}
+                {% if form.about_page_title_uz.errors %}<div class="invalid-feedback d-block">{% for e in form.about_page_title_uz.errors %}{{ e }}{% endfor %}</div>{% endif %}
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">RU</label>{{ form.about_page_title_ru }}
+                {% if form.about_page_title_ru.errors %}<div class="invalid-feedback d-block">{% for e in form.about_page_title_ru.errors %}{{ e }}{% endfor %}</div>{% endif %}
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">EN</label>{{ form.about_page_title_en }}
+                {% if form.about_page_title_en.errors %}<div class="invalid-feedback d-block">{% for e in form.about_page_title_en.errors %}{{ e }}{% endfor %}</div>{% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,140 @@
+{% extends 'management/website/settings_base.html' %}
+{% block settings_inner %}
+<div class="card mb-3">
+    <div class="card-header"><h5 class="card-title mb-0">Biz haqimizda seksiyasi (about-home)</h5></div>
+    <div class="card-body">
+        <div class="row g-3 mb-3">
+            <div class="col-md-4">
+                <label class="form-label">{{ form.about_image.label }} <small class="text-muted">(seksiya rasmi)</small></label>{{ form.about_image }}
+                {% if site.about_image %}<small class="text-muted d-block mt-1">Joriy: <a href="{{ site.about_image.url }}" target="_blank">{{ site.about_image.name }}</a></small>{% endif %}
+                {% if form.about_image.errors %}<div class="invalid-feedback d-block">{% for e in form.about_image.errors %}{{ e }}{% endfor %}</div>{% endif %}
+            </div>
+        </div>
+        <div class="row g-3 mb-3">
+            <h6 class="col-12 text-muted">H2 sarlavha</h6>
+            <div class="col-md-4">
+                <label class="form-label">Sarlavha (uz) <small class="text-muted">— bo'sh: "Mayli — sifat va lazzat markazi"</small></label>{{ form.about_title_uz }}
+                {% if form.about_title_uz.errors %}<div class="invalid-feedback d-block">{% for e in form.about_title_uz.errors %}{{ e }}{% endfor %}</div>{% endif %}
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Sarlavha (ru)</label>{{ form.about_title_ru }}
+                {% if form.about_title_ru.errors %}<div class="invalid-feedback d-block">{% for e in form.about_title_ru.errors %}{{ e }}{% endfor %}</div>{% endif %}
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Sarlavha (en)</label>{{ form.about_title_en }}
+                {% if form.about_title_en.errors %}<div class="invalid-feedback d-block">{% for e in form.about_title_en.errors %}{{ e }}{% endfor %}</div>{% endif %}
+            </div>
+        </div>
+        <div class="row g-3 mb-3">
+            <h6 class="col-12 text-muted">Tavsif matni <small class="text-muted fw-normal">(seksiya paragrafi)</small></h6>
+            <div class="col-md-4">
+                <label class="form-label">UZ</label>{{ form.about_text_uz }}
+                {% if form.about_text_uz.errors %}<div class="invalid-feedback d-block">{% for e in form.about_text_uz.errors %}{{ e }}{% endfor %}</div>{% endif %}
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">RU</label>{{ form.about_text_ru }}
+                {% if form.about_text_ru.errors %}<div class="invalid-feedback d-block">{% for e in form.about_text_ru.errors %}{{ e }}{% endfor %}</div>{% endif %}
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">EN</label>{{ form.about_text_en }}
+                {% if form.about_text_en.errors %}<div class="invalid-feedback d-block">{% for e in form.about_text_en.errors %}{{ e }}{% endfor %}</div>{% endif %}
+            </div>
+        </div>
+        <div class="row g-3 mb-3">
+            <h6 class="col-12 text-muted">Rasm ustidagi badge</h6>
+            <div class="col-md-3">
+                <label class="form-label">Raqam <small class="text-muted">(bo'sh: 5+)</small></label>{{ form.about_badge_value }}
+                {% if form.about_badge_value.errors %}<div class="invalid-feedback d-block">{% for e in form.about_badge_value.errors %}{{ e }}{% endfor %}</div>{% endif %}
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">Yorliq (uz) <small class="text-muted">(bo'sh: Yil tajriba)</small></label>{{ form.about_badge_label_uz }}
+                {% if form.about_badge_label_uz.errors %}<div class="invalid-feedback d-block">{% for e in form.about_badge_label_uz.errors %}{{ e }}{% endfor %}</div>{% endif %}
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">Yorliq (ru)</label>{{ form.about_badge_label_ru }}
+                {% if form.about_badge_label_ru.errors %}<div class="invalid-feedback d-block">{% for e in form.about_badge_label_ru.errors %}{{ e }}{% endfor %}</div>{% endif %}
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">Yorliq (en)</label>{{ form.about_badge_label_en }}
+                {% if form.about_badge_label_en.errors %}<div class="invalid-feedback d-block">{% for e in form.about_badge_label_en.errors %}{{ e }}{% endfor %}</div>{% endif %}
+            </div>
+        </div>
+        <div class="row g-3">
+            <h6 class="col-12 text-muted">Checkmark qatorlari <small class="text-muted fw-normal">(har qator bitta xususiyat; bo'sh bo'lsa — 4 ta default qator)</small></h6>
+            <div class="col-md-4">
+                <label class="form-label">UZ</label>{{ form.about_features_uz }}
+                {% if form.about_features_uz.errors %}<div class="invalid-feedback d-block">{% for e in form.about_features_uz.errors %}{{ e }}{% endfor %}</div>{% endif %}
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">RU</label>{{ form.about_features_ru }}
+                {% if form.about_features_ru.errors %}<div class="invalid-feedback d-block">{% for e in form.about_features_ru.errors %}{{ e }}{% endfor %}</div>{% endif %}
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">EN</label>{{ form.about_features_en }}
+                {% if form.about_features_en.errors %}<div class="invalid-feedback d-block">{% for e in form.about_features_en.errors %}{{ e }}{% endfor %}</div>{% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card mb-3">
+    <div class="card-header"><h5 class="card-title mb-0">Bron qilish CTA seksiyasi</h5></div>
+    <div class="card-body">
+        <div class="row g-3 mb-3">
+            <h6 class="col-12 text-muted">Sarlavha <small class="text-muted fw-normal">(bo'sh: "Stolingizni oldindan band qiling")</small></h6>
+            <div class="col-md-4">
+                <label class="form-label">UZ</label>{{ form.booking_cta_title_uz }}
+                {% if form.booking_cta_title_uz.errors %}<div class="invalid-feedback d-block">{% for e in form.booking_cta_title_uz.errors %}{{ e }}{% endfor %}</div>{% endif %}
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">RU</label>{{ form.booking_cta_title_ru }}
+                {% if form.booking_cta_title_ru.errors %}<div class="invalid-feedback d-block">{% for e in form.booking_cta_title_ru.errors %}{{ e }}{% endfor %}</div>{% endif %}
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">EN</label>{{ form.booking_cta_title_en }}
+                {% if form.booking_cta_title_en.errors %}<div class="invalid-feedback d-block">{% for e in form.booking_cta_title_en.errors %}{{ e }}{% endfor %}</div>{% endif %}
+            </div>
+        </div>
+        <div class="row g-3">
+            <h6 class="col-12 text-muted">Tavsif matni</h6>
+            <div class="col-md-4">
+                <label class="form-label">UZ</label>{{ form.booking_cta_desc_uz }}
+                {% if form.booking_cta_desc_uz.errors %}<div class="invalid-feedback d-block">{% for e in form.booking_cta_desc_uz.errors %}{{ e }}{% endfor %}</div>{% endif %}
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">RU</label>{{ form.booking_cta_desc_ru }}
+                {% if form.booking_cta_desc_ru.errors %}<div class="invalid-feedback d-block">{% for e in form.booking_cta_desc_ru.errors %}{{ e }}{% endfor %}</div>{% endif %}
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">EN</label>{{ form.booking_cta_desc_en }}
+                {% if form.booking_cta_desc_en.errors %}<div class="invalid-feedback d-block">{% for e in form.booking_cta_desc_en.errors %}{{ e }}{% endfor %}</div>{% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card mb-3">
+    <div class="card-header d-flex align-items-center justify-content-between">
+        <h5 class="card-title mb-0">"Nega biz?" bo'lim sarlavhasi</h5>
+        <a href="{% url 'dashboard_feature_list' %}" class="btn btn-sm btn-outline-primary">
+            <i class="ti ti-star me-1"></i>Xususiyatlarni boshqarish
+        </a>
+    </div>
+    <div class="card-body">
+        <div class="row g-3">
+            <div class="col-md-4">
+                <label class="form-label">Sarlavha (uz) <small class="text-muted">— bo'sh bo'lsa: "Nega aynan biz?"</small></label>{{ form.why_us_title_uz }}
+                {% if form.why_us_title_uz.errors %}<div class="invalid-feedback d-block">{% for e in form.why_us_title_uz.errors %}{{ e }}{% endfor %}</div>{% endif %}
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Sarlavha (ru)</label>{{ form.why_us_title_ru }}
+                {% if form.why_us_title_ru.errors %}<div class="invalid-feedback d-block">{% for e in form.why_us_title_ru.errors %}{{ e }}{% endfor %}</div>{% endif %}
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Sarlavha (en)</label>{{ form.why_us_title_en }}
+                {% if form.why_us_title_en.errors %}<div class="invalid-feedback d-block">{% for e in form.why_us_title_en.errors %}{{ e }}{% endfor %}</div>{% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

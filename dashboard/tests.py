@@ -133,6 +133,10 @@ class DashboardRenderTests(TestCase):
         routes = [
             ('dashboard_home', {}),
             ('dashboard_settings_website', {}),
+            ('dashboard_settings_location', {}),
+            ('dashboard_settings_hero', {}),
+            ('dashboard_settings_home', {}),
+            ('dashboard_settings_seo', {}),
             ('dashboard_news_list', {}),
             ('dashboard_news_create', {}),
             ('dashboard_news_edit', {'pk': self.news.pk}),
@@ -565,22 +569,43 @@ class SiteSettingsNewFieldsTests(TestCase):
         self.client.force_login(self.owner)
         SiteSettings.objects.filter(pk=1).delete()
 
-    def _post_settings(self, extra=None):
-        data = {
+    # Sozlamalar 5 ta alohida bo'limga bo'lingan — har test o'z bo'limiga POST qiladi.
+
+    def test_general_settings_saved(self):
+        # 1-bo'lim: Asosiy / Kontakt. `name` majburiy.
+        resp = self.client.post(reverse('dashboard_settings_website'), {
             'name': 'Mayli Restobar',
+            'email': 'info@mayli.uz',
+            'phone_main': '+998 90 000 00 00',
+        })
+        self.assertEqual(resp.status_code, 302)
+        site = SiteSettings.get()
+        self.assertEqual(site.name, 'Mayli Restobar')
+        self.assertEqual(site.email, 'info@mayli.uz')
+
+    def test_location_settings_saved(self):
+        # 2-bo'lim: Manzil. `city`, `latitude`, `longitude` majburiy.
+        resp = self.client.post(reverse('dashboard_settings_location'), {
             'city': 'Termiz',
-            'tagline_uz': '', 'tagline_ru': '', 'tagline_en': '',
-            'address_uz': '', 'address_ru': '', 'address_en': '',
-            'working_hours_uz': '', 'working_hours_ru': '', 'working_hours_en': '',
             'latitude': '37.224', 'longitude': '67.278',
-            'about_text_uz': '', 'about_text_ru': '', 'about_text_en': '',
-        }
-        if extra:
-            data.update(extra)
-        return self.client.post(reverse('dashboard_settings_website'), data)
+            'address_uz': 'Termiz sh., Mustaqillik 1',
+        })
+        self.assertEqual(resp.status_code, 302)
+        site = SiteSettings.get()
+        self.assertEqual(site.city, 'Termiz')
+        self.assertEqual(site.address_uz, 'Termiz sh., Mustaqillik 1')
+
+    def test_location_city_required(self):
+        # `city` bo'sh bo'lsa forma yiqiladi (300 emas, 200 qayta render).
+        resp = self.client.post(reverse('dashboard_settings_location'), {
+            'city': '',
+            'latitude': '37.224', 'longitude': '67.278',
+        })
+        self.assertEqual(resp.status_code, 200)
+        self.assertIn('city', resp.context['form'].errors)
 
     def test_hero_fields_saved(self):
-        resp = self._post_settings({
+        resp = self.client.post(reverse('dashboard_settings_hero'), {
             'hero_title_uz': 'Mazali ta\'mlar',
             'hero_title_accent_uz': 'Unutilmas lahzalar',
             'hero_subtitle_uz': 'Termiz shahridagi eng shinam maskan',
@@ -591,8 +616,19 @@ class SiteSettingsNewFieldsTests(TestCase):
         self.assertEqual(site.hero_title_accent_uz, 'Unutilmas lahzalar')
         self.assertEqual(site.hero_subtitle_uz, 'Termiz shahridagi eng shinam maskan')
 
+    def test_about_page_hero_fields_saved(self):
+        # "Biz haqimizda" sahifasi hero endi Hero bo'limida.
+        resp = self.client.post(reverse('dashboard_settings_hero'), {
+            'about_page_badge_uz': 'Biz haqimizda',
+            'about_page_title_uz': 'Mayli Restobar',
+        })
+        self.assertEqual(resp.status_code, 302)
+        site = SiteSettings.get()
+        self.assertEqual(site.about_page_badge_uz, 'Biz haqimizda')
+        self.assertEqual(site.about_page_title_uz, 'Mayli Restobar')
+
     def test_why_us_title_saved(self):
-        resp = self._post_settings({
+        resp = self.client.post(reverse('dashboard_settings_home'), {
             'why_us_title_uz': 'Nima uchun biz?',
             'why_us_title_ru': 'Почему мы?',
         })
@@ -602,7 +638,7 @@ class SiteSettingsNewFieldsTests(TestCase):
         self.assertEqual(site.why_us_title_ru, 'Почему мы?')
 
     def test_about_teaser_fields_saved(self):
-        resp = self._post_settings({
+        resp = self.client.post(reverse('dashboard_settings_home'), {
             'about_title_uz': 'Biz haqimizda',
             'about_badge_value': '10+',
             'about_badge_label_uz': 'Yil tajriba',
@@ -616,7 +652,7 @@ class SiteSettingsNewFieldsTests(TestCase):
         self.assertIn('Halol taomlar', site.about_features_uz)
 
     def test_booking_cta_fields_saved(self):
-        resp = self._post_settings({
+        resp = self.client.post(reverse('dashboard_settings_home'), {
             'booking_cta_title_uz': 'Joyni band qiling',
             'booking_cta_desc_uz': 'Bir necha soniyada bron qiling.',
         })
@@ -625,19 +661,9 @@ class SiteSettingsNewFieldsTests(TestCase):
         self.assertEqual(site.booking_cta_title_uz, 'Joyni band qiling')
         self.assertEqual(site.booking_cta_desc_uz, 'Bir necha soniyada bron qiling.')
 
-    def test_about_page_hero_fields_saved(self):
-        resp = self._post_settings({
-            'about_page_badge_uz': 'Biz haqimizda',
-            'about_page_title_uz': 'Mayli Restobar',
-        })
-        self.assertEqual(resp.status_code, 302)
-        site = SiteSettings.get()
-        self.assertEqual(site.about_page_badge_uz, 'Biz haqimizda')
-        self.assertEqual(site.about_page_title_uz, 'Mayli Restobar')
-
     def test_seo_content_fields_saved(self):
         seo_body = '<h3>Sarlavha</h3><p>Matn</p>'
-        resp = self._post_settings({
+        resp = self.client.post(reverse('dashboard_settings_seo'), {
             'home_seo_body_uz': seo_body,
             'about_seo_title_uz': 'About SEO sarlavha',
             'about_seo_body_uz': '<p>About matni</p>',

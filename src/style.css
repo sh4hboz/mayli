@@ -1074,11 +1074,7 @@ footer p {
 .section-header .section-title { margin-bottom:12px; }
 
 /* ===== HERO ===== */
-#hero {
-  position:relative; min-height:100vh;
-  display:flex; align-items:center; justify-content:center;
-  overflow:hidden;
-}
+/* #hero asosiy ta'rifi yuqorida (Hero Section, ~163-qator) — bu yerdagi dublikat olib tashlandi. */
 .hero-overlay { position:absolute; inset:0; background:linear-gradient(to bottom, rgba(0,0,0,.82) 0%, rgba(0,0,0,.55) 60%, rgba(0,0,0,.72) 100%); }
 .hero-content { position:relative; z-index:1; text-align:center; padding:0 20px; }
 .hero-badge { display:inline-flex; align-items:center; gap:8px; background:rgba(197,160,89,.15); border:1px solid rgba(197,160,89,.3); padding:6px 16px; border-radius:30px; font-size:.8rem; color:var(--gold); letter-spacing:1px; text-transform:uppercase; margin-bottom:24px; }
@@ -1088,7 +1084,7 @@ footer p {
 .hero-btns { display:flex; gap:12px; flex-wrap:wrap; justify-content:center; }
 .hero-stats { display:flex; gap:32px; justify-content:center; margin-top:48px; padding-top:32px; border-top:1px solid rgba(255,255,255,.08); flex-wrap:wrap; }
 .hero-stat strong { display:block; font-size:1.8rem; font-weight:800; color:var(--gold); }
-.hero-stat span { font-size:.8rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:1px; }
+.hero-stat span { font-size:.8rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:1px; margin:0; }
 
 /* ===== BUTTONS ===== */
 .btn { display:inline-flex; align-items:center; gap:8px; padding:13px 28px; border-radius:8px; font-weight:700; font-size:.9rem; letter-spacing:.5px; transition:var(--transition); cursor:pointer; border:none; text-decoration:none; }
@@ -1562,7 +1558,8 @@ small.field-error { display:block; margin-top:6px; color:#ff9999; font-size:.82r
   /* Footer */
   .footer-grid { grid-template-columns:1fr; gap:32px; }
   /* Boshqa */
-  .hero-stats { gap:20px; }
+  #hero { height:auto; padding:100px 0 30px; }
+  .hero-stats { gap:20px; margin-top:0; padding-top:20px; border:none; }
   .dishes-grid { grid-template-columns:repeat(auto-fill, minmax(160px, 1fr)); }
   .promo-card { flex-direction:column; }
   .promo-img { width:100%; height:160px; }
