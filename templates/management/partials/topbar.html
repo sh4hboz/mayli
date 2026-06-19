@@ -5,7 +5,7 @@
             <!-- Topbar Brand Logo -->
             <div class="logo-topbar">
                 <!-- Logo light -->
-                <a href="/dashboard/" class="logo-light">
+                <a href="{% url 'dashboard_home' %}" class="logo-light">
                     <span class="logo-lg">
                         <!-- <img src="{% static 'assets/images/logo.png' %}" alt="logo" /> -->
                         <img src="{% static 'src/img/icons/logo-lg.svg' %}" alt="Mayli Logo">
@@ -16,7 +16,7 @@
                 </a>
 
                 <!-- Logo Dark -->
-                <a href="/dashboard/" class="logo-dark">
+                <a href="{% url 'dashboard_home' %}" class="logo-dark">
                     <span class="logo-lg">
                         <img src="{% static 'src/img/icons/logo-lg-black.svg' %}" alt="Mayli Logo">
                     </span>

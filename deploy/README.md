@@ -136,8 +136,10 @@ sudo systemctl reload nginx
 
 - https://maylirestobar.uz — sayt ochilishi kerak
 - https://maylirestobar.uz/static/src/style.css — 200 qaytishi kerak (statik)
-- https://maylirestobar.uz/login/ — xodimlar kirishi
-- https://maylirestobar.uz/dashboard/ — login keyin boshqaruv paneli
+- https://maylirestobar.uz/dashboard/ — **404** bo'lishi kerak (dashboard ommaviy domende yashirin)
+- https://manage.maylirestobar.uz/ — login keyin boshqaruv paneli (dashboard ILDIZDA, `/dashboard/` yo'q)
+- https://manage.maylirestobar.uz/login/ — xodimlar kirishi
+- https://manage.maylirestobar.uz/<ADMIN_URL> — Django admin (maxfiy yo'l)
 
 Loglar:
 ```bash

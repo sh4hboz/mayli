@@ -2,7 +2,7 @@
 <!-- Sidenav Menu Start -->
 <div class="sidenav-menu">
     <!-- Brand Logo -->
-    <a href="/dashboard/" class="logo">
+    <a href="{% url 'dashboard_home' %}" class="logo">
         <span class="logo logo-light">
             <span class="logo-lg"><img src="{% static 'assets/images/logo.png' %}" alt="Mayli" /></span>
             <span class="logo-sm"><img src="{% static 'assets/images/logo-sm.png' %}" alt="M" /></span>
@@ -24,7 +24,7 @@
         <div id="user-profile-settings" class="sidenav-user">
             <div class="d-flex justify-content-between align-items-center">
                 <div>
-                    <a href="/dashboard/" class="link-reset">
+                    <a href="{% url 'dashboard_home' %}" class="link-reset">
                         <span class="sidenav-user-name fw-bold">{{ profile.get_full_name|default:"Dashboard" }}</span>
                         <span class="fs-12 fw-semibold">{{ profile.get_role_display|default:"Manager" }}</span>
                     </a>
@@ -52,7 +52,7 @@
                 <!-- Dashboard -->
                 <li class="side-nav-title mt-2">Asosiy</li>
                 <li class="side-nav-item">
-                    <a href="/dashboard/" class="side-nav-link">
+                    <a href="{% url 'dashboard_home' %}" class="side-nav-link">
                         <span class="menu-icon"><i class="ti ti-dashboard"></i></span>
                         <span class="menu-text">Dashboard</span>
                     </a>

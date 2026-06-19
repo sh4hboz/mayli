@@ -81,7 +81,7 @@ class CMSPermissionsTests(TestCase):
     def test_superadmin_can_manage_staff_permissions(self):
         view_news_perm = Permission.objects.get(codename='view_news', content_type__app_label='website')
         request = self.factory.post(
-            f'/dashboard/staff/{self.waiter.id}/permissions/',
+            f'/staff/{self.waiter.id}/permissions/',
             {'permissions': [view_news_perm.id]},
         )
         request.user = self.superadmin

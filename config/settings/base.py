@@ -14,8 +14,9 @@ ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=[])
 ADMIN_URL = env('ADMIN_URL', default='admin/')
 
 # Dashboard/admin uchun alohida subdomen (masalan manage.maylirestobar.uz).
-# Bo'sh bo'lsa (dev) — host ajratish o'chiq. To'ldirilsa, ommaviy domende
-# /dashboard/ va admin 404 qaytaradi (core.middleware.HostSeparationMiddleware).
+# Bo'sh bo'lsa (dev) — host ajratish o'chiq, hammasi config.urls da (dashboard /dashboard/ da).
+# To'ldirilsa: shu hostda dashboard ILDIZDA (config.urls_manage), ommaviy domende esa
+# dashboard/admin butunlay yo'q (404). Aniqlovchi: core.middleware.HostSeparationMiddleware.
 DASHBOARD_HOST = env('DASHBOARD_HOST', default='')
 
 INSTALLED_APPS = [

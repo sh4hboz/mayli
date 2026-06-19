@@ -89,12 +89,13 @@ Dashboard'ga faqat **OWNER, MANAGER, ADMIN** kira oladi (`dashboard.views.CMSBas
 | `/menu/` | Menyu sahifasi |
 | `/about/`, `/news/`, `/news/<slug>/` | Sayt sahifalari |
 | `/privacy-policy/`, `/terms-conditions/` | Huquqiy sahifalar |
-| `/login/` · `/logout/` | Login portali (mijoz + xodim) |
-| `/profile/` | Mijoz kabineti |
-| `/dashboard/` | Xodimlar boshqaruv paneli (CMS) |
-| `/admin/` | Django Admin |
 | `/api/docs/` | Swagger UI (DRF Spectacular) |
 | `/sitemap.xml` · `/robots.txt` | SEO |
+
+> **Boshqaruv paneli (prod):** `DASHBOARD_HOST` (masalan `manage.maylirestobar.uz`) to'ldirilsa,
+> dashboard shu subdomenning **ildizida** ochiladi — `manage.…/` (CMS), `manage.…/login/` (kirish),
+> `manage.…/<ADMIN_URL>` (maxfiy Django admin). Ommaviy domende `/dashboard/` va admin **404**.
+> Dev'da (DASHBOARD_HOST bo'sh) hammasi bitta hostda: `/dashboard/`, `/login/`, `/admin/`.
 
 ---
 
