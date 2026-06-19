@@ -188,3 +188,37 @@ class TextUpClient:
         except Exception as e:  # noqa: BLE001 — kutilmagan xatoni ham log qilib qaytaramiz
             logger.exception("TextUp SMS kutilmagan xato")
             return {'success': False, 'error': str(e), 'sms_id': None}
+
+    # ── Templates ─────────────────────────────────────────────────────────────
+    def list_templates(self, limit=100):
+        """Kabinetdagi shablonlar ro'yxatini qaytaradi (templateId olish uchun).
+
+        TextUp dashboard templateId'ni ko'rsatmaydi — bu yerda API orqali olamiz.
+        Returns: list[dict] — har biri {id, name, content, status, ...}.
+        """
+        token, user_id = self._ensure_token()
+        url = getattr(settings, 'TEXTUP_TEMPLATES_URL', '') or 'https://api-auth.textup.uz/v1/templates'
+        full = f"{url}?userId={user_id}&page=1&limit={limit}"
+        req = urllib.request.Request(
+            full,
+            headers={'Authorization': f'Bearer {token}', 'Accept': 'application/json'},
+            method='GET',
+        )
+        try:
+            resp = urllib.request.urlopen(req, timeout=self.timeout)
+            raw = resp.read()
+            data = _json.loads(raw) if raw else {}
+        except urllib.error.HTTPError as e:
+            detail = ''
+            try:
+                detail = e.read().decode('utf-8', 'replace')
+            except Exception:
+                pass
+            raise TextUpError(f'HTTP {e.code}: {detail[:200]}') from e
+        except urllib.error.URLError as e:
+            raise TextUpError(f'Ulanish xatosi: {e.reason}') from e
+
+        templates = _dig(data, 'templates')
+        if templates is None:
+            templates = data.get('templates') if isinstance(data, dict) else None
+        return templates or []
