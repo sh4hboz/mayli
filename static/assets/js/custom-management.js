@@ -124,4 +124,47 @@
       e.stopPropagation();
     }
   });
+
+  // --- Sayt chat (dashboard) jonli yangilanish (oddiy poll) ---
+  (function () {
+    var thread = document.getElementById("chat-messages");
+    if (!thread || !thread.dataset.pollUrl) return;
+    var url = thread.dataset.pollUrl;
+    var after = parseInt(thread.dataset.after || "0", 10) || 0;
+
+    function esc(s) {
+      var d = document.createElement("div");
+      d.textContent = s == null ? "" : String(s);
+      return d.innerHTML;
+    }
+    function scrollBottom() { thread.scrollTop = thread.scrollHeight; }
+    scrollBottom();
+
+    function append(m) {
+      if (thread.querySelector('[data-msg-id="' + m.id + '"]')) return;
+      var empty = document.getElementById("chat-empty");
+      if (empty) empty.remove();
+      var wrap = document.createElement("div");
+      wrap.className = "chat-msg chat-msg-" + m.direction;
+      wrap.setAttribute("data-msg-id", m.id);
+      var meta = (m.is_auto ? "avto · " : "") + esc(m.time);
+      wrap.innerHTML =
+        '<div class="chat-bubble">' + esc(m.text) +
+        '<span class="chat-meta">' + meta + "</span></div>";
+      thread.appendChild(wrap);
+    }
+
+    function poll() {
+      fetch(url + "?after=" + after, { headers: { "X-Requested-With": "XMLHttpRequest" } })
+        .then(function (r) { return r.json(); })
+        .then(function (data) {
+          var msgs = (data && data.messages) || [];
+          if (!msgs.length) return;
+          msgs.forEach(function (m) { append(m); if (m.id > after) after = m.id; });
+          scrollBottom();
+        })
+        .catch(function () {});
+    }
+    setInterval(poll, 5000);
+  })();
 })();

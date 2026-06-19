@@ -133,3 +133,46 @@
 .th-40 {
     width: 40%;
 }
+
+/* === Sayt chat (dashboard) === */
+.chat-thread {
+    max-height: 460px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 4px;
+}
+.chat-msg {
+    display: flex;
+}
+.chat-msg-in {
+    justify-content: flex-start;
+}
+.chat-msg-out {
+    justify-content: flex-end;
+}
+.chat-bubble {
+    max-width: 75%;
+    padding: 8px 12px;
+    border-radius: 12px;
+    font-size: 0.9rem;
+    line-height: 1.4;
+    word-break: break-word;
+}
+.chat-msg-in .chat-bubble {
+    background: rgba(128, 128, 128, 0.18);
+    border-bottom-left-radius: 4px;
+}
+.chat-msg-out .chat-bubble {
+    background: var(--bs-primary, #3e60d5);
+    color: #fff;
+    border-bottom-right-radius: 4px;
+}
+.chat-meta {
+    display: block;
+    font-size: 0.68rem;
+    opacity: 0.7;
+    margin-top: 4px;
+    text-align: right;
+}

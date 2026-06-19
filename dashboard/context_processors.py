@@ -48,7 +48,7 @@ def topbar_notifications(request):
                 'title': 'Sayt chat',
                 'text': m.text[:50],
                 'when': m.created_at,
-                'url': None,
+                'url': reverse('dashboard_chat_detail', args=[m.session_id]),
             })
 
         items.sort(key=lambda x: x['when'], reverse=True)

@@ -16,6 +16,7 @@ from accounts.models import Role
 from website.models import SiteSettings, News, Promotion, GalleryItem, Vacancy, JobApplication, ContactMessage, Feature, StatItem
 from menu.models import Category, Dish
 from crm.models import Customer, Tag, Gender, CustomerSource, Campaign, CampaignLog
+from notifications.models import ChatSession, ChatMessage
 from .forms import (
     SiteSettingsGeneralForm, SiteSettingsLocationForm, SiteSettingsHeroForm,
     SiteSettingsHomeContentForm, SiteSettingsSeoForm,
@@ -795,3 +796,81 @@ class FeatureDeleteView(CMSBaseMixin, SuccessMessageMixin, DeleteView):
     def post(self, request, *args, **kwargs):
         messages.success(request, self.success_message_delete)
         return super().post(request, *args, **kwargs)
+
+
+# ── Sayt chat — dashboarddan javob berish ───────────────────────────────────
+# Mijoz sayt chatida yozadi → ChatMessage(IN). Bu yerda admin javob yozadi →
+# ChatMessage(OUT). Mijozning sahifasi mavjud /chat/poll/ orqali javobni oladi.
+# (Telegram Reply yo'li ham ishlayveradi — bu unga MUQOBIL, qo'shimcha infra yo'q.)
+_CHAT_ROLES = (Role.OWNER, Role.MANAGER, Role.ADMIN)
+
+
+class ChatSessionListView(CMSBaseMixin, ListView):
+    model = ChatSession
+    template_name = 'management/chat/chat_list.html'
+    context_object_name = 'sessions'
+    paginate_by = 30
+
+    def get_queryset(self):
+        return (ChatSession.objects
+                .annotate(msg_count=Count('messages'))
+                .filter(msg_count__gt=0)
+                .order_by('-updated_at'))
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        for s in ctx['sessions']:
+            last = s.messages.order_by('-id').first()
+            s.last_msg = last
+            # Oxirgi xabar mehmondan bo'lsa — javob kutilmoqda.
+            s.awaiting = bool(last and last.direction == ChatMessage.IN)
+        return ctx
+
+
+class ChatSessionDetailView(CMSBaseMixin, DetailView):
+    model = ChatSession
+    template_name = 'management/chat/chat_detail.html'
+    context_object_name = 'session'
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        ctx['chat_messages'] = self.object.messages.order_by('id')
+        return ctx
+
+
+@login_required(login_url='/login/')
+@require_POST
+def dashboard_chat_reply(request, pk):
+    """Admin javobi — ChatMessage(OUT). Mijoz /chat/poll/ orqali oladi."""
+    if request.user.role not in _CHAT_ROLES:
+        raise PermissionDenied("Ruxsat yo'q!")
+    session = get_object_or_404(ChatSession, pk=pk)
+    text = (request.POST.get('text') or '').strip()[:2000]
+    if text:
+        ChatMessage.objects.create(
+            session=session, direction=ChatMessage.OUT, text=text,
+        )
+        # Sessiya updated_at yangilanishi uchun (ro'yxat tartibi to'g'ri bo'lsin).
+        session.save(update_fields=['updated_at'])
+    return redirect('dashboard_chat_detail', pk=pk)
+
+
+@login_required(login_url='/login/')
+def dashboard_chat_messages(request, pk):
+    """Dashboard chat oynasi uchun jonli yangilanish (oddiy JS poll)."""
+    if request.user.role not in _CHAT_ROLES:
+        raise PermissionDenied("Ruxsat yo'q!")
+    session = get_object_or_404(ChatSession, pk=pk)
+    try:
+        after = int(request.GET.get('after', '0'))
+    except (TypeError, ValueError):
+        after = 0
+    qs = session.messages.filter(id__gt=after).order_by('id')
+    data = [{
+        'id': m.id,
+        'direction': m.direction,
+        'text': m.text,
+        'time': timezone.localtime(m.created_at).strftime('%H:%M'),
+        'is_auto': m.is_auto,
+    } for m in qs]
+    return JsonResponse({'messages': data})

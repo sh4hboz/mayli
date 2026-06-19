@@ -3,7 +3,7 @@ from io import BytesIO
 from datetime import date
 from unittest import skip
 
-from django.test import TestCase, RequestFactory, override_settings
+from django.test import TestCase, RequestFactory, override_settings, Client
 from django.urls import reverse
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.contrib.auth import get_user_model
@@ -20,6 +20,7 @@ from website.models import (
 )
 from menu.models import Category, Dish
 from crm.models import Customer, Campaign
+from notifications.models import ChatSession, ChatMessage
 
 User = get_user_model()
 
@@ -673,3 +674,60 @@ class SiteSettingsNewFieldsTests(TestCase):
         self.assertEqual(site.home_seo_body_uz, seo_body)
         self.assertEqual(site.about_seo_title_uz, 'About SEO sarlavha')
         self.assertEqual(site.about_seo_body_uz, '<p>About matni</p>')
+
+
+# ════════════════════════════════════════════════════════════════════
+# Sayt chat — dashboarddan javob berish
+# ════════════════════════════════════════════════════════════════════
+class ChatDashboardTests(TestCase):
+
+    def setUp(self):
+        self.owner = User.objects.create_user(
+            username='chatowner', password='pw12345',
+            role=Role.OWNER, full_name='Chat Owner',
+        )
+        self.client.login(username='chatowner', password='pw12345')
+        self.session = ChatSession.objects.create(visitor_id='visitor-xyz', lang='uz')
+        ChatMessage.objects.create(
+            session=self.session, direction=ChatMessage.IN, text='Salom, stol bormi?',
+        )
+
+    def test_chat_list_and_detail_open(self):
+        self.assertEqual(self.client.get(reverse('dashboard_chat_list')).status_code, 200)
+        self.assertEqual(
+            self.client.get(reverse('dashboard_chat_detail', args=[self.session.pk])).status_code, 200,
+        )
+
+    def test_reply_creates_outbound_message(self):
+        resp = self.client.post(
+            reverse('dashboard_chat_reply', args=[self.session.pk]), {'text': 'Ha, bor!'},
+        )
+        self.assertEqual(resp.status_code, 302)
+        self.assertTrue(
+            self.session.messages.filter(direction=ChatMessage.OUT, text='Ha, bor!').exists()
+        )
+
+    def test_customer_poll_receives_dashboard_reply(self):
+        """Dashboarddan yozilgan javobni mijozning /chat/poll/ si oladi."""
+        self.client.post(reverse('dashboard_chat_reply', args=[self.session.pk]), {'text': 'Javob matni'})
+        resp = Client().get(reverse('website:chat_poll'), {'visitor_id': 'visitor-xyz', 'after': 0})
+        texts = [m['text'] for m in resp.json().get('messages', [])]
+        self.assertIn('Javob matni', texts)
+
+    def test_messages_poll_json(self):
+        resp = self.client.get(reverse('dashboard_chat_messages', args=[self.session.pk]), {'after': 0})
+        self.assertEqual(resp.status_code, 200)
+        data = resp.json()
+        self.assertEqual(len(data['messages']), 1)
+        self.assertEqual(data['messages'][0]['direction'], 'in')
+
+    def test_waiter_cannot_reply(self):
+        User.objects.create_user(
+            username='chatwaiter', password='pw12345', role=Role.WAITER, full_name='W',
+        )
+        c = Client()
+        c.login(username='chatwaiter', password='pw12345')
+        # PermissionDenied → Django 403 javob (Client exception'ni 403 ga aylantiradi).
+        resp = c.post(reverse('dashboard_chat_reply', args=[self.session.pk]), {'text': 'x'})
+        self.assertEqual(resp.status_code, 403)
+        self.assertFalse(self.session.messages.filter(direction=ChatMessage.OUT).exists())

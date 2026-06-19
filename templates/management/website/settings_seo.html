@@ -1,20 +1,28 @@
 {% extends 'management/website/settings_base.html' %}
 {% block settings_inner %}
 <div class="card mb-3">
-    <div class="card-header"><h5 class="card-title mb-0">SEO — Texnik</h5></div>
+    <div class="card-header"><h5 class="card-title mb-0">SEO — Texnik (verifikatsiya & analitika)</h5></div>
     <div class="card-body">
         <div class="row g-3">
-            <div class="col-md-4">
-                <label class="form-label">{{ form.google_verify.label }}</label>{{ form.google_verify }}
+            <div class="col-md-3">
+                <label class="form-label">Google verifikatsiya kodi</label>{{ form.google_verify }}
+                <small class="text-muted d-block mt-1">Search Console &rarr; HTML tegi usuli &rarr; <code>content="..."</code> ichidagi kod</small>
                 {% if form.google_verify.errors %}<div class="invalid-feedback d-block">{% for e in form.google_verify.errors %}{{ e }}{% endfor %}</div>{% endif %}
             </div>
-            <div class="col-md-4">
-                <label class="form-label">{{ form.yandex_verify.label }}</label>{{ form.yandex_verify }}
+            <div class="col-md-3">
+                <label class="form-label">Yandex verifikatsiya kodi</label>{{ form.yandex_verify }}
+                <small class="text-muted d-block mt-1">Yandex Webmaster &rarr; Meta tegi &rarr; <code>content="..."</code> ichidagi kod</small>
                 {% if form.yandex_verify.errors %}<div class="invalid-feedback d-block">{% for e in form.yandex_verify.errors %}{{ e }}{% endfor %}</div>{% endif %}
             </div>
-            <div class="col-md-4">
-                <label class="form-label">{{ form.google_analytics_id.label }}</label>{{ form.google_analytics_id }}
+            <div class="col-md-3">
+                <label class="form-label">Google Analytics ID (GA4)</label>{{ form.google_analytics_id }}
+                <small class="text-muted d-block mt-1">Masalan <code>G-XXXXXXXXXX</code></small>
                 {% if form.google_analytics_id.errors %}<div class="invalid-feedback d-block">{% for e in form.google_analytics_id.errors %}{{ e }}{% endfor %}</div>{% endif %}
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">Yandex Metrica ID</label>{{ form.yandex_metrica_id }}
+                <small class="text-muted d-block mt-1">Faqat raqam, masalan <code>98765432</code></small>
+                {% if form.yandex_metrica_id.errors %}<div class="invalid-feedback d-block">{% for e in form.yandex_metrica_id.errors %}{{ e }}{% endfor %}</div>{% endif %}
             </div>
         </div>
     </div>

@@ -10,7 +10,7 @@
     </div>
     <div class="news-grid">
       {% for article in latest_news %}
-      <div class="news-card reveal">
+      <a href="{% url 'website:news_detail' article.slug %}" class="news-card reveal">
         {% if article.image %}
         <div class="news-card-img">
           <img src="{{ article.image.url }}" alt="{{ article.title }}" loading="lazy">
@@ -18,12 +18,10 @@
         {% endif %}
         <div class="news-card-body">
           <div class="news-date">{{ article.created_at|date:"d.m.Y" }}</div>
-          <div class="news-card-title">
-            <a href="{% url 'website:news_detail' article.slug %}">{{ article.title }}</a>
-          </div>
+          <div class="news-card-title">{{ article.title }}</div>
           <div class="news-excerpt">{{ article.body|truncatechars:120 }}</div>
         </div>
-      </div>
+      </a>
       {% endfor %}
     </div>
     <div class="section-footer reveal">

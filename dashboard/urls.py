@@ -88,6 +88,12 @@ urlpatterns = [
     path('website/features/<int:pk>/edit/', views.FeatureUpdateView.as_view(), name='dashboard_feature_edit'),
     path('website/features/<int:pk>/delete/', views.FeatureDeleteView.as_view(), name='dashboard_feature_delete'),
 
+    # Sayt chat — dashboarddan javob berish
+    path('chat/', views.ChatSessionListView.as_view(), name='dashboard_chat_list'),
+    path('chat/<int:pk>/', views.ChatSessionDetailView.as_view(), name='dashboard_chat_detail'),
+    path('chat/<int:pk>/reply/', views.dashboard_chat_reply, name='dashboard_chat_reply'),
+    path('chat/<int:pk>/messages/', views.dashboard_chat_messages, name='dashboard_chat_messages'),
+
     # Universal AJAX toggle active
     path('toggle-active/<str:app_label>/<str:model_name>/<int:pk>/', views.toggle_active_ajax, name='dashboard_toggle_active'),
 

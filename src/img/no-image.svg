@@ -1,11 +1,11 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" width="100%" height="100%">
   <rect width="400" height="300" fill="#141414" />
-  <rect x="10" y="10" width="380" height="280" fill="none" stroke="#ea6900" stroke-width="1" stroke-dasharray="8 6" opacity="0.3" rx="8" />
-  <circle cx="200" cy="130" r="45" fill="#1c1c1c" stroke="#ea6900" stroke-width="1.5" opacity="0.8" />
+  <rect x="10" y="10" width="380" height="280" fill="none" stroke="#ffffff" stroke-width="1" stroke-dasharray="8 6" opacity="0.3" rx="8" />
+  <circle cx="200" cy="130" r="45" fill="#1c1c1c" stroke="#ffffff" stroke-width="1.5" opacity="0.8" />
   <!-- Elegant Cloche / Plate Icon -->
-  <path d="M175,140 C175,115 225,115 225,140 Z" fill="none" stroke="#ea6900" stroke-width="2" />
-  <line x1="170" y1="144" x2="230" y2="144" stroke="#ea6900" stroke-width="2" />
-  <circle cx="200" cy="112" r="3" fill="#ea6900" />
+  <path d="M175,140 C175,115 225,115 225,140 Z" fill="none" stroke="#ffffff" stroke-width="2" />
+  <line x1="170" y1="144" x2="230" y2="144" stroke="#ffffff" stroke-width="2" />
+  <circle cx="200" cy="112" r="3" fill="#ffffff" />
   <text x="200" y="210" fill="#ffffff" font-family="'Outfit', 'Inter', sans-serif" font-size="16" font-weight="600" text-anchor="middle" letter-spacing="1">MAYLI RESTOBAR</text>
   <text x="200" y="235" fill="#777777" font-family="'Inter', sans-serif" font-size="12" text-anchor="middle" letter-spacing="0.5">Tez kunda yangi rasm yuklanadi</text>
 </svg>

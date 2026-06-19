@@ -1,0 +1,51 @@
+{% extends 'management/base.html' %}
+{% load static %}
+{% block title %}Chat — {{ session.visitor_id|truncatechars:16 }} | Mayli Restobar{% endblock %}
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="page-title-box d-flex align-items-center justify-content-between">
+            <h4 class="page-title">Chat — {{ session.visitor_id|truncatechars:20 }}</h4>
+            <ol class="breadcrumb m-0">
+                <li class="breadcrumb-item"><a href="{% url 'dashboard_home' %}">Dashboard</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'dashboard_chat_list' %}">Chat</a></li>
+                <li class="breadcrumb-item active">{{ session.visitor_id|truncatechars:16 }}</li>
+            </ol>
+        </div>
+    </div>
+</div>
+<div class="row justify-content-center">
+    <div class="col-lg-9">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="card-title mb-0">Suhbat</h5>
+                <span class="text-muted fs-xs">Til: {{ session.lang|default:"—" }}</span>
+            </div>
+            <div class="card-body">
+                <div id="chat-messages" class="chat-thread"
+                     data-poll-url="{% url 'dashboard_chat_messages' session.pk %}"
+                     data-after="{{ chat_messages.last.id|default:0 }}">
+                    {% for m in chat_messages %}
+                    <div class="chat-msg chat-msg-{{ m.direction }}" data-msg-id="{{ m.id }}">
+                        <div class="chat-bubble">
+                            {{ m.text }}
+                            <span class="chat-meta">{% if m.is_auto %}avto · {% endif %}{{ m.created_at|date:"H:i" }}</span>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <p class="text-muted text-center py-3" id="chat-empty">Hozircha xabar yo'q</p>
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="card-footer">
+                <form method="post" action="{% url 'dashboard_chat_reply' session.pk %}" class="d-flex gap-2">
+                    {% csrf_token %}
+                    <input type="text" name="text" class="form-control" maxlength="2000"
+                           placeholder="Javob yozing..." autocomplete="off" required>
+                    <button type="submit" class="btn btn-primary"><i class="ti ti-send me-1"></i>Yuborish</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

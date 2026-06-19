@@ -156,7 +156,7 @@ class SiteSettingsSeoForm(BootstrapModelForm):
     class Meta:
         model = SiteSettings
         fields = [
-            'google_verify', 'yandex_verify', 'google_analytics_id',
+            'google_verify', 'yandex_verify', 'google_analytics_id', 'yandex_metrica_id',
             'home_seo_body_uz', 'home_seo_body_ru', 'home_seo_body_en',
             'about_seo_title_uz', 'about_seo_title_ru', 'about_seo_title_en',
             'about_seo_body_uz', 'about_seo_body_ru', 'about_seo_body_en',
@@ -229,6 +229,13 @@ class CategoryForm(BootstrapModelForm):
         fields = ['name_uz', 'name_ru', 'name_en', 'order', 'is_active']
 
 class DishForm(WebPModelForm):
+    # prep_time ixtiyoriy bo'lsin — bo'sh qoldirilsa default 15 daqiqa ishlatiladi.
+    # (Class-level declared field — Django 6.0 da __init__'da maydon o'zgartirish tuzog'idan qochish uchun.)
+    prep_time = forms.IntegerField(
+        label="Tayyorlanish vaqti (daqiqa)", required=False, min_value=0,
+        widget=forms.NumberInput(attrs={'placeholder': '15'}),
+    )
+
     class Meta:
         model = Dish
         fields = [
@@ -242,6 +249,10 @@ class DishForm(WebPModelForm):
             'description_ru': forms.Textarea(attrs={'rows': 3}),
             'description_en': forms.Textarea(attrs={'rows': 3}),
         }
+
+    def clean_prep_time(self):
+        # Bo'sh qoldirilsa model default'i (15) ishlatiladi — ustun NULL bo'lib qolmasin.
+        return self.cleaned_data.get('prep_time') or 15
 
 
 class CustomerForm(BootstrapModelForm):
