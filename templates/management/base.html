@@ -18,16 +18,13 @@
     <!-- App css -->
     <link id="app-style" href="{% static 'assets/css/app.min.css' %}" rel="stylesheet" type="text/css" />
 
-    <!-- Custom management css -->
-    <link href="{% static 'assets/css/custom-management.css' %}" rel="stylesheet" type="text/css" />
-
     <!-- Rich text editor (Summernote) -->
     <link href="{% static 'assets/plugins/summernote/summernote-bs5.min.css' %}" rel="stylesheet" type="text/css" />
 
     {% block extra_css %}{% endblock %}
 
-    <!-- Dashboard'dan boshqariladigan custom CSS (bazada saqlanadi) -->
-    {% if site.dashboard_custom_css %}<style id="dashboard-custom-css">{{ site.dashboard_custom_css|safe }}</style>{% endif %}
+    <!-- Dashboard custom CSS (media/css/dashboard.css — dashboarddan tahrirlanadi, eng oxirgi) -->
+    <link href="/media/css/dashboard.css?v={{ dashboard_css_v }}" rel="stylesheet" type="text/css" />
 </head>
 
 <body>

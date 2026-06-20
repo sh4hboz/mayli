@@ -1,5 +1,15 @@
+import os
+
 from django.conf import settings as django_settings
 from .models import SiteSettings, Feature, StatItem
+
+
+def _css_version(rel):
+    """media/css/<rel> faylining o'zgartirilgan vaqti (cache-bust uchun)."""
+    try:
+        return int(os.path.getmtime(os.path.join(django_settings.MEDIA_ROOT, rel)))
+    except OSError:
+        return 0
 
 
 def site_settings(request):
@@ -47,4 +57,6 @@ def site_settings(request):
         'section_stats': section_stats,
         'YANDEX_MAPS_API_KEY': getattr(django_settings, 'YANDEX_MAPS_API_KEY', ''),
         'unread_contacts_count': unread_count,
+        'site_css_v': _css_version('css/site.css'),
+        'dashboard_css_v': _css_version('css/dashboard.css'),
     }

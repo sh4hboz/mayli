@@ -195,20 +195,6 @@ class SiteSettingsSeoForm(RichTextMixin, BootstrapModelForm):
             'about_seo_body_en': forms.Textarea(attrs={'rows': 12}),
         }
 
-class DashboardCustomCssForm(BootstrapModelForm):
-    """Dashboard ko'rinishini sozlash uchun custom CSS (bazada saqlanadi)."""
-    class Meta:
-        model = SiteSettings
-        fields = ['dashboard_custom_css']
-        widgets = {
-            'dashboard_custom_css': forms.Textarea(attrs={
-                'rows': 22, 'spellcheck': 'false',
-                'style': 'font-family:monospace;font-size:13px;',
-                'placeholder': '/* Masalan: .dish-thumb { border-radius: 12px; } */',
-            }),
-        }
-
-
 class NewsForm(RichTextMixin, WebPModelForm):
     richtext_fields = ['body_uz', 'body_ru', 'body_en']
 

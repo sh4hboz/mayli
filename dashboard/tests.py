@@ -232,14 +232,23 @@ class DashboardFormSubmitTests(TestCase):
         self.assertEqual(GalleryItem.objects.count(), 1)
 
     def test_save_custom_css(self):
-        from website.models import SiteSettings
-        css = '.dish-thumb { border-radius: 12px; }'
-        resp = self.client.post(reverse('dashboard_custom_css'), {'dashboard_custom_css': css})
-        self.assertEqual(resp.status_code, 302)
-        self.assertEqual(SiteSettings.get().dashboard_custom_css, css)
-        # Dashboard sahifasida <style> sifatida chiqishi kerak
-        page = self.client.get(reverse('dashboard_home'))
-        self.assertContains(page, css)
+        import os
+        css_site = '.dish-card { border-radius: 16px; }'
+        css_dash = '.dish-thumb { border-radius: 12px; }'
+        with tempfile.TemporaryDirectory() as tmp:
+            with override_settings(MEDIA_ROOT=tmp):
+                resp = self.client.post(reverse('dashboard_custom_css'), {
+                    'site_css': css_site, 'dashboard_css': css_dash,
+                })
+                self.assertEqual(resp.status_code, 302)
+                # Fayllarga yozilgan bo'lishi kerak
+                with open(os.path.join(tmp, 'css', 'site.css'), encoding='utf-8') as f:
+                    self.assertEqual(f.read(), css_site)
+                with open(os.path.join(tmp, 'css', 'dashboard.css'), encoding='utf-8') as f:
+                    self.assertEqual(f.read(), css_dash)
+                # Tahrirlash sahifasida qayta ko'rinishi kerak
+                page = self.client.get(reverse('dashboard_custom_css'))
+                self.assertContains(page, css_dash)
 
     def test_create_partner(self):
         from website.models import Partner

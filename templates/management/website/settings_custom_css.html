@@ -1,14 +1,30 @@
 {% extends 'management/website/settings_base.html' %}
 {% block settings_inner %}
 <div class="card mb-3">
-    <div class="card-header"><h5 class="card-title mb-0">Dashboard Custom CSS</h5></div>
+    <div class="card-header"><h5 class="card-title mb-0">Custom CSS</h5></div>
     <div class="card-body">
         <p class="text-muted small mb-3">
-            Bu yerga yozilgan CSS dashboardning barcha sahifalariga qo'llanadi (saqlagan zahoti, qayta yuklash shart emas).
-            Masalan: <code>.dish-thumb { border-radius: 12px; }</code>
+            Bu yerga yozilgan CSS to'g'ridan-to'g'ri faylga yoziladi
+            (<code>/media/css/site.css</code> va <code>/media/css/dashboard.css</code>) va
+            saqlagan zahoti qo'llanadi — qayta yuklash shart emas. Har ikkala fayl mos
+            sahifaning <code>&lt;head&gt;</code> ida eng oxirgi bo'lib ulanadi, shuning
+            uchun barcha qoidalardan kuchli.
         </p>
-        {{ form.dashboard_custom_css }}
-        {% if form.dashboard_custom_css.errors %}<div class="invalid-feedback d-block">{% for e in form.dashboard_custom_css.errors %}{{ e }}{% endfor %}</div>{% endif %}
+
+        <ul class="nav nav-tabs mb-3" id="cssTab">
+            <li class="nav-item"><a class="nav-link active" data-bs-toggle="tab" href="#cssSite">Sayt (site.css)</a></li>
+            <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#cssDash">Dashboard (dashboard.css)</a></li>
+        </ul>
+        <div class="tab-content">
+            <div class="tab-pane fade show active" id="cssSite">
+                <textarea name="site_css" rows="22" spellcheck="false"
+                          class="form-control" style="font-family:monospace;font-size:13px;">{{ site_css }}</textarea>
+            </div>
+            <div class="tab-pane fade" id="cssDash">
+                <textarea name="dashboard_css" rows="22" spellcheck="false"
+                          class="form-control" style="font-family:monospace;font-size:13px;">{{ dashboard_css }}</textarea>
+            </div>
+        </div>
     </div>
 </div>
 {% endblock %}

@@ -1,7 +1,10 @@
+import os
+
+from django.conf import settings
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.views.generic import ListView, CreateView, UpdateView, DeleteView, DetailView
+from django.views.generic import ListView, CreateView, UpdateView, DeleteView, DetailView, TemplateView
 from django.urls import reverse_lazy
 from django.shortcuts import get_object_or_404
 from django.http import JsonResponse
@@ -19,7 +22,7 @@ from crm.models import Customer, Tag, Gender, CustomerSource, Campaign, Campaign
 from notifications.models import ChatSession, ChatMessage
 from .forms import (
     SiteSettingsGeneralForm, SiteSettingsLocationForm, SiteSettingsHeroForm,
-    SiteSettingsHomeContentForm, SiteSettingsSeoForm, DashboardCustomCssForm,
+    SiteSettingsHomeContentForm, SiteSettingsSeoForm,
     NewsForm, PromotionForm, GalleryItemForm, PartnerForm, VacancyForm, CategoryForm,
     DishForm, CustomerForm, CampaignForm, FeatureForm, StatItemForm,
 )
@@ -233,12 +236,52 @@ class SiteSettingsSeoView(SiteSettingsSectionView):
     active_tab = 'seo'
 
 
-class DashboardCustomCssView(SiteSettingsSectionView):
-    form_class = DashboardCustomCssForm
+# --- Custom CSS (media/css/ ichidagi fayllarni dashboarddan tahrirlash) ---
+CUSTOM_CSS_FILES = {
+    'site': 'css/site.css',
+    'dashboard': 'css/dashboard.css',
+}
+CSS_SEED_DIR = os.path.join(settings.BASE_DIR, 'dashboard', 'css_seeds')
+
+
+def _custom_css_read(key):
+    """media/css/<key>.css ni o'qiydi; yo'q bo'lsa repo seed'iga qaytadi."""
+    rel = CUSTOM_CSS_FILES[key]
+    path = os.path.join(settings.MEDIA_ROOT, rel)
+    if os.path.exists(path):
+        with open(path, encoding='utf-8') as f:
+            return f.read()
+    seed = os.path.join(CSS_SEED_DIR, os.path.basename(rel))
+    if os.path.exists(seed):
+        with open(seed, encoding='utf-8') as f:
+            return f.read()
+    return ''
+
+
+def _custom_css_write(key, content):
+    rel = CUSTOM_CSS_FILES[key]
+    path = os.path.join(settings.MEDIA_ROOT, rel)
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    with open(path, 'w', encoding='utf-8', newline='\n') as f:
+        f.write((content or '').replace('\r\n', '\n'))
+
+
+class DashboardCustomCssView(CMSBaseMixin, TemplateView):
+    """Sayt va dashboard custom CSS fayllarini (media/css/) tahrirlash."""
     template_name = 'management/website/settings_custom_css.html'
-    success_url = reverse_lazy('dashboard_custom_css')
-    active_tab = 'css'
-    success_message_update = "Custom CSS saqlandi."
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        ctx['active_tab'] = 'css'
+        ctx['site_css'] = _custom_css_read('site')
+        ctx['dashboard_css'] = _custom_css_read('dashboard')
+        return ctx
+
+    def post(self, request, *args, **kwargs):
+        _custom_css_write('site', request.POST.get('site_css', ''))
+        _custom_css_write('dashboard', request.POST.get('dashboard_css', ''))
+        messages.success(request, "Custom CSS saqlandi.")
+        return redirect('dashboard_custom_css')
 
 
 # --- Yangiliklar (News) ---

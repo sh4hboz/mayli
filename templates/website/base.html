@@ -37,6 +37,8 @@
   <link rel="stylesheet" href="{% static 'src/libs/fancybox.css' %}">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
   <link rel="stylesheet" href="{% static 'src/style.css' %}?v=2.9">
+  <!-- Sayt custom CSS (media/css/site.css — dashboarddan tahrirlanadi, eng oxirgi) -->
+  <link rel="stylesheet" href="/media/css/site.css?v={{ site_css_v }}">
 
 
   {% if site.google_verify %}<meta name="google-site-verification" content="{{ site.google_verify }}">{% endif %}

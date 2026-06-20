@@ -1,35 +1,12 @@
 /* ==========================================================================
-   custom-management.css — Mayli Restobar boshqaruv paneli (dashboard)
+   dashboard.css — Mayli Restobar boshqaruv paneli (dashboard) custom CSS
    --------------------------------------------------------------------------
-   MAQSAD:
-   - Dashboard'ning BARCHA sahifalari uchun yagona custom uslublar fayli.
-   - base.html (templates/management/base.html) da vendors.min.css va
-     app.min.css dan KEYIN ulanadi — shuning uchun bu yerdagi qoidalar
-     theme (tayyor mavzu) qoidalaridan kuchliroq (cascade bo'yicha g'olib).
-
-   QOIDALAR:
-   - app.min.css / vendors.min.css ga HECH QACHON tegmang — ular tayyor theme.
-     Har qanday o'zgartirish faqat SHU faylda.
-   - Iloji boricha `!important` ishlatmang; bu fayl keyin yuklangani uchun
-     bir xil specificity'da allaqachon g'olib bo'ladi. `!important` faqat
-     theme inline/utility qoidasini yengib bo'lmaganda, oxirgi chora sifatida.
-   - Yangi blok qo'shganda izoh bilan ajrating (quyidagi bo'limlar kabi).
+   Bu fayl dashboarddan tahrirlanadi (Sayt sozlamalari -> Custom CSS).
+   Serverda /media/css/dashboard.css sifatida saqlanadi va <head> da eng
+   oxirgi stylesheet bo'lib ulanadi (barcha tema/plagin qoidalaridan kuchli).
+   Bu repo'dagi nusxa — yangi serverni initsializatsiya qilish uchun seed.
    ========================================================================== */
 
-
-/* --------------------------------------------------------------------------
-   1. Umumiy (global) tuzatishlar
-   -------------------------------------------------------------------------- */
-
-
-/* --------------------------------------------------------------------------
-   2. Topbar / Sidebar
-   -------------------------------------------------------------------------- */
-
-
-/* --------------------------------------------------------------------------
-   3. Kartalar / jadvallar / formalar
-   -------------------------------------------------------------------------- */
 
 /* Taom formasidagi kategoriyalar (CheckboxSelectMultiple) — chiroyli quti */
 .dish-categories-box ul {
@@ -79,10 +56,6 @@
 }
 
 
-/* --------------------------------------------------------------------------
-   4. Sahifaga xos tuzatishlar
-   -------------------------------------------------------------------------- */
-
 /* Galereya: responsiv grid + kartochka */
 .gallery-grid {
     display: grid;
@@ -119,10 +92,9 @@
     filter: grayscale(60%);
 }
 
-/* Inline style o'rniga klasslar (loyiha qoidasi: HTML'da style="" yo'q) */
-/* Sidebar foydalanuvchi profili fon naqshi (yo'l CSS'ga nisbatan — 404 tuzatildi) */
+/* Sidebar foydalanuvchi profili fon naqshi (absolut static yo'l) */
 .sidenav-user {
-    background: url(../images/user-bg-pattern.svg);
+    background: url(/static/assets/images/user-bg-pattern.svg);
 }
 /* Ruxsatlar ro'yxati skroll (staff_permissions) */
 .perm-list-scroll {
