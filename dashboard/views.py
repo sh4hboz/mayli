@@ -13,14 +13,14 @@ from django.utils import timezone
 from datetime import date
 
 from accounts.models import Role
-from website.models import SiteSettings, News, Promotion, GalleryItem, Vacancy, JobApplication, ContactMessage, Feature, StatItem
+from website.models import SiteSettings, News, Promotion, GalleryItem, Partner, Vacancy, JobApplication, ContactMessage, Feature, StatItem
 from menu.models import Category, Dish
 from crm.models import Customer, Tag, Gender, CustomerSource, Campaign, CampaignLog
 from notifications.models import ChatSession, ChatMessage
 from .forms import (
     SiteSettingsGeneralForm, SiteSettingsLocationForm, SiteSettingsHeroForm,
     SiteSettingsHomeContentForm, SiteSettingsSeoForm,
-    NewsForm, PromotionForm, GalleryItemForm, VacancyForm, CategoryForm,
+    NewsForm, PromotionForm, GalleryItemForm, PartnerForm, VacancyForm, CategoryForm,
     DishForm, CustomerForm, CampaignForm, FeatureForm, StatItemForm,
 )
 
@@ -320,6 +320,38 @@ class GalleryItemDeleteView(CMSBaseMixin, SuccessMessageMixin, DeleteView):
     model = GalleryItem
     template_name = 'management/confirm_delete.html'
     success_url = reverse_lazy('dashboard_gallery_list')
+
+
+# --- Hamkorlar (Partners) ---
+class PartnerListView(CMSBaseMixin, ListView):
+    model = Partner
+    template_name = 'management/website/partner_list.html'
+    context_object_name = 'partner_list'
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        ctx['form'] = PartnerForm()
+        return ctx
+
+
+class PartnerCreateView(CMSBaseMixin, WebPReportMixin, SuccessMessageMixin, CreateView):
+    model = Partner
+    form_class = PartnerForm
+    template_name = 'management/website/partner_list.html'
+    success_url = reverse_lazy('dashboard_partner_list')
+    success_message = "Hamkor qo'shildi"
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        ctx['partner_list'] = Partner.objects.all()
+        return ctx
+
+
+class PartnerDeleteView(CMSBaseMixin, SuccessMessageMixin, DeleteView):
+    model = Partner
+    template_name = 'management/confirm_delete.html'
+    success_url = reverse_lazy('dashboard_partner_list')
+    success_message = "Hamkor o'chirildi"
 
 
 # --- Vakansiyalar (Vacancies) ---

@@ -1,0 +1,88 @@
+{% extends 'management/base.html' %}
+{% load static %}
+{% block title %}Hamkorlar | Mayli Restobar{% endblock %}
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="page-title-box d-flex align-items-center justify-content-between">
+            <h4 class="page-title">Hamkorlar</h4>
+            <ol class="breadcrumb m-0">
+                <li class="breadcrumb-item"><a href="{% url 'dashboard_home' %}">Dashboard</a></li>
+                <li class="breadcrumb-item active">Hamkorlar</li>
+            </ol>
+        </div>
+    </div>
+</div>
+<div class="row mb-3">
+    <div class="col-lg-5">
+        <div class="card">
+            <div class="card-header"><h5 class="card-title mb-0">Hamkor qo'shish</h5></div>
+            <div class="card-body">
+                {% if form.non_field_errors %}<div class="alert alert-danger alert-sm mb-2">{% for e in form.non_field_errors %}{{ e }}{% endfor %}</div>{% endif %}
+                <form method="post" action="{% url 'dashboard_partner_create' %}" enctype="multipart/form-data" novalidate>
+                    {% csrf_token %}
+                    <div class="mb-2">
+                        <label class="form-label">{{ form.logo.label }}<span class="text-danger">*</span></label>{{ form.logo }}
+                        {% if form.logo.errors %}<div class="invalid-feedback d-block">{% for e in form.logo.errors %}{{ e }}{% endfor %}</div>{% endif %}
+                        {% if form.convert_webp %}
+                        <div class="form-check mt-2">
+                            {{ form.convert_webp }}
+                            <label class="form-check-label" for="{{ form.convert_webp.id_for_label }}">{{ form.convert_webp.label }}</label>
+                            <div class="form-text">{{ form.convert_webp.help_text }}</div>
+                        </div>
+                        {% endif %}
+                    </div>
+                    <div class="mb-2">
+                        <label class="form-label">{{ form.name.label }}</label>{{ form.name }}
+                        {% if form.name.errors %}<div class="invalid-feedback d-block">{% for e in form.name.errors %}{{ e }}{% endfor %}</div>{% endif %}
+                    </div>
+                    <div class="mb-2">
+                        <label class="form-label">{{ form.url.label }}</label>{{ form.url }}
+                        {% if form.url.errors %}<div class="invalid-feedback d-block">{% for e in form.url.errors %}{{ e }}{% endfor %}</div>{% endif %}
+                    </div>
+                    <div class="mb-2">
+                        <label class="form-label">{{ form.order.label }}</label>{{ form.order }}
+                        {% if form.order.errors %}<div class="invalid-feedback d-block">{% for e in form.order.errors %}{{ e }}{% endfor %}</div>{% endif %}
+                    </div>
+                    <div class="form-check mb-3">
+                        {{ form.is_active }}
+                        <label class="form-check-label">{{ form.is_active.label }}</label>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-sm"><i class="ti ti-upload me-1"></i>Yuklash</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header"><h5 class="card-title mb-0">Hamkorlar ({{ partner_list.count }})</h5></div>
+            <div class="card-body">
+                {% if partner_list %}
+                <div class="gallery-grid">
+                    {% for item in partner_list %}
+                    <div class="gallery-item {% if not item.is_active %}gallery-item-inactive{% endif %}">
+                        <img src="{{ item.logo.url }}" alt="{{ item.name }}" style="object-fit:contain;background:#fff;">
+                        <div class="gallery-item-actions">
+                            <button class="btn btn-sm {% if item.is_active %}btn-success{% else %}btn-secondary{% endif %}"
+                                    data-toggle-url="{% url 'dashboard_toggle_active' 'website' 'partner' item.pk %}" data-field="is_active"
+                                    title="{% if item.is_active %}Faol{% else %}Nofaol{% endif %}">
+                                <i class="ti {% if item.is_active %}ti-eye{% else %}ti-eye-off{% endif %}"></i>
+                            </button>
+                            <form method="post" action="{% url 'dashboard_partner_delete' item.pk %}">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-sm btn-danger" data-confirm="Hamkorni o'chirasizmi?"><i class="ti ti-trash"></i></button>
+                            </form>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <p class="text-muted text-center py-4">Hamkorlar topilmadi</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

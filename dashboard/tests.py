@@ -146,6 +146,8 @@ class DashboardRenderTests(TestCase):
             ('dashboard_promotion_edit', {'pk': self.promo.pk}),
             ('dashboard_gallery_list', {}),
             ('dashboard_gallery_create', {}),
+            ('dashboard_partner_list', {}),
+            ('dashboard_partner_create', {}),
             ('dashboard_vacancy_list', {}),
             ('dashboard_vacancy_create', {}),
             ('dashboard_vacancy_edit', {'pk': self.vacancy.pk}),
@@ -227,6 +229,14 @@ class DashboardFormSubmitTests(TestCase):
         })
         self.assertEqual(resp.status_code, 302)
         self.assertEqual(GalleryItem.objects.count(), 1)
+
+    def test_create_partner(self):
+        from website.models import Partner
+        resp = self.client.post(reverse('dashboard_partner_create'), {
+            'name': 'ACME', 'url': '', 'order': '0', 'is_active': 'on', 'logo': _img('p.png'),
+        })
+        self.assertEqual(resp.status_code, 302)
+        self.assertEqual(Partner.objects.count(), 1)
 
     def test_create_vacancy(self):
         resp = self.client.post(reverse('dashboard_vacancy_create'), {

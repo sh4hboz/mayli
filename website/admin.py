@@ -1,6 +1,6 @@
 from django.contrib import admin
 from modeltranslation.admin import TranslationAdmin
-from .models import (SiteSettings, News, Promotion, GalleryItem,
+from .models import (SiteSettings, News, Promotion, GalleryItem, Partner,
                      TeamMember, Testimonial, Vacancy, JobApplication, ContactMessage, Feature, StatItem)
 
 
@@ -27,9 +27,9 @@ class SiteSettingsAdmin(TranslationAdmin):
 
 @admin.register(News)
 class NewsAdmin(TranslationAdmin):
-    list_display = ('title', 'is_active', 'created_at')
+    list_display = ('title', 'slug', 'is_active', 'created_at')
     list_editable = ('is_active',)
-    prepopulated_fields = {'slug': ('title',)}
+    # slug avtomatik random yaratiladi (model.save) — sarlavhadan emas
 
 
 @admin.register(Promotion)
@@ -41,6 +41,12 @@ class PromotionAdmin(TranslationAdmin):
 @admin.register(GalleryItem)
 class GalleryItemAdmin(TranslationAdmin):
     list_display = ('caption', 'order', 'is_active')
+    list_editable = ('order', 'is_active')
+
+
+@admin.register(Partner)
+class PartnerAdmin(admin.ModelAdmin):
+    list_display = ('__str__', 'order', 'is_active')
     list_editable = ('order', 'is_active')
 
 

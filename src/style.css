@@ -1172,6 +1172,7 @@ footer p {
   display:flex; align-items:center; justify-content:center;
   height:110px; padding:20px 24px;
   background:#fff; border:1px solid var(--border); border-radius:12px;
+  text-decoration:none;
 }
 .partner-item img {
   max-width:100%; max-height:60px; width:auto; height:auto;

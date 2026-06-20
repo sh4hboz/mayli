@@ -143,6 +143,22 @@ class GalleryItem(TimeStampedModel):
         return self.caption or f'Rasm #{self.pk}'
 
 
+class Partner(TimeStampedModel):
+    name = models.CharField('Nomi', max_length=120, blank=True)
+    logo = models.ImageField('Logo', upload_to='partners/')
+    url = models.URLField('Sayt havolasi', blank=True)
+    order = models.PositiveIntegerField('Tartib', default=0)
+    is_active = models.BooleanField('Faol', default=True)
+
+    class Meta:
+        verbose_name = 'Hamkor'
+        verbose_name_plural = 'Hamkorlar'
+        ordering = ['order', '-created_at']
+
+    def __str__(self):
+        return self.name or f'Hamkor #{self.pk}'
+
+
 class TeamMember(TimeStampedModel):
     name = models.CharField(max_length=100)
     position = models.CharField(max_length=100)

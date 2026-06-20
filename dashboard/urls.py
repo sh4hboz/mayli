@@ -27,6 +27,9 @@ urlpatterns = [
     path('website/gallery/', views.GalleryItemListView.as_view(), name='dashboard_gallery_list'),
     path('website/gallery/add/', views.GalleryItemCreateView.as_view(), name='dashboard_gallery_create'),
     path('website/gallery/<int:pk>/delete/', views.GalleryItemDeleteView.as_view(), name='dashboard_gallery_delete'),
+    path('website/partners/', views.PartnerListView.as_view(), name='dashboard_partner_list'),
+    path('website/partners/add/', views.PartnerCreateView.as_view(), name='dashboard_partner_create'),
+    path('website/partners/<int:pk>/delete/', views.PartnerDeleteView.as_view(), name='dashboard_partner_delete'),
 
     # Vakansiyalar
     path('website/vacancies/', views.VacancyListView.as_view(), name='dashboard_vacancy_list'),

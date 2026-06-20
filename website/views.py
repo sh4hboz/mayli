@@ -7,7 +7,7 @@ from django.utils.translation import gettext_lazy as _
 from django.contrib import messages
 from django.core.cache import cache
 from menu.models import Dish, Category
-from .models import News, Promotion, GalleryItem, Vacancy, JobApplication, ContactMessage, Testimonial
+from .models import News, Promotion, GalleryItem, Partner, Vacancy, JobApplication, ContactMessage, Testimonial
 from notifications.telegram import notify_contact_form, notify_job_application, notify_chat_message
 from notifications.models import ChatSession, ChatMessage
 
@@ -65,6 +65,7 @@ def home(request):
         'latest_news': News.objects.filter(is_active=True)[:3],
         'gallery_items': GalleryItem.objects.filter(is_active=True)[:8],
         'testimonials': Testimonial.objects.filter(is_active=True)[:6],
+        'partners': Partner.objects.filter(is_active=True),
     }
     return render(request, 'website/home.html', context)
 

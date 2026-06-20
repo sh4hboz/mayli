@@ -1,5 +1,5 @@
 from django import forms
-from website.models import SiteSettings, News, Promotion, GalleryItem, Vacancy, Feature, StatItem
+from website.models import SiteSettings, News, Promotion, GalleryItem, Partner, Vacancy, Feature, StatItem
 from menu.models import Category, Dish
 from crm.models import Customer, Campaign
 from .image_utils import convert_image_to_webp
@@ -203,6 +203,11 @@ class GalleryItemForm(WebPModelForm):
     class Meta:
         model = GalleryItem
         fields = ['image', 'caption_uz', 'caption_ru', 'caption_en', 'order', 'is_active']
+
+class PartnerForm(WebPModelForm):
+    class Meta:
+        model = Partner
+        fields = ['logo', 'name', 'url', 'order', 'is_active']
 
 class VacancyForm(BootstrapModelForm):
     class Meta:

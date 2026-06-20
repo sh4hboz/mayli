@@ -10,14 +10,24 @@
 
     <div class="swiper partners-swiper">
       <div class="swiper-wrapper">
-        {% comment %} Hozircha placeholder — o'zimizning logo. Keyin haqiqiy hamkor logolari bilan almashtiriladi. {% endcomment %}
-        {% for i in "12345678" %}
-        <div class="swiper-slide">
-          <div class="partner-item">
-            <img src="{% static 'src/img/icons/logo-black.png' %}" alt="{% trans 'Hamkor' %}" loading="lazy">
+        {% if partners %}
+          {% for partner in partners %}
+          <div class="swiper-slide">
+            {% if partner.url %}<a href="{{ partner.url }}" target="_blank" rel="noopener" class="partner-item">{% else %}<div class="partner-item">{% endif %}
+              <img src="{{ partner.logo.url }}" alt="{{ partner.name|default:_('Hamkor') }}" loading="lazy">
+            {% if partner.url %}</a>{% else %}</div>{% endif %}
           </div>
-        </div>
-        {% endfor %}
+          {% endfor %}
+        {% else %}
+          {% comment %} Hamkor qo'shilmagan — o'zimizning logo placeholder {% endcomment %}
+          {% for i in "12345678" %}
+          <div class="swiper-slide">
+            <div class="partner-item">
+              <img src="{% static 'src/img/icons/logo-black.png' %}" alt="{% trans 'Hamkor' %}" loading="lazy">
+            </div>
+          </div>
+          {% endfor %}
+        {% endif %}
       </div>
     </div>
   </div>
