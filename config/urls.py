@@ -5,11 +5,11 @@ from django.conf.urls.i18n import i18n_patterns
 from django.views.generic import RedirectView
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
 from django.contrib.sitemaps.views import sitemap
-from website.sitemaps import StaticViewSitemap, NewsSitemap
+from website.sitemaps import StaticViewSitemap, NewsSitemap, DishSitemap
 from website.robots_urls import llms_txt
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
-sitemaps = {'static': StaticViewSitemap, 'news': NewsSitemap}
+sitemaps = {'static': StaticViewSitemap, 'news': NewsSitemap, 'dishes': DishSitemap}
 
 urlpatterns = [
     path('i18n/', include('django.conf.urls.i18n')),

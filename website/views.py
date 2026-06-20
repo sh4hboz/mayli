@@ -179,6 +179,24 @@ def menu(request):
     })
 
 
+def dish_detail(request, pk):
+    """Bitta taom uchun alohida sahifa (URL = taom id raqami)."""
+    dish = get_object_or_404(
+        Dish.objects.prefetch_related('categories'),
+        pk=pk, is_active=True, is_available=True,
+    )
+    related = (
+        Dish.objects.filter(is_active=True, is_available=True,
+                            categories__in=dish.categories.all())
+        .exclude(pk=dish.pk)
+        .distinct()[:4]
+    )
+    return render(request, 'website/dish_detail.html', {
+        'dish': dish,
+        'related': related,
+    })
+
+
 def chat_send(request):
     """Sayt chat xabarini saqlaydi va admin botiga uzatadi (ikki tomonlama chat).
 

@@ -6,6 +6,7 @@ app_name = 'website'
 urlpatterns = [
     path('', views.home, name='home'),
     path('menu/', views.menu, name='menu'),
+    path('menu/<int:pk>/', views.dish_detail, name='dish_detail'),
     path('chat/send/', views.chat_send, name='chat_send'),
     path('chat/poll/', views.chat_poll, name='chat_poll'),
     path('about/', views.about, name='about'),

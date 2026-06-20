@@ -178,6 +178,21 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }
 
+  // === PARTNERS SWIPER (uzluksiz chiziqli aylanma) ===
+  if (document.querySelector('.partners-swiper')) {
+    new Swiper('.partners-swiper', {
+      slidesPerView: 2, spaceBetween: 24, loop: true,
+      autoplay: { delay: 0, disableOnInteraction: false },
+      speed: 4000,
+      allowTouchMove: false,
+      breakpoints: {
+        480: { slidesPerView: 3, spaceBetween: 28 },
+        768: { slidesPerView: 4, spaceBetween: 32 },
+        1024: { slidesPerView: 5, spaceBetween: 40 },
+      },
+    });
+  }
+
   // === TESTIMONIALS SWIPER ===
   const testSwiper = document.querySelector('.testimonials-swiper');
   if (testSwiper) {

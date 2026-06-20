@@ -1,0 +1,164 @@
+{% extends 'website/base.html' %}
+{% load static i18n %}
+
+{% block full_title %}Mayli | {{ dish.name }}{% endblock %}
+{% block meta_description %}{{ dish.name }}{% if dish.description %} — {{ dish.description|truncatechars:140 }}{% endif %}{% endblock %}
+{% block og_title %}{{ dish.name }} | Mayli Restobar{% endblock %}
+{% block og_description %}{{ dish.description|truncatechars:160 }}{% endblock %}
+{% block og_image %}{% if dish.image %}{{ request.scheme }}://{{ request.get_host }}{{ dish.image.url }}{% else %}{{ block.super }}{% endif %}{% endblock %}
+
+{% block content %}
+
+<section class="page-hero">
+  <div class="container">
+    <span class="section-badge">{% trans "Menyu" %}</span>
+    <h1 class="section-title">{{ dish.name }}</h1>
+    <div class="breadcrumb">
+      <a href="{% url 'website:home' %}">{% trans "Bosh sahifa" %}</a> /
+      <a href="{% url 'website:menu' %}">{% trans "Menyu" %}</a> /
+      <span>{{ dish.name|truncatechars:40 }}</span>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="dish-detail-layout">
+
+      <!-- Rasm -->
+      <div class="dish-detail-img">
+        {% if dish.image %}
+          <img src="{{ dish.image.url }}" alt="{{ dish.name }}" loading="lazy">
+        {% else %}
+          <div class="dish-no-img">
+            <svg width="64" height="64" viewBox="0 0 24 24" fill="currentColor"><path d="M18.06 22.99h1.66c.84 0 1.53-.64 1.63-1.46L23 5.05h-5V1h-1.97v4.05h-4.97l.3 2.34c1.71.47 3.31 1.32 4.27 2.26 1.44 1.42 2.43 2.89 2.43 5.29v8.05zM1 21.99V21h15.03v.99c0 .55-.45 1-1.01 1H2.01c-.56 0-1.01-.45-1.01-1zm15.03-7c0-2.6-1.53-3.97-4.18-3.97-2.32 0-3.03 1.25-4.85 1.25-1.5 0-2.21-.8-2.51-.8-.97 0-3.49 2.46-3.49 5.32v.2h15.03v-2z"/></svg>
+          </div>
+        {% endif %}
+      </div>
+
+      <!-- Ma'lumot -->
+      <div class="dish-detail-info">
+        <div class="dish-detail-cats">
+          {% for cat in dish.categories.all %}
+            <a href="{% url 'website:menu' %}?cat={{ cat.slug }}" class="dish-badge">{{ cat.name }}</a>
+          {% endfor %}
+        </div>
+
+        <h2 class="dish-detail-name">{{ dish.name }}</h2>
+
+        {% if dish.description %}
+        <div class="dish-detail-desc">
+          <span class="dish-detail-label">{% trans "Tarkibi" %}:</span>
+          <p>{{ dish.description|linebreaksbr }}</p>
+        </div>
+        {% endif %}
+
+        <div class="dish-detail-meta">
+          <div class="dish-detail-price">
+            {{ dish.price|floatformat:0 }} <span class="currency">{% trans "so'm" %}</span>
+          </div>
+          {% if dish.prep_time %}
+          <div class="dish-detail-time">
+            <i class="fa fa-clock-o"></i> {{ dish.prep_time }} {% trans "daqiqa" %}
+          </div>
+          {% endif %}
+        </div>
+
+        {% if site.phone_main %}
+        <a href="tel:{{ site.phone_main }}" class="btn btn-gold dish-detail-cta">
+          <i class="fa fa-phone"></i> {% trans "Buyurtma berish" %}
+        </a>
+        {% endif %}
+
+        <div class="dish-detail-back">
+          <a href="{% url 'website:menu' %}" class="btn btn-outline">← {% trans "Menyuga qaytish" %}</a>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- O'xshash taomlar -->
+    {% if related %}
+    <div class="dish-related">
+      <h3 class="related-title">{% trans "O'xshash taomlar" %}</h3>
+      <div class="dishes-grid">
+        {% for item in related %}
+        <a href="{% url 'website:dish_detail' item.pk %}" class="dish-card">
+          <div class="dish-img-wrap">
+            {% if item.image %}
+              <img src="{{ item.image.url }}" alt="{{ item.name }}" loading="lazy">
+            {% endif %}
+            {% with first_cat=item.categories.first %}{% if first_cat %}<span class="dish-badge">{{ first_cat.name }}</span>{% endif %}{% endwith %}
+          </div>
+          <div class="dish-info">
+            <div class="dish-name">{{ item.name }}</div>
+            <div class="dish-footer">
+              <div class="dish-price">{{ item.price|floatformat:0 }} <span class="currency">{% trans "so'm" %}</span></div>
+            </div>
+          </div>
+        </a>
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+
+  </div>
+</section>
+
+{# Strukturali ma'lumot (SEO) #}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "MenuItem",
+  "name": "{{ dish.name|escapejs }}",
+  {% if dish.description %}"description": "{{ dish.description|escapejs }}",{% endif %}
+  {% if dish.image %}"image": "{{ request.scheme }}://{{ request.get_host }}{{ dish.image.url }}",{% endif %}
+  "offers": {
+    "@type": "Offer",
+    "price": "{{ dish.price|floatformat:0 }}",
+    "priceCurrency": "UZS"
+  }
+}
+</script>
+
+<style>
+.dish-detail-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+  align-items: start;
+}
+.dish-detail-img img,
+.dish-detail-img .dish-no-img {
+  width: 100%;
+  border-radius: 16px;
+  display: block;
+}
+.dish-detail-img img { object-fit: cover; aspect-ratio: 4 / 3; }
+.dish-detail-img .dish-no-img {
+  aspect-ratio: 4 / 3;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(0,0,0,.05); color: rgba(0,0,0,.25);
+}
+.dish-detail-cats { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+.dish-detail-name { font-size: 2rem; margin: 0 0 16px; }
+.dish-detail-desc { margin-bottom: 24px; }
+.dish-detail-label { font-weight: 600; opacity: .7; }
+.dish-detail-desc p { margin: 6px 0 0; line-height: 1.6; }
+.dish-detail-meta {
+  display: flex; align-items: center; gap: 24px;
+  margin-bottom: 28px; flex-wrap: wrap;
+}
+.dish-detail-price { font-size: 1.8rem; font-weight: 700; }
+.dish-detail-time { opacity: .7; }
+.dish-detail-cta { margin-right: 12px; }
+.dish-detail-back { margin-top: 20px; }
+.dish-related { margin-top: 64px; }
+.dish-related .related-title { margin-bottom: 24px; }
+@media (max-width: 768px) {
+  .dish-detail-layout { grid-template-columns: 1fr; gap: 24px; }
+  .dish-detail-name { font-size: 1.5rem; }
+}
+</style>
+
+{% endblock %}

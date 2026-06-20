@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <!-- SEO Meta -->
-  <title>Mayli Restobar | {% block title %}{% trans "Termizdagi restoran va restobar" %}{% endblock %}</title>
+  <title>{% block full_title %}Mayli Restobar | {% block title %}{% trans "Termizdagi restoran va restobar" %}{% endblock %}{% endblock %}</title>
   <meta name="description" content="{% block meta_description %}{% trans "Mayli Restobar — Termizda premium taomlar, ichimliklar, kalyan va unutilmas atmosfera. Bron qiling yoki bizga tashrif buyuring." %}{% endblock %}">
   <meta name="keywords" content="{% block meta_keywords %}Mayli Restobar, Termiz restoran, restoran Termez, ресторан Термез, restaurant Termez{% endblock %}">
   <meta name="robots" content="index, follow">
@@ -36,7 +36,7 @@
   <link rel="stylesheet" href="{% static 'src/libs/swiper-bundle.min.css' %}">
   <link rel="stylesheet" href="{% static 'src/libs/fancybox.css' %}">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-  <link rel="stylesheet" href="{% static 'src/style.css' %}?v=2.7">
+  <link rel="stylesheet" href="{% static 'src/style.css' %}?v=2.8">
 
 
   {% if site.google_verify %}<meta name="google-site-verification" content="{{ site.google_verify }}">{% endif %}
@@ -129,7 +129,7 @@ window.SITE_VALIDATION = {
 <script src="{% static 'src/libs/swiper-bundle.min.js' %}" defer></script>
 <script src="{% static 'src/libs/fancybox.umd.js' %}" defer></script>
 <script src="{% static 'src/libs/imask.js' %}" defer></script>
-<script src="{% static 'src/website.js' %}?v=2.6" defer></script>
+<script src="{% static 'src/website.js' %}?v=2.7" defer></script>
 {% block extra_js %}{% endblock %}
 
 </body>

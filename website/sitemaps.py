@@ -1,6 +1,7 @@
 from django.contrib.sitemaps import Sitemap
 from django.urls import reverse
 
+from menu.models import Dish
 from .models import News
 
 
@@ -45,3 +46,19 @@ class NewsSitemap(Sitemap):
 
     def location(self, obj):
         return reverse('website:news_detail', kwargs={'slug': obj.slug})
+
+
+class DishSitemap(Sitemap):
+    """Har bir faol va mavjud taom alohida URL sifatida (/menu/<id>/)."""
+    changefreq = 'weekly'
+    priority = 0.7
+    i18n = True
+
+    def items(self):
+        return Dish.objects.filter(is_active=True, is_available=True)
+
+    def lastmod(self, obj):
+        return obj.updated_at
+
+    def location(self, obj):
+        return reverse('website:dish_detail', kwargs={'pk': obj.pk})

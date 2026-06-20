@@ -1,6 +1,16 @@
+import secrets
+
 from django.db import models
-from django.utils.text import slugify
 from core.models import TimeStampedModel
+
+# Chalkash belgilarsiz alfavit (0/o, 1/l/i kabilarsiz) — qisqa random slug uchun
+_SLUG_ALPHABET = 'abcdefghijkmnpqrstuvwxyz23456789'
+
+
+def random_news_slug():
+    """Qisqa, noyob random slug: masalan 'k7p2-x9m'."""
+    pick = lambda n: ''.join(secrets.choice(_SLUG_ALPHABET) for _ in range(n))
+    return f"{pick(4)}-{pick(3)}"
 
 
 class SiteSettings(models.Model):
@@ -95,7 +105,10 @@ class News(TimeStampedModel):
 
     def save(self, *args, **kwargs):
         if not self.slug:
-            self.slug = slugify(self.title)
+            slug = random_news_slug()
+            while News.objects.filter(slug=slug).exclude(pk=self.pk).exists():
+                slug = random_news_slug()
+            self.slug = slug
         super().save(*args, **kwargs)
 
 

@@ -37,7 +37,7 @@
     {% if dishes %}
     <div class="dishes-grid">
       {% for dish in dishes %}
-      <div class="dish-card reveal">
+      <a href="{% url 'website:dish_detail' dish.pk %}" class="dish-card reveal">
         <div class="dish-img-wrap">
           {% if dish.image %}
             <img src="{{ dish.image.url }}" alt="{{ dish.name }}" loading="lazy">
@@ -59,7 +59,7 @@
             </div>
           </div>
         </div>
-      </div>
+      </a>
       {% endfor %}
     </div>
     {% else %}

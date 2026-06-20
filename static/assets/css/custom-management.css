@@ -60,6 +60,16 @@
     border-radius: .375rem;
 }
 
+/* Taomlar ro'yxatidagi kattaroq rasm (200x200) */
+.dish-thumb {
+    max-width: 200px;
+    width: 100%;
+    max-height: 200px;
+    height: auto;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
 
 /* Kichik alert (galereya formasi va h.k.) */
 .alert-sm {

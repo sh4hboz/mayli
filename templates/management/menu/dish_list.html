@@ -32,7 +32,7 @@
                                 <td>{{ forloop.counter }}</td>
                                 <td>
                                     <a href="{% url 'dashboard_dish_edit' item.pk %}">
-                                        {% if item.image %}<img src="{{ item.image.url }}" class="thumb-img" alt="">{% else %}<i class="ti ti-photo text-muted fs-3"></i>{% endif %}
+                                        {% if item.image %}<img src="{{ item.image.url }}" class="dish-thumb" alt="">{% else %}<i class="ti ti-photo text-muted fs-3"></i>{% endif %}
                                     </a>
                                 </td>
                                 <td><a href="{% url 'dashboard_dish_edit' item.pk %}" class="text-reset fw-semibold">{{ item.name_uz|truncatechars:30 }}</a></td>

@@ -95,6 +95,35 @@ class WebsiteRenderTests(TestCase):
         self.assertEqual(resp.status_code, 200)
 
 
+class DishDetailTests(TestCase):
+
+    def setUp(self):
+        self.client = Client(SERVER_NAME='localhost')
+        SiteSettings.objects.filter(pk=1).delete()
+
+    def test_active_dish_renders(self):
+        from menu.models import Dish
+        dish = Dish.objects.create(name='Lag\'mon', price=30000,
+                                   is_active=True, is_available=True)
+        resp = self.client.get(reverse('website:dish_detail', kwargs={'pk': dish.pk}))
+        self.assertEqual(resp.status_code, 200)
+        self.assertContains(resp, 'Lag')
+
+    def test_inactive_dish_404(self):
+        from menu.models import Dish
+        dish = Dish.objects.create(name='Yashirin', price=1000,
+                                   is_active=False, is_available=False)
+        resp = self.client.get(reverse('website:dish_detail', kwargs={'pk': dish.pk}))
+        self.assertEqual(resp.status_code, 404)
+
+    def test_news_slug_is_random(self):
+        from website.models import News
+        n = News.objects.create(title='Katta yangilik sarlavhasi', body='matn')
+        # Slug sarlavhadan emas, qisqa random (xxxx-xxx) bo'lishi kerak
+        self.assertNotIn('katta', n.slug)
+        self.assertRegex(n.slug, r'^[a-z2-9]{4}-[a-z2-9]{3}$')
+
+
 # ════════════════════════════════════════════════════════════════════
 # Template DB qiymatlari testlari — DB'dagi matnlar sahifada ko'rinadimi
 # ════════════════════════════════════════════════════════════════════
