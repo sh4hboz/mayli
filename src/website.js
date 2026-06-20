@@ -143,6 +143,53 @@ document.addEventListener('DOMContentLoaded', function () {
   }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
   reveals.forEach(el => revealObserver.observe(el));
 
+  // === MENU (AJAX tablar + "Ko'proq") ===
+  const menuGrid = document.getElementById('dishes-grid');
+  if (menuGrid) {
+    const loadMoreBtn = document.getElementById('menu-load-more');
+    const emptyEl = document.getElementById('menu-empty');
+    const filterBtns = document.querySelectorAll('.menu-filters .filter-btn');
+    let currentCat = '';
+    let currentPage = 1;
+    let loading = false;
+
+    const fetchItems = function (append) {
+      if (loading) return;
+      loading = true;
+      if (loadMoreBtn) loadMoreBtn.disabled = true;
+      const url = menuGrid.dataset.url + '?cat=' + encodeURIComponent(currentCat) + '&page=' + currentPage;
+      fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+        .then(r => r.json())
+        .then(data => {
+          if (append) {
+            menuGrid.insertAdjacentHTML('beforeend', data.html);
+          } else {
+            menuGrid.innerHTML = data.html;
+          }
+          if (emptyEl) emptyEl.style.display = (!append && !data.html.trim()) ? '' : 'none';
+          if (loadMoreBtn) loadMoreBtn.style.display = data.has_more ? '' : 'none';
+        })
+        .catch(() => {})
+        .finally(() => {
+          loading = false;
+          if (loadMoreBtn) loadMoreBtn.disabled = false;
+        });
+    };
+
+    filterBtns.forEach(btn => btn.addEventListener('click', function () {
+      filterBtns.forEach(b => b.classList.remove('active'));
+      this.classList.add('active');
+      currentCat = this.dataset.cat || '';
+      currentPage = 1;
+      fetchItems(false);
+    }));
+
+    if (loadMoreBtn) loadMoreBtn.addEventListener('click', function () {
+      currentPage += 1;
+      fetchItems(true);
+    });
+  }
+
   // === HERO SWIPER ===
   if (document.querySelector('.hero-swiper')) {
     new Swiper('.hero-swiper', {

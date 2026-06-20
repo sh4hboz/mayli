@@ -2,6 +2,8 @@ from datetime import timedelta
 
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import JsonResponse
+from django.core.paginator import Paginator
+from django.template.loader import render_to_string
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from django.contrib import messages
@@ -160,24 +162,45 @@ def about(request):
     return render(request, 'website/about.html', context)
 
 
-def menu(request):
-    """To'liq menyu sahifasi — kategoriya filtri bilan."""
-    categories = Category.objects.filter(is_active=True)
-    active_category = request.GET.get('cat', '').strip()
+MENU_PAGE_SIZE = 6
 
-    dishes = (
+
+def _menu_queryset(cat):
+    """Faol/mavjud taomlar; kategoriya slug berilsa — filtrlanadi."""
+    qs = (
         Dish.objects.filter(is_active=True, is_available=True)
         .prefetch_related('categories')
     )
-    if active_category:
-        dishes = dishes.filter(categories__slug=active_category, categories__is_active=True)
-    dishes = dishes.distinct()
+    if cat:
+        qs = qs.filter(categories__slug=cat, categories__is_active=True)
+    return qs.distinct()
 
+
+def menu(request):
+    """Menyu sahifasi — birinchi porsiya server'dan (SEO + JS'siz fallback)."""
+    categories = Category.objects.filter(is_active=True)
+    page_obj = Paginator(_menu_queryset(''), MENU_PAGE_SIZE).get_page(1)
     return render(request, 'website/menu.html', {
         'categories': categories,
-        'active_category': active_category,
-        'dishes': dishes,
+        'dishes': page_obj.object_list,
+        'has_more': page_obj.has_next(),
     })
+
+
+def menu_items(request):
+    """AJAX: kategoriya + sahifa bo'yicha taom kartalarini (HTML) qaytaradi."""
+    cat = request.GET.get('cat', '').strip()
+    try:
+        page = int(request.GET.get('page', 1))
+    except (TypeError, ValueError):
+        page = 1
+    page_obj = Paginator(_menu_queryset(cat), MENU_PAGE_SIZE).get_page(page)
+    html = render_to_string(
+        'website/partials/_dish_cards.html',
+        {'dishes': page_obj.object_list},
+        request=request,
+    )
+    return JsonResponse({'html': html, 'has_more': page_obj.has_next()})
 
 
 def dish_detail(request, pk):

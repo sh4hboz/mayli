@@ -1125,8 +1125,9 @@ footer p {
 
 /* ===== MENU PAGE ===== */
 .menu-filters { display:flex; flex-wrap:wrap; gap:10px; justify-content:center; margin-bottom:40px; }
-.filter-btn { padding:8px 20px; border-radius:30px; border:1px solid var(--border); background:transparent; color:var(--text-muted); font-size:.85rem; font-weight:600; cursor:pointer; transition:var(--transition); text-decoration:none; }
+.filter-btn { padding:8px 20px; border-radius:30px; border:1px solid var(--border); background:transparent; color:var(--text-muted); font-size:.85rem; font-weight:600; font-family:inherit; cursor:pointer; transition:var(--transition); text-decoration:none; }
 .filter-btn:hover, .filter-btn.active { background:var(--gold); color:#000; border-color:var(--gold); }
+.menu-load-more-wrap { text-align:center; margin-top:36px; }
 .no-dishes { text-align:center; padding:60px 0; color:var(--text-muted); }
 .no-dishes i { font-size:3rem; margin-bottom:16px; opacity:.3; display:block; }
 

@@ -90,6 +90,25 @@ class WebsiteRenderTests(TestCase):
         resp = self.client.get(reverse('website:menu'))
         self.assertEqual(resp.status_code, 200)
 
+    def test_menu_items_ajax(self):
+        from menu.models import Dish, Category
+        cat = Category.objects.create(name='Sho\'rvalar')
+        for i in range(9):
+            d = Dish.objects.create(name=f'Taom {i}', price=1000,
+                                    is_active=True, is_available=True)
+            d.categories.add(cat)
+        # 1-sahifa: 6 ta + has_more True
+        resp = self.client.get(reverse('website:menu_items'), {'cat': cat.slug, 'page': 1})
+        self.assertEqual(resp.status_code, 200)
+        data = resp.json()
+        self.assertTrue(data['has_more'])
+        self.assertEqual(data['html'].count('dish-card'), 6)
+        # 2-sahifa: qolgan 3 ta + has_more False
+        resp2 = self.client.get(reverse('website:menu_items'), {'cat': cat.slug, 'page': 2})
+        data2 = resp2.json()
+        self.assertFalse(data2['has_more'])
+        self.assertEqual(data2['html'].count('dish-card'), 3)
+
     def test_news_list_renders(self):
         resp = self.client.get(reverse('website:news_list'))
         self.assertEqual(resp.status_code, 200)

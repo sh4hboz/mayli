@@ -82,22 +82,7 @@
     <div class="dish-related">
       <h3 class="related-title">{% trans "O'xshash taomlar" %}</h3>
       <div class="dishes-grid">
-        {% for item in related %}
-        <a href="{% url 'website:dish_detail' item.pk %}" class="dish-card">
-          <div class="dish-img-wrap">
-            {% if item.image %}
-              <img src="{{ item.image.url }}" alt="{{ item.name }}" loading="lazy">
-            {% endif %}
-            {% with first_cat=item.categories.first %}{% if first_cat %}<span class="dish-badge">{{ first_cat.name }}</span>{% endif %}{% endwith %}
-          </div>
-          <div class="dish-info">
-            <div class="dish-name">{{ item.name }}</div>
-            <div class="dish-footer">
-              <div class="dish-price">{{ item.price|floatformat:0 }} <span class="currency">{% trans "so'm" %}</span></div>
-            </div>
-          </div>
-        </a>
-        {% endfor %}
+        {% include 'website/partials/_dish_cards.html' with dishes=related %}
       </div>
     </div>
     {% endif %}
