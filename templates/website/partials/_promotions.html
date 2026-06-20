@@ -20,8 +20,8 @@
           <div class="promo-label">{% trans "Aksiya" %}</div>
           <div class="promo-title">{{ promo.title }}</div>
           {% if promo.description %}
-            <div class="promo-desc">{{ promo.description|truncatechars:80 }}</div>
-            <div class="promo-full-desc">{{ promo.description }}</div>
+            <div class="promo-desc">{{ promo.description|striptags|truncatechars:80 }}</div>
+            <div class="promo-full-desc">{{ promo.description|safe }}</div>
           {% endif %}
           {% if promo.valid_until %}<div class="promo-valid">{% trans "Amal qilish muddati:" %} {{ promo.valid_until }}</div>{% endif %}
           <button type="button" class="promo-toggle-hint">{% trans "Batafsil uchun bosing" %} ▾</button>

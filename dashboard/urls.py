@@ -10,6 +10,7 @@ urlpatterns = [
     path('settings/website/hero/', views.SiteSettingsHeroView.as_view(), name='dashboard_settings_hero'),
     path('settings/website/home/', views.SiteSettingsHomeContentView.as_view(), name='dashboard_settings_home'),
     path('settings/website/seo/', views.SiteSettingsSeoView.as_view(), name='dashboard_settings_seo'),
+    path('settings/website/custom-css/', views.DashboardCustomCssView.as_view(), name='dashboard_custom_css'),
 
     # Yangiliklar
     path('website/news/', views.NewsListView.as_view(), name='dashboard_news_list'),

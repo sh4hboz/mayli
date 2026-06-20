@@ -36,7 +36,7 @@
         {% endif %}
 
         <div class="news-detail-body">
-          {{ article.body|linebreaks }}
+          {{ article.body|safe }}
         </div>
 
         <div class="news-detail-back mt-4">

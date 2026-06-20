@@ -21,7 +21,13 @@
     <!-- Custom management css -->
     <link href="{% static 'assets/css/custom-management.css' %}" rel="stylesheet" type="text/css" />
 
+    <!-- Rich text editor (Summernote) -->
+    <link href="{% static 'assets/plugins/summernote/summernote-bs5.min.css' %}" rel="stylesheet" type="text/css" />
+
     {% block extra_css %}{% endblock %}
+
+    <!-- Dashboard'dan boshqariladigan custom CSS (bazada saqlanadi) -->
+    {% if site.dashboard_custom_css %}<style id="dashboard-custom-css">{{ site.dashboard_custom_css|safe }}</style>{% endif %}
 </head>
 
 <body>
@@ -61,6 +67,24 @@
 
     <!-- Custom management js -->
     <script src="{% static 'assets/js/custom-management.js' %}"></script>
+
+    <!-- Rich text editor (Summernote) -->
+    <script src="{% static 'assets/plugins/summernote/summernote-bs5.min.js' %}"></script>
+    <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        if (window.jQuery && jQuery.fn.summernote && jQuery('.richtext').length) {
+            jQuery('.richtext').summernote({
+                height: 220,
+                toolbar: [
+                    ['style', ['bold', 'italic', 'underline', 'clear']],
+                    ['para', ['ul', 'ol', 'paragraph']],
+                    ['insert', ['link']],
+                    ['misc', ['undo', 'redo', 'codeview']],
+                ],
+            });
+        }
+    });
+    </script>
 
     {% block extra_js %}{% endblock %}
 </body>

@@ -70,6 +70,24 @@ class WebPModelForm(BootstrapModelForm):
         return cleaned
 
 
+class RichTextMixin:
+    """`richtext_fields` ro'yxatidagi maydon widgetlariga 'richtext' class qo'shadi.
+
+    BootstrapModelForm class'ni 'form-control' ga qayta yozgani uchun bu super()
+    __init__ dan KEYIN ishlashi shart (shuning uchun mixin chapdan qo'yiladi).
+    Front-end JS '.richtext' textarea'larini Summernote editoriga aylantiradi.
+    """
+    richtext_fields = []
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for name in self.richtext_fields:
+            field = self.fields.get(name)
+            if field is not None:
+                cls = field.widget.attrs.get('class', '')
+                field.widget.attrs['class'] = (cls + ' richtext').strip()
+
+
 # ─────────────────────────────────────────────────────────────────────
 # Sayt sozlamalari — bitta katta forma o'rniga 5 ta alohida bo'lim.
 # Har biri bitta SiteSettings (singleton) ni tahrirlaydi; har bo'lim faqat
@@ -123,8 +141,10 @@ class SiteSettingsHeroForm(BootstrapModelForm):
         }
 
 
-class SiteSettingsHomeContentForm(BootstrapModelForm):
+class SiteSettingsHomeContentForm(RichTextMixin, BootstrapModelForm):
     """4-bo'lim — Bosh sahifa kontenti: about seksiyasi, Bron CTA, "Nega biz?"."""
+    richtext_fields = ['about_text_uz', 'about_text_ru', 'about_text_en']
+
     class Meta:
         model = SiteSettings
         fields = [
@@ -151,8 +171,13 @@ class SiteSettingsHomeContentForm(BootstrapModelForm):
         }
 
 
-class SiteSettingsSeoForm(BootstrapModelForm):
+class SiteSettingsSeoForm(RichTextMixin, BootstrapModelForm):
     """5-bo'lim — SEO: verifikatsiya, GA4, SEO matnlari."""
+    richtext_fields = [
+        'home_seo_body_uz', 'home_seo_body_ru', 'home_seo_body_en',
+        'about_seo_body_uz', 'about_seo_body_ru', 'about_seo_body_en',
+    ]
+
     class Meta:
         model = SiteSettings
         fields = [
@@ -170,7 +195,23 @@ class SiteSettingsSeoForm(BootstrapModelForm):
             'about_seo_body_en': forms.Textarea(attrs={'rows': 12}),
         }
 
-class NewsForm(WebPModelForm):
+class DashboardCustomCssForm(BootstrapModelForm):
+    """Dashboard ko'rinishini sozlash uchun custom CSS (bazada saqlanadi)."""
+    class Meta:
+        model = SiteSettings
+        fields = ['dashboard_custom_css']
+        widgets = {
+            'dashboard_custom_css': forms.Textarea(attrs={
+                'rows': 22, 'spellcheck': 'false',
+                'style': 'font-family:monospace;font-size:13px;',
+                'placeholder': '/* Masalan: .dish-thumb { border-radius: 12px; } */',
+            }),
+        }
+
+
+class NewsForm(RichTextMixin, WebPModelForm):
+    richtext_fields = ['body_uz', 'body_ru', 'body_en']
+
     class Meta:
         model = News
         fields = [
@@ -184,7 +225,9 @@ class NewsForm(WebPModelForm):
             'body_en': forms.Textarea(attrs={'rows': 5}),
         }
 
-class PromotionForm(WebPModelForm):
+class PromotionForm(RichTextMixin, WebPModelForm):
+    richtext_fields = ['description_uz', 'description_ru', 'description_en']
+
     class Meta:
         model = Promotion
         fields = [
@@ -209,7 +252,12 @@ class PartnerForm(WebPModelForm):
         model = Partner
         fields = ['logo', 'name', 'url', 'order', 'is_active']
 
-class VacancyForm(BootstrapModelForm):
+class VacancyForm(RichTextMixin, BootstrapModelForm):
+    richtext_fields = [
+        'description_uz', 'description_ru', 'description_en',
+        'requirements_uz', 'requirements_ru', 'requirements_en',
+    ]
+
     class Meta:
         model = Vacancy
         fields = [

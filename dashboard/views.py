@@ -19,7 +19,7 @@ from crm.models import Customer, Tag, Gender, CustomerSource, Campaign, Campaign
 from notifications.models import ChatSession, ChatMessage
 from .forms import (
     SiteSettingsGeneralForm, SiteSettingsLocationForm, SiteSettingsHeroForm,
-    SiteSettingsHomeContentForm, SiteSettingsSeoForm,
+    SiteSettingsHomeContentForm, SiteSettingsSeoForm, DashboardCustomCssForm,
     NewsForm, PromotionForm, GalleryItemForm, PartnerForm, VacancyForm, CategoryForm,
     DishForm, CustomerForm, CampaignForm, FeatureForm, StatItemForm,
 )
@@ -231,6 +231,14 @@ class SiteSettingsSeoView(SiteSettingsSectionView):
     template_name = 'management/website/settings_seo.html'
     success_url = reverse_lazy('dashboard_settings_seo')
     active_tab = 'seo'
+
+
+class DashboardCustomCssView(SiteSettingsSectionView):
+    form_class = DashboardCustomCssForm
+    template_name = 'management/website/settings_custom_css.html'
+    success_url = reverse_lazy('dashboard_custom_css')
+    active_tab = 'css'
+    success_message_update = "Custom CSS saqlandi."
 
 
 # --- Yangiliklar (News) ---

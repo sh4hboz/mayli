@@ -19,10 +19,10 @@
           <div class="vacancy-card reveal">
             <div class="vacancy-title">{{ v.title }}</div>
             {% if v.salary %}<div class="vacancy-salary"><i class="fa fa-money"></i> {{ v.salary }}</div>{% endif %}
-            <div class="vacancy-desc">{{ v.description }}</div>
+            <div class="vacancy-desc">{{ v.description|safe }}</div>
             {% if v.requirements %}
             <div class="vacancy-requirements-label">
-              <strong class="text-bold">{% trans "Talablar:" %}</strong> {{ v.requirements }}
+              <strong class="text-bold">{% trans "Talablar:" %}</strong> {{ v.requirements|safe }}
             </div>
             {% endif %}
             <button type="button" class="btn btn-gold vacancy-apply-btn" data-vacancy-open data-vacancy-id="{{ v.pk }}" data-vacancy-title="{{ v.title }}">

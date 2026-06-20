@@ -1,0 +1,14 @@
+{% extends 'management/website/settings_base.html' %}
+{% block settings_inner %}
+<div class="card mb-3">
+    <div class="card-header"><h5 class="card-title mb-0">Dashboard Custom CSS</h5></div>
+    <div class="card-body">
+        <p class="text-muted small mb-3">
+            Bu yerga yozilgan CSS dashboardning barcha sahifalariga qo'llanadi (saqlagan zahoti, qayta yuklash shart emas).
+            Masalan: <code>.dish-thumb { border-radius: 12px; }</code>
+        </p>
+        {{ form.dashboard_custom_css }}
+        {% if form.dashboard_custom_css.errors %}<div class="invalid-feedback d-block">{% for e in form.dashboard_custom_css.errors %}{{ e }}{% endfor %}</div>{% endif %}
+    </div>
+</div>
+{% endblock %}

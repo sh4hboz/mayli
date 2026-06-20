@@ -138,6 +138,7 @@ class DashboardRenderTests(TestCase):
             ('dashboard_settings_hero', {}),
             ('dashboard_settings_home', {}),
             ('dashboard_settings_seo', {}),
+            ('dashboard_custom_css', {}),
             ('dashboard_news_list', {}),
             ('dashboard_news_create', {}),
             ('dashboard_news_edit', {'pk': self.news.pk}),
@@ -229,6 +230,16 @@ class DashboardFormSubmitTests(TestCase):
         })
         self.assertEqual(resp.status_code, 302)
         self.assertEqual(GalleryItem.objects.count(), 1)
+
+    def test_save_custom_css(self):
+        from website.models import SiteSettings
+        css = '.dish-thumb { border-radius: 12px; }'
+        resp = self.client.post(reverse('dashboard_custom_css'), {'dashboard_custom_css': css})
+        self.assertEqual(resp.status_code, 302)
+        self.assertEqual(SiteSettings.get().dashboard_custom_css, css)
+        # Dashboard sahifasida <style> sifatida chiqishi kerak
+        page = self.client.get(reverse('dashboard_home'))
+        self.assertContains(page, css)
 
     def test_create_partner(self):
         from website.models import Partner

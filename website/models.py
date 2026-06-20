@@ -75,6 +75,9 @@ class SiteSettings(models.Model):
     google_analytics_id = models.CharField(max_length=50, blank=True)
     yandex_metrica_id = models.CharField(max_length=20, blank=True)
 
+    # Dashboard ko'rinishini sozlash uchun custom CSS (dashboard sahifalariga <style> sifatida qo'shiladi)
+    dashboard_custom_css = models.TextField('Dashboard custom CSS', blank=True)
+
     class Meta:
         verbose_name = 'Sayt sozlamalari'
         verbose_name_plural = 'Sayt sozlamalari'

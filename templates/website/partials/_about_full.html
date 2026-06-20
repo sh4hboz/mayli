@@ -17,9 +17,11 @@
       <div class="reveal">
         <span class="section-badge">{% trans "Bizning hikoyamiz" %}</span>
         <h2 class="section-title">{% trans "Sifat va lazzat markazi" %}</h2>
-        <p class="text-muted-lh">
-          {% if site.about_text %}{{ site.about_text }}{% else %}{% trans "Termiz shahrida joylashgan Mayli Restobar — bu nafaqat restoran, balki har bir mehmon uchun alohida tajriba. Premium taomlar, ajoyib atmosfera va iliq xizmat bilan sizni kutamiz." %}{% endif %}
-        </p>
+        {% if site.about_text %}
+        <div class="text-muted-lh">{{ site.about_text|safe }}</div>
+        {% else %}
+        <p class="text-muted-lh">{% trans "Termiz shahrida joylashgan Mayli Restobar — bu nafaqat restoran, balki har bir mehmon uchun alohida tajriba. Premium taomlar, ajoyib atmosfera va iliq xizmat bilan sizni kutamiz." %}</p>
+        {% endif %}
         <div class="about-features">
           <div class="about-feature"><i class="fa fa-check-circle"></i> {% trans "Halol va yangi mahsulotlar" %}</div>
           <div class="about-feature"><i class="fa fa-check-circle"></i> {% trans "Tajribali oshpazlar jamoasi" %}</div>

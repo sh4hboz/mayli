@@ -14,7 +14,7 @@
       <div class="about-text reveal">
         <h2 class="section-title">{{ site.about_title|default:_("Mayli — sifat va lazzat markazi") }}</h2>
         <p class="text-muted-lh17">
-          {{ site.about_text|default:_("Termiz shahrida joylashgan Mayli Restobar sizga turli xil taomlar, tetiklashtiruvchi ichimliklar va premium kalyan xizmatini taklif etada.") }}
+          {{ site.about_text|striptags|truncatechars:240|default:_("Termiz shahrida joylashgan Mayli Restobar sizga turli xil taomlar, tetiklashtiruvchi ichimliklar va premium kalyan xizmatini taklif etada.") }}
         </p>
         <div class="about-features">
           {% if site.about_features %}
