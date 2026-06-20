@@ -12,6 +12,7 @@ import os
 from django.core.files import File
 from django.core.management.base import BaseCommand, CommandError
 
+from dashboard.image_utils import convert_image_to_webp
 from menu.models import Dish
 
 # Bir xil raqam uchun ko'rib chiqiladigan kengaytmalar (tartib muhim)
@@ -37,6 +38,10 @@ class Command(BaseCommand):
             help="Placeholder narx (standart 0)",
         )
         parser.add_argument(
+            '--no-webp', action='store_true',
+            help="Rasmlarni WebP'ga aylantirmaslik (asl JPG holatida saqlash)",
+        )
+        parser.add_argument(
             '--dry-run', action='store_true',
             help="Hech narsa yozmasdan nima qilinishini ko'rsatadi",
         )
@@ -46,6 +51,7 @@ class Command(BaseCommand):
         start, end = opts['start'], opts['end']
         prefix = opts['name_prefix']
         price = opts['price']
+        use_webp = not opts['no_webp']
         dry = opts['dry_run']
 
         if not os.path.isdir(directory):
@@ -74,10 +80,20 @@ class Command(BaseCommand):
 
             dish = Dish(name=name, price=price, is_available=False, is_active=False)
             with open(path, 'rb') as fh:
-                dish.image.save(filename, File(fh), save=False)
+                src = File(fh, name=filename)
+                if use_webp:
+                    result = convert_image_to_webp(src)
+                    out_file, save_name = result['file'], result['file'].name
+                    if result['used_webp']:
+                        note = f"webp (-{result['saved_pct']}%)"
+                    else:
+                        note = f"asl ({result['reason']})"
+                else:
+                    out_file, save_name, note = src, filename, "asl"
+                dish.image.save(save_name, out_file, save=False)
             dish.save()
             created += 1
-            self.stdout.write(self.style.SUCCESS(f"  #{n}: '{name}' yaratildi <- {filename}"))
+            self.stdout.write(self.style.SUCCESS(f"  #{n}: '{name}' yaratildi <- {filename} [{note}]"))
 
         self.stdout.write("")
         verb = "yaratiladi" if dry else "yaratildi"
