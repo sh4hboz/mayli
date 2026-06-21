@@ -162,6 +162,12 @@ python manage.py compilemessages
 sudo systemctl restart gunicorn
 ```
 
+> Menyu kategoriyalari va custom CSS fayllari (`media/css/`) endi **data migration**
+> orqali bir marta seed qilinadi (`menu.0006`, `website.0015`) — ya'ni `migrate`
+> ularni avtomatik bajaradi. Har deploy'da `init_custom_css` / `sync_menu_categories`
+> ni alohida yurgizish **kerak emas**. Qayta seed kerak bo'lsa, qo'lda:
+> `python manage.py sync_menu_categories` yoki `python manage.py init_custom_css --force`.
+
 ## Telegram webhook (kerak bo'lsa)
 
 ```bash

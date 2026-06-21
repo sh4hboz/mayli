@@ -92,7 +92,7 @@ class WebsiteRenderTests(TestCase):
 
     def test_menu_items_ajax(self):
         from menu.models import Dish, Category
-        cat = Category.objects.create(name='Sho\'rvalar')
+        cat = Category.objects.create(name='Sho\'rvalar', slug='test-shorvalar')
         for i in range(9):
             d = Dish.objects.create(name=f'Taom {i}', price=1000,
                                     is_active=True, is_available=True)

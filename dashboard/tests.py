@@ -113,7 +113,7 @@ class DashboardRenderTests(TestCase):
         cls.contact = ContactMessage.objects.create(
             name='Mehmon', phone='+998901112244', message='Salom', kind='message',
         )
-        cls.category = Category.objects.create(name='Issiq taomlar')
+        cls.category = Category.objects.create(name='Issiq taomlar', slug='test-issiq-taomlar')
         cls.dish = Dish.objects.create(name='Lag\'mon', price=30000)
         cls.dish.categories.add(cls.category)
         cls.customer = Customer.objects.create(first_name='Dilshod', phone='+998901112255')
@@ -267,10 +267,10 @@ class DashboardFormSubmitTests(TestCase):
 
     def test_create_category(self):
         resp = self.client.post(reverse('dashboard_category_create'), {
-            'name_uz': 'Salatlar', 'order': '0', 'is_active': 'on',
+            'name_uz': 'Mantilar', 'order': '0', 'is_active': 'on',
         })
         self.assertEqual(resp.status_code, 302)
-        self.assertTrue(Category.objects.filter(name='Salatlar').exists())
+        self.assertTrue(Category.objects.filter(name='Mantilar').exists())
 
     def test_create_dish(self):
         cat = Category.objects.create(name='Ichimliklar')
