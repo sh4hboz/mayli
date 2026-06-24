@@ -36,7 +36,7 @@
   <link rel="stylesheet" href="{% static 'src/libs/swiper-bundle.min.css' %}">
   <link rel="stylesheet" href="{% static 'src/libs/fancybox.css' %}">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-  <link rel="stylesheet" href="{% static 'src/style.css' %}?v=2.9">
+  <link rel="stylesheet" href="{% static 'src/style.css' %}?v=3.5">
   <!-- Sayt custom CSS (media/css/site.css — dashboarddan tahrirlanadi, eng oxirgi) -->
   <link rel="stylesheet" href="/media/css/site.css?v={{ site_css_v }}">
 
@@ -119,6 +119,18 @@ window.SITE_MESSAGES = {
     en: "💬 Our operator will contact you shortly."
   }
 };
+// Savat (cart) xabarlari (uz/ru/en) — toast va client-side tekshiruvlar
+window.CART_MESSAGES = {
+  added:          { uz: "Savatga qo‘shildi", ru: "Добавлено в корзину", en: "Added to cart" },
+  empty:          { uz: "Savat bo‘sh", ru: "Корзина пуста", en: "Cart is empty" },
+  name_required:  { uz: "Ismingizni kiriting.", ru: "Введите имя.", en: "Enter your name." },
+  phone_required: { uz: "Telefon raqamini to‘liq kiriting.", ru: "Введите номер телефона полностью.", en: "Enter your phone number." },
+  code_required:  { uz: "SMS kodni kiriting.", ru: "Введите код из SMS.", en: "Enter the SMS code." },
+  min_order:      { uz: "Minimum buyurtma summasi:", ru: "Минимальная сумма заказа:", en: "Minimum order amount:" },
+  sending:        { uz: "Yuborilmoqda...", ru: "Отправка...", en: "Sending..." },
+  code_sent:      { uz: "Tasdiqlash kodi telefoningizga yuborildi.", ru: "Код подтверждения отправлен на ваш телефон.", en: "A verification code was sent to your phone." },
+  network:        { uz: "Tarmoq xatosi. Qayta urinib ko‘ring.", ru: "Ошибка сети. Попробуйте ещё раз.", en: "Network error. Please try again." }
+};
 // jQuery validate — client-side validatsiya xabarlari (uz/ru/en)
 window.SITE_VALIDATION = {
   uz: { required: "Bu maydon to‘ldirilishi shart.", phone: "Telefonni to‘liq kiriting: +998 XX XXX-XX-XX", maxlength: "Juda uzun." },
@@ -131,7 +143,8 @@ window.SITE_VALIDATION = {
 <script src="{% static 'src/libs/swiper-bundle.min.js' %}" defer></script>
 <script src="{% static 'src/libs/fancybox.umd.js' %}" defer></script>
 <script src="{% static 'src/libs/imask.js' %}" defer></script>
-<script src="{% static 'src/website.js' %}?v=2.8" defer></script>
+<script src="{% static 'src/website.js' %}?v=2.10" defer></script>
+<script src="{% static 'src/cart.js' %}?v=1.2" defer></script>
 {% block extra_js %}{% endblock %}
 
 </body>

@@ -1,0 +1,160 @@
+/* ==========================================================================
+   dashboard.css — Mayli Restobar boshqaruv paneli (dashboard) custom CSS
+   --------------------------------------------------------------------------
+   Bu fayl dashboarddan tahrirlanadi (Sayt sozlamalari -> Custom CSS).
+   Serverda /media/css/dashboard.css sifatida saqlanadi va <head> da eng
+   oxirgi stylesheet bo'lib ulanadi (barcha tema/plagin qoidalaridan kuchli).
+   Bu repo'dagi nusxa — yangi serverni initsializatsiya qilish uchun seed.
+   ========================================================================== */
+
+
+/* Taom formasidagi kategoriyalar (CheckboxSelectMultiple) — chiroyli quti */
+.dish-categories-box ul {
+    list-style: none;
+    margin: 0;
+    padding: .5rem .75rem;
+    border: 1px solid var(--bs-border-color, #dee2e6);
+    border-radius: .375rem;
+    max-height: 180px;
+    overflow-y: auto;
+}
+.dish-categories-box li {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+    padding: .15rem 0;
+}
+.dish-categories-box input[type="checkbox"] {
+    width: 1.05em;
+    height: 1.05em;
+}
+
+/* Jadvaldagi kichik rasm (thumbnail) */
+.thumb-img {
+    width: 48px;
+    height: 48px;
+    object-fit: cover;
+    border-radius: .375rem;
+}
+
+/* Taomlar ro'yxatidagi kattaroq rasm (200x200) */
+.dish-thumb {
+    max-width: 200px;
+    width: 100%;
+    max-height: 200px;
+    height: auto;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+
+/* Kichik alert (galereya formasi va h.k.) */
+.alert-sm {
+    padding: .5rem .75rem;
+    font-size: .875rem;
+    margin-bottom: .5rem;
+}
+
+
+/* Galereya: responsiv grid + kartochka */
+.gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 16px;
+}
+.gallery-item {
+    position: relative;
+    border-radius: 8px;
+    overflow: hidden;
+    background: var(--ct-card-bg, #1e2330);
+    border: 1px solid var(--ct-border-color, rgba(255, 255, 255, .08));
+}
+.gallery-item img {
+    display: block;
+    width: 100%;
+    height: 160px;
+    object-fit: cover;
+}
+.gallery-item-actions {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+.gallery-item-actions form {
+    margin: 0;
+}
+/* Galereya: nofaol rasm xira ko'rsatiladi */
+.gallery-item-inactive img {
+    opacity: .4;
+    filter: grayscale(60%);
+}
+
+/* Sidebar foydalanuvchi profili fon naqshi (absolut static yo'l) */
+.sidenav-user {
+    background: url(/static/assets/images/user-bg-pattern.svg);
+}
+/* Ruxsatlar ro'yxati skroll (staff_permissions) */
+.perm-list-scroll {
+    max-height: 480px;
+    overflow-y: auto;
+}
+/* Topbar bildirishnomalar skroll balandligi */
+.notif-scroll {
+    max-height: 300px;
+}
+/* Topbar kichik avatar (doira) */
+.avatar-32 {
+    width: 32px;
+    height: 32px;
+    font-size: 14px;
+}
+/* customer_detail jadval sarlavha kengligi */
+.th-40 {
+    width: 40%;
+}
+
+/* === Sayt chat (dashboard) === */
+.chat-thread {
+    max-height: 460px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 4px;
+}
+.chat-msg {
+    display: flex;
+}
+.chat-msg-in {
+    justify-content: flex-start;
+}
+.chat-msg-out {
+    justify-content: flex-end;
+}
+.chat-bubble {
+    max-width: 75%;
+    padding: 8px 12px;
+    border-radius: 12px;
+    font-size: 0.9rem;
+    line-height: 1.4;
+    word-break: break-word;
+}
+.chat-msg-in .chat-bubble {
+    background: rgba(128, 128, 128, 0.18);
+    border-bottom-left-radius: 4px;
+}
+.chat-msg-out .chat-bubble {
+    background: var(--bs-primary, #3e60d5);
+    color: #fff;
+    border-bottom-right-radius: 4px;
+}
+.chat-meta {
+    display: block;
+    font-size: 0.68rem;
+    opacity: 0.7;
+    margin-top: 4px;
+    text-align: right;
+}

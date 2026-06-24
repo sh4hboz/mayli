@@ -19,6 +19,10 @@ ADMIN_URL = env('ADMIN_URL', default='admin/')
 # dashboard/admin butunlay yo'q (404). Aniqlovchi: core.middleware.HostSeparationMiddleware.
 DASHBOARD_HOST = env('DASHBOARD_HOST', default='')
 
+# Ommaviy sayt URL'i — dashboard (manage subdomen) topbaridagi "Saytni ko'rish" uchun.
+# Bo'sh bo'lsa DASHBOARD_HOST'dan apex domen avtomatik chiqariladi (dev'da '/').
+PUBLIC_SITE_URL = env('PUBLIC_SITE_URL', default='')
+
 INSTALLED_APPS = [
     'daphne',
     'modeltranslation',  # admin'dan OLDIN turishi shart
@@ -43,6 +47,8 @@ INSTALLED_APPS = [
     'menu',
     'notifications',
     'crm',
+    'orders',
+    'reservations',
     'website',
     'dashboard',
 ]
@@ -184,3 +190,27 @@ BIRTHDAY_SMS_TEXT = env(
     default="Hurmatli {{first_name}}, tug'ilgan kuningiz muborak! Mayli Restobar jamoasi.",
 )
 BIRTHDAY_SMS_TEMPLATE_ID = env('BIRTHDAY_SMS_TEMPLATE_ID', default='')
+
+# --- Buyurtma OTP (telefon tasdig'i) ---
+# OTP matni TextUp'da tasdiqlangan shablonga mos bo'lishi shart (templateId kerak).
+# Shablon tasdiqlanmaguncha (template_id bo'sh) — dev-stub: kod log'ga yoziladi,
+# DEBUG'da javobda `dev_code` qaytariladi (real SMS yuborilmaydi).
+ORDER_OTP_TEMPLATE_ID = env('ORDER_OTP_TEMPLATE_ID', default='')
+ORDER_OTP_TEXT = env(
+    'ORDER_OTP_TEXT',
+    default='Mayli Restobar (maylirestobar.uz) saytida buyurtmani tasdiqlash uchun kod: {code}',
+)
+ORDER_OTP_TTL_MINUTES = env.int('ORDER_OTP_TTL_MINUTES', default=5)
+ORDER_OTP_MAX_ATTEMPTS = env.int('ORDER_OTP_MAX_ATTEMPTS', default=5)
+
+# --- Bron OTP (telefon tasdig'i) ---
+# OTP matni TextUp'da tasdiqlangan shablonga mos bo'lishi shart (templateId kerak).
+# Shablon tasdiqlanmaguncha (template_id bo'sh) — dev-stub: kod log'ga yoziladi,
+# DEBUG'da javobda `dev_code` qaytariladi (real SMS yuborilmaydi).
+BOOKING_OTP_TEMPLATE_ID = env('BOOKING_OTP_TEMPLATE_ID', default='')
+BOOKING_OTP_TEXT = env(
+    'BOOKING_OTP_TEXT',
+    default='Mayli Restobar (maylirestobar.uz) saytida bronni tasdiqlash uchun kod: {code}',
+)
+BOOKING_OTP_TTL_MINUTES = env.int('BOOKING_OTP_TTL_MINUTES', default=5)
+BOOKING_OTP_MAX_ATTEMPTS = env.int('BOOKING_OTP_MAX_ATTEMPTS', default=5)

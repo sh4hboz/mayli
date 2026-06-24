@@ -1,0 +1,114 @@
+{% extends 'website/base.html' %}
+{% load static i18n %}
+
+{% block full_title %}Mayli | {% trans "Savat" %}{% endblock %}
+{% block meta_description %}{% trans "Mayli Restobar — menyudan buyurtma berish savati." %}{% endblock %}
+
+{% block content %}
+<section class="page-hero">
+  <div class="container">
+    <span class="section-badge">{% trans "Buyurtma" %}</span>
+    <h1 class="section-title">{% trans "Savat" %}</h1>
+    <div class="breadcrumb">
+      <a href="{% url 'website:home' %}">{% trans "Bosh sahifa" %}</a> /
+      <a href="{% url 'website:menu' %}">{% trans "Menyu" %}</a> /
+      <span>{% trans "Savat" %}</span>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div id="cart-page"
+         data-otp-request-url="{% url 'order_otp_request' %}"
+         data-otp-verify-url="{% url 'order_otp_verify' %}"
+         data-create-url="{% url 'order_create' %}"
+         data-my-orders-url="{% url 'website:my_orders' %}"
+         data-min-amount="{{ min_order_amount|floatformat:0 }}"
+         data-order-open="{{ order_open|yesno:'1,0' }}">
+
+      {% if not order_open %}
+      <div class="cart-notice">{% trans "Hozircha buyurtma qabul qilinmayapti. Iltimos, keyinroq urinib ko‘ring." %}</div>
+      {% endif %}
+
+      <!-- Bo'sh savat -->
+      <div id="cart-empty" class="cart-empty hidden">
+        <i class="fa fa-shopping-cart"></i>
+        <p>{% trans "Savatingiz bo‘sh." %}</p>
+        <a href="{% url 'website:menu' %}" class="btn btn-gold">{% trans "Menyuga o‘tish" %}</a>
+      </div>
+
+      <!-- Savat tarkibi + checkout -->
+      <div id="cart-content" class="cart-layout hidden">
+        <div class="cart-items-col">
+          <div id="cart-items" class="cart-items"></div>
+        </div>
+
+        <div class="cart-summary-col">
+          <div class="cart-summary">
+            <h3 class="cart-summary-title">{% trans "Buyurtma" %}</h3>
+            <div class="cart-summary-row">
+              <span>{% trans "Jami" %}</span>
+              <strong><span id="cart-total">0</span> {% trans "so‘m" %}</strong>
+            </div>
+            {% if min_order_amount %}
+            <div class="cart-min-note">{% trans "Minimum" %}: {{ min_order_amount|floatformat:0 }} {% trans "so‘m" %}</div>
+            {% endif %}
+            <div id="cart-min-warning" class="cart-min-warning hidden"></div>
+
+            <!-- Checkout forma -->
+            <form id="checkout-form" class="cart-form" novalidate>
+              <input type="text" name="website" class="hp-field" tabindex="-1" autocomplete="off" aria-hidden="true">
+              <div class="cart-field">
+                <label for="co-name">{% trans "Ismingiz" %}</label>
+                <input type="text" id="co-name" maxlength="120" required>
+              </div>
+              <div class="cart-field">
+                <label for="co-phone">{% trans "Telefon" %}</label>
+                <input type="tel" id="co-phone" inputmode="tel" placeholder="+998 __ ___-__-__" required>
+              </div>
+              <div class="cart-field">
+                <label>{% trans "To‘lov usuli" %}</label>
+                <div class="cart-pay">
+                  <label class="cart-pay-opt"><input type="radio" name="payment_method" value="cash" checked> {% trans "Naqd" %}</label>
+                  <label class="cart-pay-opt"><input type="radio" name="payment_method" value="card"> {% trans "Karta" %}</label>
+                </div>
+              </div>
+              <div class="cart-field">
+                <label for="co-comment">{% trans "Izoh (ixtiyoriy)" %}</label>
+                <textarea id="co-comment" rows="2" maxlength="500"></textarea>
+              </div>
+              <button type="submit" id="checkout-btn" class="btn btn-gold btn-block">{% trans "Buyurtma berish" %}</button>
+              {% url 'website:privacy_policy' as privacy_url %}
+              {% url 'website:terms_conditions' as terms_url %}
+              <p class="cart-consent">{% blocktrans trimmed %}«Buyurtma berish» tugmasini bosish orqali siz <a href="{{ privacy_url }}" target="_blank">Maxfiylik siyosati</a> va <a href="{{ terms_url }}" target="_blank">Foydalanish shartlari</a>ga rozilik bildirasiz.{% endblocktrans %}</p>
+              <div id="checkout-msg" class="cart-msg"></div>
+            </form>
+
+            <!-- OTP bosqichi -->
+            <div id="otp-step" class="cart-otp hidden">
+              <p class="cart-otp-info">{% trans "Telefoningizga yuborilgan tasdiqlash kodini kiriting." %}</p>
+              <div class="cart-field">
+                <label for="otp-code">{% trans "SMS kod" %}</label>
+                <input type="text" id="otp-code" inputmode="numeric" maxlength="6" autocomplete="one-time-code">
+              </div>
+              <button type="button" id="otp-verify-btn" class="btn btn-gold btn-block">{% trans "Tasdiqlash" %}</button>
+              <button type="button" id="otp-back-btn" class="btn btn-outline btn-block">{% trans "Orqaga" %}</button>
+              <div id="otp-msg" class="cart-msg"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Muvaffaqiyat -->
+      <div id="cart-success" class="cart-success hidden">
+        <i class="fa fa-check-circle"></i>
+        <h3>{% trans "Buyurtmangiz qabul qilindi!" %}</h3>
+        <p>{% trans "Tez orada operatorimiz siz bilan bog‘lanadi." %}</p>
+        <a href="{% url 'website:menu' %}" class="btn btn-gold">{% trans "Menyuga qaytish" %}</a>
+      </div>
+
+    </div>
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,41 @@
+{% extends 'website/base.html' %}
+{% load static i18n %}
+
+{% block full_title %}Mayli | {% trans "Buyurtmalarim" %}{% endblock %}
+{% block meta_description %}{% trans "Mayli Restobar — mening buyurtmalarim." %}{% endblock %}
+
+{% block content %}
+<section class="page-hero">
+  <div class="container">
+    <span class="section-badge">{% trans "Buyurtma" %}</span>
+    <h1 class="section-title">{% trans "Buyurtmalarim" %}</h1>
+    <div class="breadcrumb">
+      <a href="{% url 'website:home' %}">{% trans "Bosh sahifa" %}</a> /
+      <span>{% trans "Buyurtmalarim" %}</span>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div id="orders-page" data-url="{% url 'order_my' %}">
+
+      <div class="orders-tabs">
+        <button type="button" class="orders-tab active" data-tab="all">{% trans "Barcha buyurtmalar" %}</button>
+        <button type="button" class="orders-tab" data-tab="active">{% trans "Faol" %}</button>
+      </div>
+
+      <div id="orders-loading" class="orders-empty">{% trans "Yuklanmoqda..." %}</div>
+
+      <div id="orders-none" class="orders-empty hidden">
+        <i class="fa fa-list-alt"></i>
+        <p>{% trans "Hali buyurtma bermagansiz." %}</p>
+        <a href="{% url 'website:menu' %}" class="btn btn-gold">{% trans "Menyuga o‘tish" %}</a>
+      </div>
+
+      <div id="orders-list" class="orders-list hidden"></div>
+
+    </div>
+  </div>
+</section>
+{% endblock %}

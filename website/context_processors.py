@@ -44,6 +44,18 @@ def site_settings(request):
     # Add to site object
     site.social_links = social_links
 
+    # Ommaviy sayt URL'i (dashboard manage subdomenidan "Saytni ko'rish" uchun).
+    # PUBLIC_SITE_URL berilsa — o'shani; aks holda DASHBOARD_HOST'dan apex domenni
+    # chiqaramiz (manage.maylirestobar.uz → https://maylirestobar.uz); dev'da '/'.
+    public_site_url = getattr(django_settings, 'PUBLIC_SITE_URL', '')
+    if not public_site_url:
+        dh = getattr(django_settings, 'DASHBOARD_HOST', '')
+        if dh:
+            apex = dh.split('.', 1)[1] if dh.count('.') >= 2 else dh
+            public_site_url = 'https://' + apex
+        else:
+            public_site_url = '/'
+
     why_us_features = Feature.objects.filter(is_active=True).order_by('order', 'pk')
 
     stat_qs = StatItem.objects.filter(is_active=True).order_by('order', 'pk')
@@ -59,4 +71,5 @@ def site_settings(request):
         'unread_contacts_count': unread_count,
         'site_css_v': _css_version('css/site.css'),
         'dashboard_css_v': _css_version('css/dashboard.css'),
+        'public_site_url': public_site_url,
     }

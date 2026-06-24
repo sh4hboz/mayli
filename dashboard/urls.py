@@ -80,6 +80,10 @@ urlpatterns = [
     # Tug'ilgan kun SMS tabrigi (AJAX)
     path('customers/birthday-congratulate/', views.dashboard_birthday_congratulate, name='dashboard_birthday_congratulate'),
 
+    # Topbar bildirishnomalari (AJAX)
+    path('notifications/count/', views.dashboard_notifications_count, name='dashboard_notifications_count'),
+    path('notifications/mark-all-read/', views.dashboard_notifications_mark_all_read, name='dashboard_notifications_mark_all_read'),
+
     # Statistika
     path('website/stats/', views.StatItemListView.as_view(), name='dashboard_statitem_list'),
     path('website/stats/add/', views.StatItemCreateView.as_view(), name='dashboard_statitem_create'),
@@ -91,6 +95,13 @@ urlpatterns = [
     path('website/features/add/', views.FeatureCreateView.as_view(), name='dashboard_feature_create'),
     path('website/features/<int:pk>/edit/', views.FeatureUpdateView.as_view(), name='dashboard_feature_edit'),
     path('website/features/<int:pk>/delete/', views.FeatureDeleteView.as_view(), name='dashboard_feature_delete'),
+
+    # Buyurtmalar
+    path('orders/', views.OrderListView.as_view(), name='dashboard_order_list'),
+    path('orders/settings/', views.OrderSettingsView.as_view(), name='dashboard_order_settings'),
+    path('orders/<int:pk>/', views.OrderDetailView.as_view(), name='dashboard_order_detail'),
+    path('orders/<int:pk>/status/', views.dashboard_order_status, name='dashboard_order_status'),
+    path('orders/<int:pk>/delete/', views.OrderDeleteView.as_view(), name='dashboard_order_delete'),
 
     # Sayt chat — dashboarddan javob berish
     path('chat/', views.ChatSessionListView.as_view(), name='dashboard_chat_list'),

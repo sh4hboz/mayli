@@ -64,9 +64,16 @@
           {% endif %}
         </div>
 
+        <button type="button" class="btn btn-gold dish-detail-cta add-to-cart" data-id="{{ dish.pk }}" data-name="{{ dish.name }}" data-price="{{ dish.price|floatformat:0 }}"{% if dish.image %} data-img="{{ dish.image.url }}"{% endif %}>
+          <i class="fa fa-plus"></i> {% trans "Savatga qo'shish" %}
+        </button>
+        <a href="{% url 'website:cart' %}" class="btn btn-outline dish-detail-cta">
+          <i class="fa fa-shopping-cart"></i> {% trans "Savatga o'tish" %}
+        </a>
+
         {% if site.phone_main %}
-        <a href="tel:{{ site.phone_main }}" class="btn btn-gold dish-detail-cta">
-          <i class="fa fa-phone"></i> {% trans "Buyurtma berish" %}
+        <a href="tel:{{ site.phone_main }}" class="btn btn-outline dish-detail-cta">
+          <i class="fa fa-phone"></i> {% trans "Telefon orqali" %}
         </a>
         {% endif %}
 

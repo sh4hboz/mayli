@@ -1030,16 +1030,17 @@ footer p {
 
 /* ===== HEADER ===== */
 .nav-right { display:flex; align-items:center; gap:18px; }
-.nav-phone { display:flex; align-items:center; gap:6px; font-size:.85rem; font-weight:600; color:var(--gold); white-space:nowrap; }
-.nav-phone:hover { color:var(--gold-light); }
+.nav-phone { display:flex; align-items:center; justify-content:center; gap:8px; height:40px; padding:0 14px; border:1px solid var(--border); border-radius:8px; color:var(--text); font-size:.85rem; font-weight:600; white-space:nowrap; transition:var(--transition); }
+.nav-phone:hover { background:var(--gold); color:#000; border-color:var(--gold); }
 
 /* Nav links — so'z kesishini oldini olish */
 .nav-links a { white-space: nowrap; }
 
 /* Til almashtirgich — custom dropdown */
 .lang-dropdown { position:relative; }
-.lang-dropdown-btn { display:flex; align-items:center; gap:5px; background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.25); border-radius:6px; padding:5px 10px; cursor:pointer; color:var(--text); font-size:.8rem; font-weight:600; transition:var(--transition); white-space:nowrap; }
-.lang-dropdown-btn:hover { border-color:var(--gold); background:rgba(255,255,255,.15); }
+.lang-dropdown-btn { display:flex; align-items:center; justify-content:center; gap:5px; height:40px; padding:0 14px; background:transparent; border:1px solid var(--border); border-radius:8px; cursor:pointer; color:var(--text); font-size:.85rem; font-weight:600; transition:var(--transition); white-space:nowrap; }
+.lang-dropdown-btn:hover { background:var(--gold); color:#000; border-color:var(--gold); }
+.lang-dropdown-btn:hover .lang-flag { color:#000; }
 .lang-code { letter-spacing:.5px; }
 .lang-chevron { transition:transform .25s ease; flex-shrink:0; color:var(--gold); }
 .lang-dropdown.open .lang-chevron { transform:rotate(180deg); }
@@ -1549,9 +1550,16 @@ small.field-error { display:block; margin-top:6px; color:#ff9999; font-size:.82r
 
 @media (max-width:768px) {
   /* ── Mobil Navigatsiya ── */
+  /* nav-right ko'rinib turadi, lekin mobilda faqat savat — qolgani drawer'da */
   .nav-right {
-    display: none;
+    display: flex;
+    gap: 10px;
   }
+  .nav-right .lang-dropdown,
+  .nav-right .nav-phone,
+  .nav-right .nav-orders { display: none !important; }
+  /* Kichik ekranda container yon padding kichrayadi */
+  .container { padding: 0 12px; }
   .nav-links {
     position:fixed; top:0; left:-100%;
     width:min(80vw, 300px); height:100vh;
@@ -2192,3 +2200,191 @@ body.modal-open { overflow: hidden; }
   .seo-content-body p { font-size: .95rem; line-height: 1.75; }
 }
 
+
+/* ============================================================
+   SAVAT (cart) + buyurtma — 2026-06-22
+   ============================================================ */
+#cart-page .hidden { display: none !important; }
+.cart-fab--hidden { display: none !important; }
+
+/* "Savatga" tugmasi (taom kartasi) */
+.add-to-cart {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: transparent; color: var(--gold);
+  border: 1.5px solid var(--gold); border-radius: 6px;
+  padding: 6px 12px; font-size: .8rem; font-weight: 700;
+  cursor: pointer; transition: var(--transition); white-space: nowrap;
+}
+.add-to-cart:hover { background: var(--gold); color: #000; }
+.add-to-cart i { font-size: .75rem; }
+
+/* Floating savat tugmasi */
+.fab-cart { background: var(--gold); color: #000; position: relative; }
+.fab-cart-badge {
+  position: absolute; top: -4px; right: -4px;
+  min-width: 20px; height: 20px; padding: 0 5px;
+  background: var(--orange, #e8662a); color: #fff;
+  border-radius: 10px; font-size: .72rem; font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 2px 6px rgba(0,0,0,.4);
+}
+
+/* Toast (3 soniya) */
+.cart-toast {
+  position: fixed; left: 50%; bottom: 24px;
+  transform: translate(-50%, 120%);
+  display: flex; align-items: center; gap: 12px;
+  background: #1c1c1c; color: #fff;
+  border: 1px solid var(--border, rgba(255,255,255,.12));
+  border-radius: 12px; padding: 12px 16px 14px;
+  min-width: 240px; max-width: 90vw; z-index: 3000;
+  box-shadow: 0 12px 40px rgba(0,0,0,.5);
+  opacity: 0; transition: transform .3s ease, opacity .3s ease;
+}
+.cart-toast--in { transform: translate(-50%, 0); opacity: 1; }
+.cart-toast--out { transform: translate(-50%, 120%); opacity: 0; }
+.cart-toast__icon {
+  width: 28px; height: 28px; flex-shrink: 0; border-radius: 50%;
+  background: #2e7d32; color: #fff; font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+}
+.cart-toast__name { font-weight: 700; font-size: .9rem; }
+.cart-toast__sub { font-size: .78rem; opacity: .7; }
+.cart-toast__progress { position: absolute; left: 0; bottom: 0; height: 3px; width: 100%; background: rgba(255,255,255,.1); border-radius: 0 0 12px 12px; overflow: hidden; }
+.cart-toast__progress span { display: block; height: 100%; width: 100%; background: var(--gold); transform-origin: left; animation: cartToastBar 3s linear forwards; }
+@keyframes cartToastBar { from { transform: scaleX(1); } to { transform: scaleX(0); } }
+
+/* Savat sahifasi */
+.cart-notice, .cart-min-warning { background: rgba(232,102,42,.12); border: 1px solid rgba(232,102,42,.4); color: var(--orange, #e8662a); border-radius: 8px; padding: 12px 16px; margin-bottom: 20px; font-size: .9rem; }
+.cart-empty, .cart-success { text-align: center; padding: 60px 20px; }
+.cart-empty i, .cart-success i { font-size: 3rem; color: var(--gold); margin-bottom: 16px; }
+.cart-empty p { opacity: .7; margin-bottom: 20px; }
+.cart-success h3 { margin: 0 0 8px; }
+.cart-success p { opacity: .7; margin-bottom: 24px; }
+
+.cart-layout { display: grid; grid-template-columns: 1.6fr 1fr; gap: 32px; align-items: start; }
+.cart-items { display: flex; flex-direction: column; gap: 12px; }
+.cart-item {
+  display: grid; grid-template-columns: 64px 1fr auto auto auto; gap: 14px; align-items: center;
+  background: var(--dark3, #1a1a1a); border: 1px solid var(--border, rgba(255,255,255,.1));
+  border-radius: 12px; padding: 10px 14px;
+}
+.cart-item-img { width: 64px; height: 64px; border-radius: 8px; overflow: hidden; }
+.cart-item-img img { width: 100%; height: 100%; object-fit: cover; }
+.cart-item-noimg { display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,.06); color: var(--gold); opacity: .6; }
+.cart-item-name { font-weight: 700; font-size: .95rem; }
+.cart-item-price { font-size: .82rem; opacity: .65; margin-top: 2px; }
+.cart-item-qty { display: flex; align-items: center; gap: 8px; }
+.qty-btn { width: 30px; height: 30px; border-radius: 6px; border: 1px solid var(--border, rgba(255,255,255,.2)); background: transparent; color: inherit; font-size: 1.1rem; line-height: 1; cursor: pointer; transition: var(--transition); }
+.qty-btn:hover { background: var(--gold); color: #000; border-color: var(--gold); }
+.qty-val { min-width: 22px; text-align: center; font-weight: 700; }
+.cart-item-total { font-weight: 800; color: var(--gold); white-space: nowrap; }
+.cart-item-remove { background: none; border: none; color: inherit; opacity: .45; cursor: pointer; font-size: 1rem; transition: var(--transition); }
+.cart-item-remove:hover { opacity: 1; color: #e74c3c; }
+
+.cart-summary { background: var(--dark3, #1a1a1a); border: 1px solid var(--border, rgba(255,255,255,.1)); border-radius: 14px; padding: 22px; position: sticky; top: 90px; }
+.cart-summary-title { margin: 0 0 16px; font-size: 1.1rem; }
+.cart-summary-row { display: flex; align-items: center; justify-content: space-between; font-size: 1.05rem; padding-bottom: 12px; border-bottom: 1px solid var(--border, rgba(255,255,255,.1)); margin-bottom: 8px; }
+.cart-summary-row strong { color: var(--gold); font-size: 1.2rem; }
+.cart-min-note { font-size: .78rem; opacity: .6; margin-bottom: 14px; }
+
+.cart-form, .cart-otp { margin-top: 16px; display: flex; flex-direction: column; gap: 12px; }
+.cart-field { display: flex; flex-direction: column; gap: 5px; }
+.cart-field label { font-size: .8rem; font-weight: 600; opacity: .8; }
+.cart-field input, .cart-field textarea { width: 100%; background: rgba(255,255,255,.04); border: 1px solid var(--border, rgba(255,255,255,.18)); border-radius: 8px; padding: 10px 12px; color: inherit; font-family: inherit; font-size: .9rem; }
+.cart-field input:focus, .cart-field textarea:focus { outline: none; border-color: var(--gold); }
+.cart-pay { display: flex; gap: 16px; }
+.cart-pay-opt { display: flex; align-items: center; gap: 6px; font-size: .9rem; cursor: pointer; opacity: .9; }
+.btn-block { width: 100%; justify-content: center; }
+.hp-field { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
+.cart-msg { font-size: .84rem; min-height: 1em; }
+.cart-msg--error { color: #e74c3c; }
+.cart-msg--info { opacity: .75; }
+.cart-otp-info { font-size: .85rem; opacity: .75; margin: 0; }
+
+/* Buyurtma berish tugmasi ostidagi rozilik matni (maxfiylik/shartlar) */
+.cart-consent { font-size: .75rem; line-height: 1.5; opacity: .75; margin: 10px 0 0; text-align: center; }
+.cart-consent a { color: #4ea1ff; text-decoration: underline; }
+.cart-consent a:hover { color: #7bb8ff; }
+
+@media (max-width: 768px) {
+  .cart-layout { grid-template-columns: 1fr; gap: 20px; }
+  .cart-summary { position: static; }
+  .cart-item { grid-template-columns: 50px 1fr auto; grid-row-gap: 8px; }
+  .cart-item-img { width: 50px; height: 50px; }
+  .cart-item-total { grid-column: 2 / 3; }
+  .cart-item-remove { grid-column: 3 / 4; grid-row: 1; }
+}
+
+/* ============================================================
+   BUYURTMALARIM (my orders) + header link — 2026-06-22
+   ============================================================ */
+#orders-page .hidden { display: none !important; }
+
+/* Header savat tugmasi (suzuvchi FAB o'rniga header'ga ko'chirildi) */
+.nav-cart {
+  position: relative;
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 40px; height: 40px;
+  color: var(--text); text-decoration: none;
+  border: 1px solid var(--border); border-radius: 8px;
+  transition: var(--transition);
+}
+.nav-cart:hover,
+.nav-cart.active { background: var(--gold); color: #000; border-color: var(--gold); }
+.nav-cart i { font-size: 1rem; }
+.nav-cart-badge {
+  position: absolute; top: -6px; right: -6px;
+  min-width: 18px; height: 18px; padding: 0 4px;
+  background: #fff; color: #000; border: 1px solid #000;
+  border-radius: 9px; font-size: .68rem; font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+}
+.cart-count--hidden { display: none !important; }
+
+/* "Buyurtma" — nav-links ichida oddiy menyu linki (boshqa linklar uslubida).
+   DEFAULT YASHIRIN; birinchi buyurtmadan (mayli_phone localStorage) keyin
+   cart.js .orders-link--visible qo'shadi. */
+.nav-links li[data-orders-link] { display: none; }
+.nav-links li[data-orders-link].orders-link--visible { display: block; }
+.mobile-orders-link { display: none !important; color: var(--gold) !important; font-weight: 700; }
+.mobile-orders-link.orders-link--visible { display: flex !important; align-items: center; gap: 8px; }
+@media (max-width: 992px) {
+  /* Telefon: raqam yashirinadi, faqat kvadrat icon-tugma (savat bilan bir xil) */
+  .nav-phone span { display: none; }
+  .nav-phone { width: 40px; padding: 0; }
+  .nav-phone i { font-size: 1.2rem; }
+}
+@media (max-width: 768px) {
+  /* Mobilda drawer'dagi "Buyurtma" link ishlaydi — nav-links panelidagisi yashirin */
+  .nav-links li[data-orders-link],
+  .nav-links li[data-orders-link].orders-link--visible { display: none !important; }
+}
+
+/* Buyurtmalarim sahifasi */
+.orders-tabs { display: flex; gap: 8px; margin-bottom: 24px; flex-wrap: wrap; }
+.orders-tab {
+  padding: 10px 20px; border: 1px solid var(--border, rgba(255,255,255,.2));
+  background: transparent; color: inherit; border-radius: 8px; cursor: pointer;
+  font-weight: 600; font-size: .9rem; transition: var(--transition);
+}
+.orders-tab:hover { border-color: var(--gold); }
+.orders-tab.active { background: var(--gold); color: #000; border-color: var(--gold); }
+.orders-empty { text-align: center; padding: 50px 20px; opacity: .85; }
+.orders-empty i { font-size: 2.5rem; color: var(--gold); display: block; margin-bottom: 12px; }
+.orders-empty p { margin-bottom: 18px; }
+.orders-list { display: flex; flex-direction: column; gap: 16px; }
+.ord-card { background: var(--dark3, #1a1a1a); border: 1px solid var(--border, rgba(255,255,255,.1)); border-radius: 12px; padding: 18px; }
+.ord-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.ord-id { font-weight: 800; font-size: 1.05rem; }
+.ord-date { font-size: .8rem; opacity: .6; margin: 2px 0 12px; }
+.ord-items { display: flex; flex-direction: column; gap: 6px; padding: 12px 0; border-top: 1px solid var(--border, rgba(255,255,255,.1)); border-bottom: 1px solid var(--border, rgba(255,255,255,.1)); margin-bottom: 12px; }
+.ord-line { display: flex; justify-content: space-between; gap: 12px; font-size: .9rem; }
+.ord-total { text-align: right; font-size: .95rem; }
+.ord-total strong { color: var(--gold); }
+.ord-reason { margin-top: 10px; font-size: .85rem; color: #e74c3c; }
+.ord-badge { font-size: .72rem; font-weight: 700; padding: 4px 10px; border-radius: 20px; white-space: nowrap; }
+.ord-badge--new { background: rgba(241,196,15,.16); color: #f1c40f; }
+.ord-badge--accepted { background: rgba(52,152,219,.16); color: #3498db; }
+.ord-badge--done { background: rgba(46,204,113,.16); color: #2ecc71; }
+.ord-badge--cancel { background: rgba(231,76,60,.16); color: #e74c3c; }

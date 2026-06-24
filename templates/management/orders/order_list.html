@@ -1,0 +1,85 @@
+{% extends 'management/base.html' %}
+{% load static %}
+{% block title %}Buyurtmalar | Mayli Restobar{% endblock %}
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="page-title-box d-flex align-items-center justify-content-between">
+            <h4 class="page-title">Buyurtmalar</h4>
+            <ol class="breadcrumb m-0">
+                <li class="breadcrumb-item"><a href="{% url 'dashboard_home' %}">Dashboard</a></li>
+                <li class="breadcrumb-item active">Buyurtmalar</li>
+            </ol>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header d-flex align-items-center justify-content-between flex-wrap gap-2">
+                <h5 class="card-title mb-0">Barcha buyurtmalar</h5>
+                <div class="d-flex align-items-center gap-2">
+                    <ul class="nav nav-pills gap-1">
+                        <li class="nav-item"><a class="nav-link py-1 px-2 {% if not active_status %}active{% endif %}" href="{% url 'dashboard_order_list' %}">Barchasi</a></li>
+                        {% for value, label in statuses %}
+                        <li class="nav-item"><a class="nav-link py-1 px-2 {% if active_status == value %}active{% endif %}" href="?status={{ value }}">{{ label }}</a></li>
+                        {% endfor %}
+                    </ul>
+                    <a href="{% url 'dashboard_order_settings' %}" class="btn btn-sm btn-soft-secondary"><i class="ti ti-settings me-1"></i>Sozlamalar</a>
+                </div>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
+                            <tr><th>#</th><th>Mijoz</th><th>Telefon</th><th>Summa</th><th>To'lov</th><th>Holat</th><th>Sana</th><th>Amallar</th></tr>
+                        </thead>
+                        <tbody>
+                            {% for order in order_list %}
+                            <tr {% if not order.is_read %}class="fw-semibold"{% endif %}>
+                                <td>#{{ order.pk }}</td>
+                                <td><a href="{% url 'dashboard_order_detail' order.pk %}" class="text-reset">{{ order.customer_name }}</a></td>
+                                <td>{{ order.phone }}</td>
+                                <td>{{ order.total_amount|floatformat:0 }} so'm</td>
+                                <td>{{ order.get_payment_method_display }}</td>
+                                <td>
+                                    {% if order.status == 'new' %}<span class="badge bg-warning text-dark">Yangi</span>
+                                    {% elif order.status == 'accepted' %}<span class="badge bg-info">Qabul qilindi</span>
+                                    {% elif order.status == 'completed' %}<span class="badge bg-success">Yetkazildi</span>
+                                    {% else %}<span class="badge bg-danger">Bekor qilindi</span>{% endif %}
+                                </td>
+                                <td>{{ order.created_at|date:"d.m.Y H:i" }}</td>
+                                <td>
+                                    <div class="d-flex gap-1">
+                                        <a href="{% url 'dashboard_order_detail' order.pk %}" class="btn btn-sm btn-info"><i class="ti ti-eye"></i></a>
+                                        <form method="post" action="{% url 'dashboard_order_delete' order.pk %}" class="d-inline">
+                                            {% csrf_token %}
+                                            <button type="submit" class="btn btn-sm btn-danger" data-confirm="Buyurtmani o'chirasizmi?"><i class="ti ti-trash"></i></button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr><td colspan="8" class="text-center text-muted py-4">Buyurtmalar topilmadi</td></tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if is_paginated %}
+<div class="row">
+    <div class="col-12">
+        <nav><ul class="pagination justify-content-center">
+            {% if page_obj.has_previous %}<li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if active_status %}&status={{ active_status }}{% endif %}">&laquo;</a></li>{% endif %}
+            <li class="page-item active"><span class="page-link">{{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</span></li>
+            {% if page_obj.has_next %}<li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}{% if active_status %}&status={{ active_status }}{% endif %}">&raquo;</a></li>{% endif %}
+        </ul></nav>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

@@ -561,9 +561,10 @@ document.addEventListener('DOMContentLoaded', function () {
     if (lastModalTrigger) { lastModalTrigger.focus(); lastModalTrigger = null; }
   }
 
-  // Bron modalini ochish
+  // Bron tugmalari — endi 2D sxema sahifasiga olib boradi (eski modal — fallback).
   document.querySelectorAll('[data-booking-open]').forEach(btn => {
     btn.addEventListener('click', function () {
+      if (window.BOOKING_URL) { window.location.href = window.BOOKING_URL; return; }
       lastModalTrigger = this;
       openModal(document.getElementById('bookingModal'));
     });
@@ -616,7 +617,7 @@ document.addEventListener('DOMContentLoaded', function () {
   document.querySelectorAll('input[type="tel"], input[name="phone"]').forEach(function (el) {
     if (el.dataset.maskInit) return;   // ikki marta init bo'lmasin
     el.dataset.maskInit = '1';
-    IMask(el, { mask: '+{998} (00) 000-00-00' });
+    IMask(el, { mask: '+{998} (00) 000-00-00', lazy: false });
   });
 })();
 

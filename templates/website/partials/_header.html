@@ -13,11 +13,17 @@
         <li><a href="{% url 'website:menu' %}" class="{% if cur_url == 'menu' %}active{% endif %}">{% trans "Menyu" %}</a></li>
         <li><a href="{% url 'website:about' %}" class="{% if cur_url == 'about' %}active{% endif %}">{% trans "Biz haqimizda" %}</a></li>
         <li><a href="{% url 'website:news_list' %}" class="{% if cur_url == 'news_list' or cur_url == 'news_detail' %}active{% endif %}">{% trans "Yangiliklar" %}</a></li>
+        <li data-orders-link><a href="{% url 'website:my_orders' %}" class="{% if cur_url == 'my_orders' %}active{% endif %}">{% trans "Buyurtma" %}</a></li>
       </ul>
       {% endwith %}
     </nav>
 
     <div class="nav-right">
+      <a href="{% url 'website:cart' %}" class="nav-cart {% if request.resolver_match.url_name == 'cart' %}active{% endif %}" title="{% trans 'Savat' %}" aria-label="{% trans 'Savat' %}">
+        <i class="fa fa-shopping-cart"></i>
+        <span class="nav-cart-badge cart-count--hidden" data-cart-count>0</span>
+      </a>
+
       <!-- Til almashtirgich (custom dropdown) -->
       {% get_current_language as cur_lang %}
       <div class="lang-dropdown" id="langDropdown">
@@ -51,11 +57,11 @@
         <span>{{ site.phone_main }}</span>
       </a>
       {% endif %}
-    </div>
 
-    <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="{% trans 'Menyu' %}">
-      <span></span><span></span><span></span>
-    </button>
+      <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="{% trans 'Menyu' %}">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
   </div>
 </header>
 
@@ -84,6 +90,7 @@
       <a href="{% url 'website:home' %}#testimonials">{% trans "Sharhlar" %}</a>
       <a href="{% url 'website:news_list' %}" class="{% if cur_url == 'news_list' or cur_url == 'news_detail' %}active{% endif %}">{% trans "Yangiliklar" %}</a>
       <a href="{% url 'website:about' %}" class="{% if cur_url == 'about' %}active{% endif %}">{% trans "Batafsil" %}</a>
+      <a href="{% url 'website:my_orders' %}" data-orders-link class="mobile-orders-link {% if cur_url == 'my_orders' %}active{% endif %}"><i class="fa fa-list-alt"></i> {% trans "Buyurtma" %}</a>
       {% endwith %}
     </nav>
 

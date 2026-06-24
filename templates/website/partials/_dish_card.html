@@ -17,6 +17,9 @@
     {% endif %}
     <div class="dish-footer">
       <div class="dish-price">{{ dish.price|floatformat:0 }} <span class="currency">{% trans "so'm" %}</span></div>
+      <button type="button" class="add-to-cart" data-id="{{ dish.pk }}" data-name="{{ dish.name }}" data-price="{{ dish.price|floatformat:0 }}"{% if dish.image %} data-img="{{ dish.image.url }}"{% endif %} aria-label="{% trans 'Savatga qo`shish' %}">
+        <i class="fa fa-plus"></i> {% trans "Savatga" %}
+      </button>
     </div>
   </div>
 </a>

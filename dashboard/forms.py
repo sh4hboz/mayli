@@ -2,6 +2,7 @@ from django import forms
 from website.models import SiteSettings, News, Promotion, GalleryItem, Partner, Vacancy, Feature, StatItem
 from menu.models import Category, Dish
 from crm.models import Customer, Campaign
+from orders.models import OrderSettings
 from .image_utils import convert_image_to_webp
 
 
@@ -339,6 +340,16 @@ class StatItemForm(BootstrapModelForm):
         help_texts = {
             'value': 'Raqam qiymati (masalan: 5+, 200+, 10 000+, 24/7)',
             'placement': 'Qayerda ko\'rsatilsin',
+        }
+
+
+class OrderSettingsForm(BootstrapModelForm):
+    """Buyurtma sozlamalari — qabul qilish toggle + minimum summa."""
+    class Meta:
+        model = OrderSettings
+        fields = ['is_open', 'min_order_amount']
+        help_texts = {
+            'min_order_amount': "Shu summadan kam buyurtma qabul qilinmaydi (0 — cheklov yo'q).",
         }
 
 

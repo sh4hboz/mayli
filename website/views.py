@@ -25,11 +25,13 @@ MAX_MESSAGE_LEN = 2000
 MAX_CHAT_LEN = 1000
 
 # Bir IP'dan maksimal yuborishlar (oddiy rate-limit, cache asosida).
-SUBMIT_LIMIT = 6
-SUBMIT_WINDOW = 600  # 10 daqiqa (soniya)
-# Chat ko'proq xabar yuborishi mumkin — alohida, kengroq limit.
+# Formalar to'g'ridan-to'g'ri Telegram'ga boradi → flood/spam himoyasi MUHIM.
+# 5 daqiqalik oyna: 1 IP'dan 5 daqiqada ko'pi bilan SUBMIT_LIMIT ta yuborish.
+SUBMIT_LIMIT = 5
+SUBMIT_WINDOW = 300  # 5 daqiqa (soniya)
+# Chat ko'proq xabar yuborishi mumkin — alohida, kengroq limit (lekin oyna ham 5 daq).
 CHAT_LIMIT = 15
-CHAT_WINDOW = 600
+CHAT_WINDOW = 300
 
 
 def _client_ip(request):
@@ -219,6 +221,21 @@ def dish_detail(request, pk):
         'dish': dish,
         'related': related,
     })
+
+
+def cart(request):
+    """Savat / buyurtma berish sahifasi. Itemlar JS'da localStorage'dan render qilinadi."""
+    from orders.models import OrderSettings
+    cfg = OrderSettings.get()
+    return render(request, 'website/cart.html', {
+        'min_order_amount': cfg.min_order_amount,
+        'order_open': cfg.is_open,
+    })
+
+
+def my_orders(request):
+    """Mijozning buyurtmalari sahifasi. Buyurtmalar JS'da telefon (localStorage) bo'yicha olinadi."""
+    return render(request, 'website/my_orders.html')
 
 
 def chat_send(request):

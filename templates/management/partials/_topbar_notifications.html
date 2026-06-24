@@ -1,10 +1,10 @@
-<div id="notification-dropdown-people" class="topbar-item">
+<div id="notification-dropdown-people" class="topbar-item"
+     data-notif-count-url="{% url 'dashboard_notifications_count' %}"
+     data-notif-mark-url="{% url 'dashboard_notifications_mark_all_read' %}">
     <div class="dropdown">
         <button class="topbar-link dropdown-toggle drop-arrow-none" data-bs-toggle="dropdown" type="button" data-bs-auto-close="outside" aria-haspopup="false" aria-expanded="false">
             <i class="ti ti-bell topbar-link-icon animate-ring"></i>
-            {% if topbar_notifications_count %}
-            <span class="badge text-bg-danger badge-circle topbar-badge">{{ topbar_notifications_count }}</span>
-            {% endif %}
+            <span class="badge text-bg-danger badge-circle topbar-badge {% if not topbar_notifications_count %}d-none{% endif %}" id="topbar-notif-badge">{{ topbar_notifications_count }}</span>
         </button>
 
         <div class="dropdown-menu p-0 dropdown-menu-end dropdown-menu-lg">
@@ -13,11 +13,12 @@
                     <div class="col">
                         <h6 class="m-0 fs-md fw-semibold">Bildirishnomalar</h6>
                     </div>
-                    {% if topbar_notifications_count %}
                     <div class="col text-end">
-                        <span class="badge badge-soft-danger badge-label py-1">{{ topbar_notifications_count }} yangi</span>
+                        <button type="button" class="btn btn-sm btn-link p-0 text-decoration-none {% if not topbar_notifications_count %}d-none{% endif %}"
+                                id="topbar-notif-mark-all" data-mark-all-read>
+                            <i class="ti ti-checks me-1"></i>Hammasi o'qildi
+                        </button>
                     </div>
-                    {% endif %}
                 </div>
             </div>
 

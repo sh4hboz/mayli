@@ -30,6 +30,12 @@ urlpatterns = [
 
     # Telegram webhook (BOSQICH 0.7)
     path('', include('notifications.urls')),
+
+    # Buyurtma API (tilsiz — savat/OTP/buyurtma yaratish)
+    path('', include('orders.urls')),
+
+    # Bron API (tilsiz — stol bo'shligi/OTP/bron yaratish)
+    path('', include('reservations.urls')),
 ]
 
 # Admin + dashboard + xodim auth — FAQAT dev'da (DASHBOARD_HOST bo'sh) shu apex

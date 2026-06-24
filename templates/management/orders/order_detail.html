@@ -1,0 +1,94 @@
+{% extends 'management/base.html' %}
+{% load static %}
+{% block title %}Buyurtma #{{ order.pk }} | Mayli Restobar{% endblock %}
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="page-title-box d-flex align-items-center justify-content-between">
+            <h4 class="page-title">Buyurtma #{{ order.pk }}</h4>
+            <ol class="breadcrumb m-0">
+                <li class="breadcrumb-item"><a href="{% url 'dashboard_home' %}">Dashboard</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'dashboard_order_list' %}">Buyurtmalar</a></li>
+                <li class="breadcrumb-item active">#{{ order.pk }}</li>
+            </ol>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-7">
+        <div class="card">
+            <div class="card-header d-flex align-items-center justify-content-between">
+                <h5 class="card-title mb-0">Buyurtma tarkibi</h5>
+                {% if order.status == 'new' %}<span class="badge bg-warning text-dark">Yangi</span>
+                {% elif order.status == 'accepted' %}<span class="badge bg-info">Qabul qilindi</span>
+                {% elif order.status == 'completed' %}<span class="badge bg-success">Yetkazildi</span>
+                {% else %}<span class="badge bg-danger">Bekor qilindi</span>{% endif %}
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table mb-0">
+                        <thead class="table-light"><tr><th>Taom</th><th class="text-center">Soni</th><th class="text-end">Narx</th><th class="text-end">Jami</th></tr></thead>
+                        <tbody>
+                            {% for item in items %}
+                            <tr>
+                                <td>{{ item.dish_name }}</td>
+                                <td class="text-center">{{ item.quantity }}</td>
+                                <td class="text-end">{{ item.unit_price|floatformat:0 }}</td>
+                                <td class="text-end">{{ item.line_total|floatformat:0 }} so'm</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                        <tfoot class="table-light">
+                            <tr><th colspan="3" class="text-end">Jami</th><th class="text-end">{{ order.total_amount|floatformat:0 }} so'm</th></tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-5">
+        <div class="card">
+            <div class="card-header"><h5 class="card-title mb-0">Mijoz</h5></div>
+            <div class="card-body">
+                <dl class="row mb-0">
+                    <dt class="col-sm-4">Ism</dt><dd class="col-sm-8">{{ order.customer_name }}</dd>
+                    <dt class="col-sm-4">Telefon</dt><dd class="col-sm-8"><a href="tel:{{ order.phone }}">{{ order.phone }}</a></dd>
+                    <dt class="col-sm-4">To'lov usuli</dt><dd class="col-sm-8">{{ order.get_payment_method_display }}</dd>
+                    <dt class="col-sm-4">Sana</dt><dd class="col-sm-8">{{ order.created_at|date:"d.m.Y H:i" }}</dd>
+                    {% if order.comment %}<dt class="col-sm-4">Izoh</dt><dd class="col-sm-8">{{ order.comment|linebreaksbr }}</dd>{% endif %}
+                    {% if order.handled_by %}<dt class="col-sm-4">Ko'rib chiqdi</dt><dd class="col-sm-8">{{ order.handled_by }}</dd>{% endif %}
+                    {% if order.status == 'rejected' %}<dt class="col-sm-4 text-danger">Rad sababi</dt><dd class="col-sm-8 text-danger">{{ order.reject_reason|linebreaksbr }}</dd>{% endif %}
+                </dl>
+            </div>
+            <div class="card-footer">
+                {% if order.status == 'new' %}
+                <p class="text-muted fs-13 mb-2">Mijoz bilan telefon orqali gaplashib, qarorni belgilang:</p>
+                <form method="post" action="{% url 'dashboard_order_status' order.pk %}" class="mb-2">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="accept">
+                    <button type="submit" class="btn btn-success w-100"><i class="ti ti-check me-1"></i>Qabul qilish</button>
+                </form>
+                <form method="post" action="{% url 'dashboard_order_status' order.pk %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="reject">
+                    <textarea name="reject_reason" class="form-control mb-2" rows="2" placeholder="Bekor qilish sababi (majburiy)" required></textarea>
+                    <button type="submit" class="btn btn-outline-danger w-100"><i class="ti ti-x me-1"></i>Bekor qilish</button>
+                </form>
+                {% elif order.status == 'accepted' %}
+                <p class="text-muted fs-13 mb-2">Buyurtma yetkazib berilgach belgilang:</p>
+                <form method="post" action="{% url 'dashboard_order_status' order.pk %}" class="mb-2">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="complete">
+                    <button type="submit" class="btn btn-success w-100"><i class="ti ti-truck-delivery me-1"></i>Yetkazildi</button>
+                </form>
+                <a href="{% url 'dashboard_order_list' %}" class="btn btn-secondary btn-sm w-100"><i class="ti ti-arrow-left me-1"></i>Orqaga</a>
+                {% else %}
+                <a href="{% url 'dashboard_order_list' %}" class="btn btn-secondary btn-sm"><i class="ti ti-arrow-left me-1"></i>Orqaga</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -20,11 +20,12 @@ from website.models import SiteSettings, News, Promotion, GalleryItem, Partner, 
 from menu.models import Category, Dish
 from crm.models import Customer, Tag, Gender, CustomerSource, Campaign, CampaignLog
 from notifications.models import ChatSession, ChatMessage
+from orders.models import Order, OrderStatus, OrderSettings
 from .forms import (
     SiteSettingsGeneralForm, SiteSettingsLocationForm, SiteSettingsHeroForm,
     SiteSettingsHomeContentForm, SiteSettingsSeoForm,
     NewsForm, PromotionForm, GalleryItemForm, PartnerForm, VacancyForm, CategoryForm,
-    DishForm, CustomerForm, CampaignForm, FeatureForm, StatItemForm,
+    DishForm, CustomerForm, CampaignForm, FeatureForm, StatItemForm, OrderSettingsForm,
 )
 
 
@@ -773,6 +774,127 @@ def dashboard_birthday_congratulate(request):
         'failed': failed,
         'message': msg,
     })
+
+
+# --- Buyurtmalar (Orders) ---
+_ORDER_ROLES = (Role.OWNER, Role.MANAGER, Role.ADMIN)
+
+
+class OrderListView(CMSBaseMixin, ListView):
+    model = Order
+    template_name = 'management/orders/order_list.html'
+    context_object_name = 'order_list'
+    paginate_by = 30
+
+    def get_queryset(self):
+        qs = super().get_queryset().prefetch_related('items')
+        status = self.request.GET.get('status', '')
+        if status in OrderStatus.values:
+            qs = qs.filter(status=status)
+        return qs
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        ctx['statuses'] = OrderStatus.choices
+        ctx['active_status'] = self.request.GET.get('status', '')
+        ctx['new_count'] = Order.objects.filter(status=OrderStatus.NEW).count()
+        return ctx
+
+
+class OrderDetailView(CMSBaseMixin, DetailView):
+    model = Order
+    template_name = 'management/orders/order_detail.html'
+    context_object_name = 'order'
+
+    def get_object(self, queryset=None):
+        obj = super().get_object(queryset)
+        if not obj.is_read:
+            obj.is_read = True
+            obj.save(update_fields=['is_read'])
+        return obj
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        ctx['items'] = self.object.items.all()
+        ctx['STATUS'] = OrderStatus
+        return ctx
+
+
+class OrderDeleteView(CMSBaseMixin, SuccessMessageMixin, DeleteView):
+    model = Order
+    template_name = 'management/confirm_delete.html'
+    success_url = reverse_lazy('dashboard_order_list')
+
+
+@login_required(login_url='/login/')
+@require_POST
+def dashboard_order_status(request, pk):
+    """Manager buyurtmani qabul qiladi yoki rad etadi (sabab bilan)."""
+    if request.user.role not in _ORDER_ROLES:
+        raise PermissionDenied("Ruxsat yo'q!")
+    order = get_object_or_404(Order, pk=pk)
+    action = request.POST.get('action', '')
+
+    if action == 'accept':
+        order.status = OrderStatus.ACCEPTED
+        order.reject_reason = ''
+        order.accepted_at = timezone.now()
+        order.handled_by = request.user
+        order.save(update_fields=['status', 'reject_reason', 'accepted_at', 'handled_by', 'updated_at'])
+        messages.success(request, f"Buyurtma #{order.pk} qabul qilindi.")
+    elif action == 'reject':
+        reason = (request.POST.get('reject_reason') or '').strip()[:1000]
+        if not reason:
+            messages.error(request, "Rad etish sababini kiriting.")
+            return redirect('dashboard_order_detail', pk=pk)
+        order.status = OrderStatus.REJECTED
+        order.reject_reason = reason
+        order.rejected_at = timezone.now()
+        order.handled_by = request.user
+        order.save(update_fields=['status', 'reject_reason', 'rejected_at', 'handled_by', 'updated_at'])
+        messages.success(request, f"Buyurtma #{order.pk} bekor qilindi.")
+    elif action == 'complete':
+        order.status = OrderStatus.COMPLETED
+        order.handled_by = request.user
+        order.save(update_fields=['status', 'handled_by', 'updated_at'])
+        messages.success(request, f"Buyurtma #{order.pk} yetkazildi deb belgilandi.")
+    return redirect('dashboard_order_detail', pk=pk)
+
+
+class OrderSettingsView(CMSBaseMixin, SuccessMessageMixin, UpdateView):
+    """Buyurtma sozlamalari (singleton): qabul toggle + minimum summa."""
+    model = OrderSettings
+    form_class = OrderSettingsForm
+    template_name = 'management/orders/order_settings.html'
+    success_url = reverse_lazy('dashboard_order_settings')
+    success_message_update = "Buyurtma sozlamalari saqlandi."
+
+    def get_object(self, queryset=None):
+        return OrderSettings.get()
+
+    def get_success_message(self, cleaned_data=None):
+        return self.success_message_update
+
+
+# --- Topbar bildirishnomalari (AJAX) ---
+@login_required(login_url='/login/')
+def dashboard_notifications_count(request):
+    """Joriy bildirishnoma sonini qaytaradi (orqaga qaytishda badge'ni yangilash uchun)."""
+    from .context_processors import build_notifications
+    data = build_notifications(request.user)
+    return JsonResponse({'count': data['topbar_notifications_count']})
+
+
+@login_required(login_url='/login/')
+@require_POST
+def dashboard_notifications_mark_all_read(request):
+    """Barcha o'qilmagan murojaat va yangi buyurtmalarni o'qilgan deb belgilaydi."""
+    from website.models import ContactMessage
+    from .context_processors import build_notifications
+    ContactMessage.objects.filter(is_read=False).update(is_read=True)
+    Order.objects.filter(status=OrderStatus.NEW, is_read=False).update(is_read=True)
+    data = build_notifications(request.user)
+    return JsonResponse({'success': True, 'count': data['topbar_notifications_count']})
 
 
 # --- Lock Screen ---

@@ -1,0 +1,151 @@
+{% extends 'website/base.html' %}
+{% load static i18n %}
+
+{% block full_title %}Mayli | {% trans "Stol bron qilish" %}{% endblock %}
+{% block meta_description %}{% trans "Mayli Restobar — stolni onlayn bron qiling: zal sxemasidan bo'sh stolni tanlang, sana va vaqtni belgilang." %}{% endblock %}
+
+{% block extra_head %}
+  <link rel="stylesheet" href="{% static 'src/booking.css' %}?v=1.0">
+{% endblock %}
+
+{% block content %}
+<section class="page-hero">
+  <div class="container">
+    <span class="section-badge">{% trans "Bron" %}</span>
+    <h1 class="section-title">{% trans "Stol bron qilish" %}</h1>
+    <div class="breadcrumb">
+      <a href="{% url 'website:home' %}">{% trans "Bosh sahifa" %}</a> /
+      <span>{% trans "Bron" %}</span>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div id="booking-page"
+         data-availability-url="{% url 'booking_availability' %}"
+         data-otp-request-url="{% url 'booking_otp_request' %}"
+         data-otp-verify-url="{% url 'booking_otp_verify' %}"
+         data-create-url="{% url 'booking_create' %}"
+         data-open-time="{{ open_time|time:'H:i' }}"
+         data-close-time="{{ close_time|time:'H:i' }}"
+         data-today="{{ today|date:'Y-m-d' }}"
+         data-max-date="{{ max_date|date:'Y-m-d' }}"
+         data-booking-open="{{ booking_open|yesno:'1,0' }}">
+
+      {% if not booking_open %}
+      <div class="cart-notice">{% trans "Hozircha bron qabul qilinmayapti. Iltimos, keyinroq urinib ko‘ring." %}</div>
+      {% endif %}
+
+      <!-- ── 1-QADAM: parametrlar + sxema ─────────────────────────────── -->
+      <div id="bk-step-plan">
+        <div class="bk-controls">
+          <div class="bk-field">
+            <label for="bk-date">{% trans "Sana" %}</label>
+            <input type="date" id="bk-date">
+          </div>
+          <div class="bk-field">
+            <label for="bk-time">{% trans "Vaqt" %}</label>
+            <select id="bk-time"></select>
+          </div>
+          <div class="bk-field">
+            <label for="bk-guests">{% trans "Kishi soni" %}</label>
+            <input type="number" id="bk-guests" min="1" max="50" value="2" inputmode="numeric">
+          </div>
+        </div>
+
+        <div class="bk-legend">
+          <span class="bk-legend-item"><i class="bk-swatch bk-swatch--free"></i>{% trans "Bo‘sh" %}</span>
+          <span class="bk-legend-item"><i class="bk-swatch bk-swatch--busy"></i>{% trans "Band" %}</span>
+          <span class="bk-legend-item"><i class="bk-swatch bk-swatch--small"></i>{% trans "Sig‘im yetmaydi" %}</span>
+          <span class="bk-legend-item"><i class="bk-swatch bk-swatch--selected"></i>{% trans "Tanlangan" %}</span>
+        </div>
+
+        {% if zones %}
+        <div class="bk-zones" id="bk-zones">
+          {% for z in zones %}
+          <button type="button" class="bk-zone-tab{% if forloop.first %} active{% endif %}" data-zone="{{ z.id }}">{{ z.name }}</button>
+          {% endfor %}
+        </div>
+        {% endif %}
+
+        <div class="bk-plan-wrap">
+          <div id="booking-plan" class="bk-plan" aria-live="polite"></div>
+        </div>
+
+        <div id="bk-selected" class="bk-selected hidden">
+          <div class="bk-selected-info" id="bk-selected-info"></div>
+          <button type="button" id="bk-continue" class="btn btn-primary">{% trans "Davom etish" %}</button>
+        </div>
+      </div>
+
+      <!-- ── 2-QADAM: ma'lumotlar + OTP ───────────────────────────────── -->
+      <div id="bk-step-form" class="bk-step-form hidden">
+        <button type="button" id="bk-back" class="bk-back"><i class="fa fa-arrow-left"></i> {% trans "Orqaga" %}</button>
+
+        <div class="bk-summary" id="bk-summary"></div>
+
+        <form id="bk-form" class="bk-form" novalidate>
+          <input type="text" name="website" class="hp-field" tabindex="-1" autocomplete="off" aria-hidden="true">
+          <div class="bk-field">
+            <label for="bk-name">{% trans "Ismingiz" %}</label>
+            <input type="text" id="bk-name" maxlength="120" required>
+          </div>
+          <div class="bk-field">
+            <label for="bk-phone">{% trans "Telefon" %}</label>
+            <input type="tel" id="bk-phone" inputmode="tel" placeholder="+998 __ ___-__-__" required>
+          </div>
+          <div class="bk-field">
+            <label for="bk-note">{% trans "Izoh (ixtiyoriy)" %}</label>
+            <textarea id="bk-note" rows="2" maxlength="500"></textarea>
+          </div>
+          <button type="submit" id="bk-submit" class="btn btn-primary btn-block">{% trans "Bron qilish" %}</button>
+          <div id="bk-msg" class="cart-msg"></div>
+        </form>
+
+        <!-- OTP bosqichi -->
+        <div id="bk-otp" class="bk-otp hidden">
+          <p class="bk-otp-info">{% trans "Telefoningizga yuborilgan tasdiqlash kodini kiriting." %}</p>
+          <div class="bk-field">
+            <label for="bk-otp-code">{% trans "SMS kod" %}</label>
+            <input type="text" id="bk-otp-code" inputmode="numeric" maxlength="6" autocomplete="one-time-code">
+          </div>
+          <button type="button" id="bk-otp-verify" class="btn btn-primary btn-block">{% trans "Tasdiqlash" %}</button>
+          <button type="button" id="bk-otp-back" class="btn btn-outline btn-block">{% trans "Orqaga" %}</button>
+          <div id="bk-otp-msg" class="cart-msg"></div>
+        </div>
+      </div>
+
+      <!-- ── Muvaffaqiyat ─────────────────────────────────────────────── -->
+      <div id="bk-success" class="bk-success hidden">
+        <i class="fa fa-check-circle"></i>
+        <h3>{% trans "So‘rovingiz qabul qilindi!" %}</h3>
+        <p>{% trans "Operatorimiz tez orada bronni tasdiqlash uchun siz bilan bog‘lanadi." %}</p>
+        <a href="{% url 'website:home' %}" class="btn btn-primary">{% trans "Bosh sahifaga" %}</a>
+      </div>
+
+    </div>
+  </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+window.BOOKING_MESSAGES = {
+  choose_dt:      { uz: "Sana va vaqtni tanlang.", ru: "Выберите дату и время.", en: "Choose date and time." },
+  pick_table:     { uz: "Bo‘sh stolni tanlang.", ru: "Выберите свободный стол.", en: "Pick an available table." },
+  no_tables:      { uz: "Bu zonada stol yo‘q.", ru: "В этой зоне нет столов.", en: "No tables in this zone." },
+  loading:        { uz: "Yuklanmoqda...", ru: "Загрузка...", en: "Loading..." },
+  name_required:  { uz: "Ismingizni kiriting.", ru: "Введите имя.", en: "Enter your name." },
+  phone_required: { uz: "Telefon raqamini to‘liq kiriting.", ru: "Введите номер телефона полностью.", en: "Enter your phone number." },
+  code_required:  { uz: "SMS kodni kiriting.", ru: "Введите код из SMS.", en: "Enter the SMS code." },
+  sending:        { uz: "Yuborilmoqda...", ru: "Отправка...", en: "Sending..." },
+  code_sent:      { uz: "Tasdiqlash kodi telefoningizga yuborildi.", ru: "Код подтверждения отправлен на ваш телефон.", en: "A verification code was sent to your phone." },
+  network:        { uz: "Tarmoq xatosi. Qayta urinib ko‘ring.", ru: "Ошибка сети. Попробуйте ещё раз.", en: "Network error. Please try again." },
+  seat:           { uz: "kishi", ru: "чел", en: "pers" },
+  guests_label:   { uz: "Kishi", ru: "Гостей", en: "Guests" },
+  table_label:    { uz: "Stol", ru: "Стол", en: "Table" }
+};
+</script>
+<script src="{% static 'src/booking.js' %}?v=1.0" defer></script>
+{% endblock %}

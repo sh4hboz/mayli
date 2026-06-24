@@ -107,7 +107,7 @@ def set_webhook(url: str, secret: str = '') -> dict | None:
     `secret` berilsa, Telegram har so'rovda `X-Telegram-Bot-Api-Secret-Token` header'ini
     qo'shadi (webhook view'da tekshiriladi).
     """
-    payload = {'url': url, 'allowed_updates': ['message']}
+    payload = {'url': url, 'allowed_updates': ['message', 'callback_query']}
     if secret:
         payload['secret_token'] = secret
     return _post('setWebhook', payload)
@@ -166,3 +166,77 @@ def notify_job_application(full_name: str, phone: str, vacancy_title: str = '') 
         f"💼 Vakansiya: {vacancy_title or '—'}"
     )
     return notify_admin(text)
+
+
+def order_message_text(order) -> str:
+    """Buyurtma xabari matnini (HTML) tuzadi — yuborish va tahrirlash uchun umumiy."""
+    name = html.escape(order.customer_name)
+    phone = html.escape(format_uz_phone(order.phone))
+    lines = [
+        f"🛒 <b>Yangi buyurtma #{order.pk}</b>",
+        f"👤 Mijoz: {name}",
+        f"📱 Telefon: {phone}",
+        "",
+        "<b>Tarkibi:</b>",
+    ]
+    for it in order.items.all():
+        dish_name = html.escape(it.dish_name)
+        lines.append(f"• {dish_name} × {it.quantity} = {it.line_total:,.0f} so'm".replace(',', ' '))
+    lines.append("")
+    lines.append(f"💰 <b>Jami: {order.total_amount:,.0f} so'm</b>".replace(',', ' '))
+    lines.append(f"💳 To'lov: {html.escape(order.get_payment_method_display())}")
+    if order.comment:
+        lines.append(f"📝 Izoh: {html.escape(order.comment)}")
+    return "\n".join(lines)
+
+
+def _order_keyboard(order_pk):
+    return {'inline_keyboard': [[
+        {'text': '✅ Qabul qilish', 'callback_data': f'order_accept:{order_pk}'},
+        {'text': '❌ Rad etish', 'callback_data': f'order_reject:{order_pk}'},
+    ]]}
+
+
+def notify_order(order) -> bool:
+    """Yangi buyurtmani admin guruhiga yuboradi + Qabul/Rad inline tugmalari bilan."""
+    chat_id = _admin_chat_id()
+    if not chat_id:
+        return False
+    return send_message(chat_id, order_message_text(order), reply_markup=_order_keyboard(order.pk))
+
+
+def notify_reservation(reservation) -> bool:
+    """Yangi bron so'rovini admin guruhiga yuboradi (manager tasdiqlashi uchun)."""
+    name = html.escape(reservation.customer_name)
+    phone = html.escape(format_uz_phone(reservation.customer_phone))
+    table = html.escape(str(reservation.table))
+    date = reservation.date.strftime('%d.%m.%Y')
+    time = reservation.time.strftime('%H:%M')
+    lines = [
+        f"🪑 <b>Yangi bron so'rovi #{reservation.pk}</b>",
+        f"👤 Mijoz: {name}",
+        f"📱 Telefon: {phone}",
+        f"📍 Stol: {table}",
+        f"📅 Sana: {date} {time}",
+        f"👥 Kishi: {reservation.guests}",
+    ]
+    if reservation.note:
+        lines.append(f"📝 Izoh: {html.escape(reservation.note)}")
+    lines.append("")
+    lines.append("⏳ <i>Tasdiqlash uchun dashboard'ga kiring.</i>")
+    return notify_admin("\n".join(lines))
+
+
+def answer_callback(callback_query_id: str, text: str = '') -> bool:
+    """Telegram callback (tugma bosilishi)ga javob — foydalanuvchiga toast ko'rsatadi."""
+    data = _post('answerCallbackQuery', {'callback_query_id': callback_query_id, 'text': text})
+    return bool(data and data.get('ok'))
+
+
+def edit_message_text(chat_id, message_id, text: str, reply_markup=None) -> bool:
+    """Mavjud xabar matnini (va tugmalarini) tahrirlaydi."""
+    payload = {'chat_id': chat_id, 'message_id': message_id, 'text': text, 'parse_mode': 'HTML'}
+    if reply_markup is not None:
+        payload['reply_markup'] = reply_markup
+    data = _post('editMessageText', payload)
+    return bool(data and data.get('ok'))

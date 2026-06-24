@@ -114,6 +114,45 @@
       .finally(function () { btn.dataset.busy = ""; btn.disabled = false; });
   });
 
+  // --- Bildirishnomalar: "Hammasi o'qildi" ---
+  document.addEventListener("click", function (e) {
+    var btn = e.target.closest("[data-mark-all-read]");
+    if (!btn) return;
+    e.preventDefault();
+    var wrap = document.getElementById("notification-dropdown-people");
+    var url = wrap && wrap.getAttribute("data-notif-mark-url");
+    if (!url) return;
+    btn.disabled = true;
+    fetch(url, {
+      method: "POST",
+      headers: { "X-CSRFToken": getCookie("csrftoken"), "X-Requested-With": "XMLHttpRequest" },
+    })
+      .then(function (r) { return r.json(); })
+      .then(function () { window.location.reload(); })
+      .catch(function () { btn.disabled = false; });
+  });
+
+  // --- Bildirishnoma badge'ni orqaga qaytishda (bfcache) yangilash ---
+  function updateNotifBadge(count) {
+    var badge = document.getElementById("topbar-notif-badge");
+    if (badge) {
+      badge.textContent = count;
+      badge.classList.toggle("d-none", !count);
+    }
+    var markBtn = document.getElementById("topbar-notif-mark-all");
+    if (markBtn) markBtn.classList.toggle("d-none", !count);
+  }
+  window.addEventListener("pageshow", function (e) {
+    if (!e.persisted) return; // oddiy yuklanishda server badge'ni to'g'ri beradi
+    var wrap = document.getElementById("notification-dropdown-people");
+    var url = wrap && wrap.getAttribute("data-notif-count-url");
+    if (!url) return;
+    fetch(url, { headers: { "X-Requested-With": "XMLHttpRequest" } })
+      .then(function (r) { return r.json(); })
+      .then(function (d) { if (d && typeof d.count !== "undefined") updateNotifBadge(d.count); })
+      .catch(function () {});
+  });
+
   // --- Tasdiq so'rash (o'chirish va h.k.) ---
   document.addEventListener("click", function (e) {
     var el = e.target.closest("[data-confirm]");

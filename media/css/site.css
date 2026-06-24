@@ -1,0 +1,12 @@
+/* ==========================================================================
+   site.css — Mayli Restobar ommaviy sayti uchun custom CSS
+   --------------------------------------------------------------------------
+   Bu fayl dashboarddan tahrirlanadi (Sayt sozlamalari -> Custom CSS).
+   Serverda /media/css/site.css sifatida saqlanadi va sayt <head> ida eng
+   oxirgi stylesheet bo'lib ulanadi (style.css va kutubxonalardan keyin).
+   Bu repo'dagi nusxa — yangi serverni initsializatsiya qilish uchun seed.
+   ========================================================================== */
+
+/* Masalan:
+.dish-card { border-radius: 16px; }
+*/
