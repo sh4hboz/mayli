@@ -162,6 +162,11 @@ class Campaign(TimeStampedModel):
         Tag, blank=True, related_name='campaigns', verbose_name=_('Teglar (filtr)'),
         help_text=_('Bo\'sh bo\'lsa — barcha mijozlarga'),
     )
+    recipients_raw = models.TextField(
+        _('Qo\'lda raqamlar'), blank=True,
+        help_text=_('Har qatorda yoki vergul bilan telefon raqamlar. To\'ldirilsa — SMS faqat shu '
+                    'raqamlarga yuboriladi (teg/mijoz bazasi ishlatilmaydi).'),
+    )
     status = models.CharField(
         _('Holat'), max_length=20, choices=CampaignStatus.choices,
         default=CampaignStatus.DRAFT,

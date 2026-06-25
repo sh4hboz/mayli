@@ -277,9 +277,14 @@ class DashboardFormSubmitTests(TestCase):
         self.assertTrue(Customer.objects.filter(phone='+998901230001').exists())
 
     def test_create_campaign(self):
+        # SMS yuborgich (yangi): nom + shablon + raqamlar + vaqt. "schedule" — yuborishni chaqirmaydi.
         resp = self.client.post(reverse('dashboard_campaign_create'), {
-            'name': 'Yangi yil', 'channel': 'sms',
-            'template': 'Tabriklaymiz {{first_name}}', 'status': 'draft',
+            'name': 'Yangi yil',
+            'sms_template_id': 'tpl-123',
+            'template': 'Tabriklaymiz!',
+            'recipients_raw': '+998901112233',
+            'when': 'schedule',
+            'scheduled_at': '2030-01-01T09:00',
         })
         self.assertEqual(resp.status_code, 302)
         self.assertTrue(Campaign.objects.filter(name='Yangi yil').exists())

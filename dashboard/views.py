@@ -27,7 +27,7 @@ from .forms import (
     SiteSettingsHomeContentForm, SiteSettingsSeoForm,
     NewsForm, PromotionForm, GalleryItemForm, PartnerForm, VacancyForm, CategoryForm,
     DishForm, CustomerForm, CampaignForm, FeatureForm, StatItemForm, OrderSettingsForm,
-    LoyaltySettingsForm,
+    LoyaltySettingsForm, SmsCampaignForm,
 )
 from .search import global_search, CMS_ROLES
 
@@ -751,15 +751,67 @@ class CampaignListView(CMSBaseMixin, ListView):
         return ctx
 
 
-class CampaignCreateView(CMSBaseMixin, SuccessMessageMixin, CreateView):
+class _SmsCampaignMixin:
+    """SMS yuborgich (Create/Update) — shablonlar API'dan, "hozir/rejalashtirish"."""
     model = Campaign
-    form_class = CampaignForm
+    form_class = SmsCampaignForm
     template_name = 'management/crm/campaign_form.html'
     success_url = reverse_lazy('dashboard_campaign_list')
 
+    @staticmethod
+    def _active_templates():
+        from django.core.cache import cache
+        cached = cache.get('sms_active_templates')
+        if cached is not None:
+            return cached
+        from crm.integrations.textup import TextUpClient
+        try:
+            tpls = TextUpClient().list_templates()
+        except Exception:  # noqa: BLE001 — API yetib bormasa, bo'sh ro'yxat
+            return []
+        result = [
+            {'id': t.get('id'), 'name': t.get('name'), 'content': t.get('content')}
+            for t in tpls if (t.get('status') or '').lower() == 'active'
+        ]
+        cache.set('sms_active_templates', result, 300)  # 5 daqiqa kesh
+        return result
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        ctx['sms_templates'] = self._active_templates()
+        return ctx
+
+    def get_initial(self):
+        initial = super().get_initial()
+        obj = getattr(self, 'object', None)
+        if obj and obj.scheduled_at:
+            initial['when'] = SmsCampaignForm.WHEN_SCHEDULE
+        return initial
+
     def form_valid(self, form):
-        form.instance.created_by = self.request.user
-        return super().form_valid(form)
+        from crm.models import CampaignChannel, CampaignStatus
+        from crm.services import CampaignSendService
+        form.instance.channel = CampaignChannel.SMS
+        if not form.instance.created_by_id:
+            form.instance.created_by = self.request.user
+        scheduling = form.cleaned_data.get('when') == SmsCampaignForm.WHEN_SCHEDULE
+        form.instance.status = CampaignStatus.SCHEDULED if scheduling else CampaignStatus.DRAFT
+        response = super().form_valid(form)  # self.object saqlanadi
+
+        if scheduling:
+            messages.success(self.request, "SMS rejalashtirildi — belgilangan vaqtda avtomatik yuboriladi.")
+        else:
+            result = CampaignSendService.send_campaign(self.object.pk)
+            sent, failed = result.get('sent', 0), result.get('failed', 0)
+            if sent:
+                messages.success(self.request, f"{sent} ta raqamga SMS yuborildi.")
+            if failed or (not sent and result.get('errors')):
+                messages.error(self.request, "; ".join(result.get('errors', [])[:2]) or f"{failed} ta xato")
+        return response
+
+
+class CampaignCreateView(_SmsCampaignMixin, CMSBaseMixin, CreateView):
+    pass
 
 
 class CampaignDetailView(CMSBaseMixin, DetailView):
@@ -774,11 +826,8 @@ class CampaignDetailView(CMSBaseMixin, DetailView):
         return ctx
 
 
-class CampaignUpdateView(CMSBaseMixin, SuccessMessageMixin, UpdateView):
-    model = Campaign
-    form_class = CampaignForm
-    template_name = 'management/crm/campaign_form.html'
-    success_url = reverse_lazy('dashboard_campaign_list')
+class CampaignUpdateView(_SmsCampaignMixin, CMSBaseMixin, UpdateView):
+    pass
 
 
 class CampaignDeleteView(CMSBaseMixin, SuccessMessageMixin, DeleteView):

@@ -38,6 +38,10 @@ class CampaignSendService:
             logger.error(f"Kampaniya topilmadi: {campaign_id}")
             return {'sent': 0, 'failed': 0, 'errors': ['Kampaniya topilmadi']}
 
+        # Qo'lda raqamlar kiritilgan bo'lsa — to'g'ridan-to'g'ri shu raqamlarga (mijoz bazasisiz).
+        if (campaign.recipients_raw or '').strip():
+            return CampaignSendService._send_to_numbers(campaign)
+
         # Mijozlarni filtrlash
         customers = CampaignSendService._get_target_customers(campaign)
 
@@ -115,6 +119,41 @@ class CampaignSendService:
             'sent': sent_count,
             'failed': failed_count,
             'errors': errors,
+            'campaign_id': campaign.id,
+        }
+
+    @staticmethod
+    def _send_to_numbers(campaign):
+        """Qo'lda kiritilgan raqamlarga SMS (TextUp) — bitta so'rovda hammasiga."""
+        import re
+        from crm.integrations.textup import TextUpClient, normalize_phone
+        parts = re.split(r'[\s,;]+', (campaign.recipients_raw or '').strip())
+        phones, seen = [], set()
+        for p in parts:
+            n = normalize_phone(p)
+            if n and n not in seen:
+                seen.add(n)
+                phones.append(n)
+        if not phones:
+            return {'sent': 0, 'failed': 0, 'errors': ["Yaroqli telefon raqami yo'q"]}
+
+        try:
+            res = TextUpClient().send_sms(
+                phones, campaign.template, name=(campaign.name or 'Mayli')[:50],
+                template_id=campaign.sms_template_id,
+            )
+        except Exception as e:  # noqa: BLE001
+            res = {'success': False, 'error': str(e)}
+
+        ok = bool(res.get('success'))
+        campaign.sent_count = len(phones) if ok else 0
+        campaign.failed_count = 0 if ok else len(phones)
+        campaign.status = CampaignStatus.SENT
+        campaign.save(update_fields=['sent_count', 'failed_count', 'status'])
+        logger.info("SMS (qo'lda) kampaniya=%s raqamlar=%s ok=%s", campaign.pk, len(phones), ok)
+        return {
+            'sent': campaign.sent_count, 'failed': campaign.failed_count,
+            'errors': [] if ok else [res.get('error', 'xato')],
             'campaign_id': campaign.id,
         }
 

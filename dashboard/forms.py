@@ -330,6 +330,47 @@ class CampaignForm(BootstrapModelForm):
         }
 
 
+class SmsCampaignForm(BootstrapModelForm):
+    """Soddalashtirilgan SMS yuborgich — nom + shablon (tugma) + qo'lda raqamlar + vaqt."""
+    WHEN_NOW = 'now'
+    WHEN_SCHEDULE = 'schedule'
+    when = forms.ChoiceField(
+        label="Yuborish vaqti", required=False,
+        choices=[(WHEN_NOW, "Hozir yuborish"), (WHEN_SCHEDULE, "Vaqtni tanlash")],
+        widget=forms.RadioSelect, initial=WHEN_NOW,
+    )
+
+    class Meta:
+        model = Campaign
+        fields = ['name', 'sms_template_id', 'template', 'recipients_raw', 'scheduled_at']
+        widgets = {
+            'sms_template_id': forms.HiddenInput(),
+            'template': forms.Textarea(attrs={
+                'rows': 3, 'readonly': True,
+                'placeholder': "Shablon tanlang — matni shu yerda ko'rinadi",
+            }),
+            'recipients_raw': forms.Textarea(attrs={
+                'rows': 4, 'placeholder': "+998901112233\n+998935556677",
+            }),
+            'scheduled_at': forms.DateTimeInput(attrs={'type': 'datetime-local'}),
+        }
+        labels = {
+            'name': "Nomi (ichki belgi)",
+            'template': "Shablon matni",
+            'recipients_raw': "Telefon raqamlar",
+        }
+
+    def clean(self):
+        cleaned = super().clean()
+        if not (cleaned.get('sms_template_id') or '').strip():
+            self.add_error(None, "Shablon tanlang.")
+        if not (cleaned.get('recipients_raw') or '').strip():
+            self.add_error('recipients_raw', "Kamida bitta telefon raqam kiriting.")
+        if cleaned.get('when') == self.WHEN_SCHEDULE and not cleaned.get('scheduled_at'):
+            self.add_error('scheduled_at', "Vaqtni tanlang yoki 'Hozir yuborish'ni belgilang.")
+        return cleaned
+
+
 class StatItemForm(BootstrapModelForm):
     class Meta:
         model = StatItem

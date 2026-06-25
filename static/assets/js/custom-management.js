@@ -164,6 +164,12 @@
     }
   });
 
+  // --- Avto-submit select (data-autosubmit) ---
+  document.addEventListener("change", function (e) {
+    var el = e.target.closest("select[data-autosubmit]");
+    if (el && el.form) el.form.submit();
+  });
+
   // --- Alert (xabar) bildirishnomalarini 5 soniyada avtomatik yopish ---
   (function () {
     var alerts = document.querySelectorAll(".alert-dismissible");

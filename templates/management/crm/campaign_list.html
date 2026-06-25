@@ -1,48 +1,14 @@
 {% extends 'management/base.html' %}
-{% block title %}Kampaniyalar | Mayli Restobar{% endblock %}
+{% block title %}SMS yuborish | Mayli Restobar{% endblock %}
 {% block content %}
 <div class="row">
     <div class="col-12">
         <div class="page-title-box d-flex align-items-center justify-content-between">
-            <h4 class="page-title">Kampaniyalar (CRM Marketing)</h4>
+            <h4 class="page-title">SMS yuborish</h4>
             <ol class="breadcrumb m-0">
                 <li class="breadcrumb-item"><a href="{% url 'dashboard_home' %}">Dashboard</a></li>
-                <li class="breadcrumb-item active">Kampaniyalar</li>
+                <li class="breadcrumb-item active">SMS</li>
             </ol>
-        </div>
-    </div>
-</div>
-
-<!-- Filtr -->
-<div class="row">
-    <div class="col-12">
-        <div class="card">
-            <div class="card-body">
-                <form method="get" class="row g-2 align-items-end">
-                    <div class="col-md-4">
-                        <label class="form-label mb-1">Kanal</label>
-                        <select name="channel" class="form-select">
-                            <option value="">Barchasi</option>
-                            {% for val, label in channels %}
-                            <option value="{{ val }}" {% if active_channel == val %}selected{% endif %}>{{ label }}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
-                    <div class="col-md-4">
-                        <label class="form-label mb-1">Holat</label>
-                        <select name="status" class="form-select">
-                            <option value="">Barchasi</option>
-                            {% for val, label in statuses %}
-                            <option value="{{ val }}" {% if active_status == val %}selected{% endif %}>{{ label }}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
-                    <div class="col-md-4 d-flex gap-1">
-                        <button type="submit" class="btn btn-primary flex-grow-1"><i class="ti ti-filter"></i></button>
-                        <a href="{% url 'dashboard_campaign_list' %}" class="btn btn-light" title="Tozalash"><i class="ti ti-x"></i></a>
-                    </div>
-                </form>
-            </div>
         </div>
     </div>
 </div>
@@ -51,11 +17,21 @@
 <div class="row">
     <div class="col-12">
         <div class="card">
-            <div class="card-header d-flex align-items-center justify-content-between">
-                <h5 class="card-title mb-0">Kampaniyalar ({{ page_obj.paginator.count }})</h5>
-                <a href="{% url 'dashboard_campaign_create' %}" class="btn btn-primary btn-sm">
-                    <i class="ti ti-plus me-1"></i>Kampaniya yaratish
-                </a>
+            <div class="card-header d-flex align-items-center justify-content-between flex-wrap gap-2">
+                <h5 class="card-title mb-0">Yuborilgan / rejalashtirilgan SMS ({{ page_obj.paginator.count }})</h5>
+                <div class="d-flex align-items-center gap-2">
+                    <form method="get" class="d-flex align-items-center gap-1">
+                        <select name="status" class="form-select form-select-sm w-auto" data-autosubmit>
+                            <option value="">Barcha holat</option>
+                            {% for val, label in statuses %}
+                            <option value="{{ val }}" {% if active_status == val %}selected{% endif %}>{{ label }}</option>
+                            {% endfor %}
+                        </select>
+                    </form>
+                    <a href="{% url 'dashboard_campaign_create' %}" class="btn btn-primary btn-sm">
+                        <i class="ti ti-plus me-1"></i>Yangi SMS
+                    </a>
+                </div>
             </div>
             <div class="card-body p-0">
                 <div class="table-responsive">
@@ -64,9 +40,8 @@
                             <tr>
                                 <th>#</th>
                                 <th>Nomi</th>
-                                <th>Kanal</th>
                                 <th>Holat</th>
-                                <th>Yuborilan / Xato</th>
+                                <th>Yuborildi / Xato</th>
                                 <th>Yaratilgan</th>
                                 <th>Amallar</th>
                             </tr>
@@ -76,14 +51,11 @@
                             <tr>
                                 <td>{{ forloop.counter0|add:page_obj.start_index }}</td>
                                 <td>
-                                    <a href="{% url 'dashboard_campaign_detail' c.pk %}" class="fw-semibold text-reset">
-                                        {{ c.name }}
-                                    </a>
+                                    <a href="{% url 'dashboard_campaign_detail' c.pk %}" class="fw-semibold text-reset">{{ c.name }}</a>
                                 </td>
-                                <td><span class="badge bg-light text-dark">{{ c.get_channel_display }}</span></td>
                                 <td>
                                     <span class="badge bg-{% if c.status == 'draft' %}secondary{% elif c.status == 'scheduled' %}warning{% else %}success{% endif %}-subtle text-{% if c.status == 'draft' %}secondary{% elif c.status == 'scheduled' %}warning{% else %}success{% endif %}">
-                                        {{ c.get_status_display }}
+                                        {{ c.get_status_display }}{% if c.status == 'scheduled' and c.scheduled_at %} · {{ c.scheduled_at|date:"d.m H:i" }}{% endif %}
                                     </span>
                                 </td>
                                 <td>
@@ -97,13 +69,13 @@
                                         <a href="{% url 'dashboard_campaign_edit' c.pk %}" class="btn btn-sm btn-warning"><i class="ti ti-edit"></i></a>
                                         <form method="post" action="{% url 'dashboard_campaign_delete' c.pk %}" class="d-inline">
                                             {% csrf_token %}
-                                            <button type="submit" class="btn btn-sm btn-danger" data-confirm="Kampaniyani o'chirasizmi?"><i class="ti ti-trash"></i></button>
+                                            <button type="submit" class="btn btn-sm btn-danger" data-confirm="O'chirasizmi?"><i class="ti ti-trash"></i></button>
                                         </form>
                                     </div>
                                 </td>
                             </tr>
                             {% empty %}
-                            <tr><td colspan="7" class="text-center text-muted py-4">Kampaniyalar topilmadi</td></tr>
+                            <tr><td colspan="6" class="text-center text-muted py-4">Hali SMS yuborilmagan</td></tr>
                             {% endfor %}
                         </tbody>
                     </table>
@@ -114,15 +86,15 @@
                 <span class="text-muted fs-xs">{{ page_obj.number }} / {{ page_obj.paginator.num_pages }} sahifa</span>
                 <ul class="pagination pagination-sm mb-0">
                     {% if page_obj.has_previous %}
-                    <li class="page-item"><a class="page-link" href="?channel={{ active_channel }}&status={{ active_status }}&page={{ page_obj.previous_page_number }}">‹</a></li>
+                    <li class="page-item"><a class="page-link" href="?status={{ active_status }}&page={{ page_obj.previous_page_number }}">‹</a></li>
                     {% endif %}
                     {% for num in page_obj.paginator.page_range %}
                     <li class="page-item {% if num == page_obj.number %}active{% endif %}">
-                        <a class="page-link" href="?channel={{ active_channel }}&status={{ active_status }}&page={{ num }}">{{ num }}</a>
+                        <a class="page-link" href="?status={{ active_status }}&page={{ num }}">{{ num }}</a>
                     </li>
                     {% endfor %}
                     {% if page_obj.has_next %}
-                    <li class="page-item"><a class="page-link" href="?channel={{ active_channel }}&status={{ active_status }}&page={{ page_obj.next_page_number }}">›</a></li>
+                    <li class="page-item"><a class="page-link" href="?status={{ active_status }}&page={{ page_obj.next_page_number }}">›</a></li>
                     {% endif %}
                 </ul>
             </div>
