@@ -16,35 +16,24 @@
 <div class="row">
     <div class="col-12">
         <div class="card">
-            <div class="card-header d-flex align-items-center justify-content-between flex-wrap gap-2">
+            <div class="card-header d-flex align-items-center justify-content-between">
                 <h5 class="card-title mb-0">Barcha taomlar ({{ dish_list.count }})</h5>
-                <div class="d-flex align-items-center gap-2 flex-wrap">
-                    <form method="get" class="d-flex align-items-center gap-2 flex-wrap">
-                        <select name="category" class="form-select form-select-sm w-auto">
-                            <option value="">Barcha kategoriyalar</option>
-                            {% for c in all_categories %}
-                            <option value="{{ c.pk }}" {% if active_category == c.pk|stringformat:'s' %}selected{% endif %}>{{ c.name_uz }}</option>
-                            {% endfor %}
-                        </select>
-                        <select name="status" class="form-select form-select-sm w-auto">
-                            <option value="">Barcha holat</option>
-                            <option value="active" {% if active_status == 'active' %}selected{% endif %}>Faol</option>
-                            <option value="inactive" {% if active_status == 'inactive' %}selected{% endif %}>Nofaol</option>
-                            <option value="no_price" {% if active_status == 'no_price' %}selected{% endif %}>Narxsiz</option>
-                        </select>
-                        <button type="submit" class="btn btn-sm btn-outline-primary"><i class="ti ti-filter"></i></button>
-                        {% if active_category or active_status %}
-                        <a href="{% url 'dashboard_dish_list' %}" class="btn btn-sm btn-outline-secondary"><i class="ti ti-x"></i></a>
-                        {% endif %}
-                    </form>
-                    <a href="{% url 'dashboard_dish_create' %}" class="btn btn-primary btn-sm"><i class="ti ti-plus me-1"></i>Taom qo'shish</a>
-                </div>
+                <a href="{% url 'dashboard_dish_create' %}" class="btn btn-primary btn-sm"><i class="ti ti-plus me-1"></i>Taom qo'shish</a>
             </div>
             <div class="card-body p-0">
                 <div class="table-responsive">
                     <table class="table table-hover table-nowrap mb-0 js-datatable" data-dt-order="2:asc">
                         <thead class="table-light">
-                            <tr><th data-orderable="false" data-searchable="false">#</th><th data-orderable="false" data-searchable="false">Rasm</th><th>Nomi (UZ)</th><th>Kategoriya</th><th>Narxi</th><th>Mavjud</th><th>Faol</th><th data-orderable="false" data-searchable="false">Amallar</th></tr>
+                            <tr>
+                                <th data-orderable="false" data-searchable="false">#</th>
+                                <th data-orderable="false" data-searchable="false">Rasm</th>
+                                <th data-dt-filter="text">Nomi (UZ)</th>
+                                <th data-dt-filter="contains" data-dt-options="{% for c in all_categories %}{{ c.name_uz }}{% if not forloop.last %}|{% endif %}{% endfor %}">Kategoriya</th>
+                                <th>Narxi</th>
+                                <th data-dt-filter="select">Mavjud</th>
+                                <th data-dt-filter="select">Faol</th>
+                                <th data-orderable="false" data-searchable="false">Amallar</th>
+                            </tr>
                         </thead>
                         <tbody>
                             {% for item in dish_list %}

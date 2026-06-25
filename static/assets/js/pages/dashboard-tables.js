@@ -87,6 +87,72 @@
     var order = parseOrder(table);
     if (order) opts.order = order;
 
-    $(table).DataTable(opts);
+    var dt = $(table).DataTable(opts);
+    buildColumnFilters(table, dt);
   });
+
+  // Ustun-darajasidagi filtrlar (th data-dt-filter="text|select|contains").
+  // thead'ga ikkinchi qator qo'shadi: text=qidiruv inputi, select=aniq moslik dropdown,
+  // contains=ichida-bor moslik dropdown (ko'p qiymatli ustun — masalan kategoriya).
+  function buildColumnFilters(table, dt) {
+    var ths = table.querySelectorAll("thead tr th");
+    var hasFilter = Array.prototype.some.call(ths, function (th) { return th.dataset.dtFilter; });
+    if (!hasFilter) return;
+
+    var row = document.createElement("tr");
+    row.className = "dt-filter-row";
+
+    Array.prototype.forEach.call(ths, function (th, i) {
+      var cell = document.createElement("th");
+      var type = th.dataset.dtFilter;
+
+      if (type === "text") {
+        var inp = document.createElement("input");
+        inp.type = "search";
+        inp.className = "form-control form-control-sm";
+        inp.placeholder = "Qidirish...";
+        inp.addEventListener("keyup", function () { dt.column(i).search(this.value).draw(); });
+        inp.addEventListener("click", function (e) { e.stopPropagation(); });
+        cell.appendChild(inp);
+      } else if (type === "select" || type === "contains") {
+        var sel = document.createElement("select");
+        sel.className = "form-select form-select-sm";
+        var first = document.createElement("option");
+        first.value = ""; first.textContent = "Barchasi";
+        sel.appendChild(first);
+
+        var values = [];
+        if (th.dataset.dtOptions) {
+          values = th.dataset.dtOptions.split("|");
+        } else {
+          dt.column(i).data().unique().sort().each(function (d) {
+            var t = $("<div>").html(d).text().trim();
+            if (t && values.indexOf(t) === -1) values.push(t);
+          });
+        }
+        values.forEach(function (v) {
+          if (!v) return;
+          var o = document.createElement("option");
+          o.value = v; o.textContent = v;
+          sel.appendChild(o);
+        });
+
+        sel.addEventListener("click", function (e) { e.stopPropagation(); });
+        sel.addEventListener("change", function () {
+          if (!this.value) { dt.column(i).search("").draw(); return; }
+          if (type === "contains") {
+            dt.column(i).search(this.value, false, false).draw();           // ichida-bor
+          } else {
+            var esc = $.fn.dataTable.util.escapeRegex(this.value);
+            dt.column(i).search("^" + esc + "$", true, false).draw();        // aniq moslik
+          }
+        });
+        cell.appendChild(sel);
+      }
+
+      row.appendChild(cell);
+    });
+
+    table.querySelector("thead").appendChild(row);
+  }
 })();

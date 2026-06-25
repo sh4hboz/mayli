@@ -591,24 +591,13 @@ class DishListView(CMSBaseMixin, ListView):
     context_object_name = 'dish_list'
 
     def get_queryset(self):
-        qs = super().get_queryset().prefetch_related('categories')
-        category = self.request.GET.get('category', '')
-        status = self.request.GET.get('status', '')
-        if category:
-            qs = qs.filter(categories__id=category)
-        if status == 'active':
-            qs = qs.filter(is_active=True)
-        elif status == 'inactive':
-            qs = qs.filter(is_active=False)
-        elif status == 'no_price':
-            qs = qs.filter(price=0)
-        return qs.distinct()
+        # Barcha taom DOM'ga chiqadi; filtr/sort ustun-darajasida client-side (DataTables).
+        return super().get_queryset().prefetch_related('categories')
 
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
+        # Kategoriya ustuni filtri (dropdown) opsiyalari uchun.
         ctx['all_categories'] = Category.objects.all()
-        ctx['active_category'] = self.request.GET.get('category', '')
-        ctx['active_status'] = self.request.GET.get('status', '')
         return ctx
 
 
