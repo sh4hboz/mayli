@@ -16,9 +16,29 @@
 <div class="row">
     <div class="col-12">
         <div class="card">
-            <div class="card-header d-flex align-items-center justify-content-between">
+            <div class="card-header d-flex align-items-center justify-content-between flex-wrap gap-2">
                 <h5 class="card-title mb-0">Barcha taomlar ({{ dish_list.count }})</h5>
-                <a href="{% url 'dashboard_dish_create' %}" class="btn btn-primary btn-sm"><i class="ti ti-plus me-1"></i>Taom qo'shish</a>
+                <div class="d-flex align-items-center gap-2 flex-wrap">
+                    <form method="get" class="d-flex align-items-center gap-2 flex-wrap">
+                        <select name="category" class="form-select form-select-sm w-auto">
+                            <option value="">Barcha kategoriyalar</option>
+                            {% for c in all_categories %}
+                            <option value="{{ c.pk }}" {% if active_category == c.pk|stringformat:'s' %}selected{% endif %}>{{ c.name_uz }}</option>
+                            {% endfor %}
+                        </select>
+                        <select name="status" class="form-select form-select-sm w-auto">
+                            <option value="">Barcha holat</option>
+                            <option value="active" {% if active_status == 'active' %}selected{% endif %}>Faol</option>
+                            <option value="inactive" {% if active_status == 'inactive' %}selected{% endif %}>Nofaol</option>
+                            <option value="no_price" {% if active_status == 'no_price' %}selected{% endif %}>Narxsiz</option>
+                        </select>
+                        <button type="submit" class="btn btn-sm btn-outline-primary"><i class="ti ti-filter"></i></button>
+                        {% if active_category or active_status %}
+                        <a href="{% url 'dashboard_dish_list' %}" class="btn btn-sm btn-outline-secondary"><i class="ti ti-x"></i></a>
+                        {% endif %}
+                    </form>
+                    <a href="{% url 'dashboard_dish_create' %}" class="btn btn-primary btn-sm"><i class="ti ti-plus me-1"></i>Taom qo'shish</a>
+                </div>
             </div>
             <div class="card-body p-0">
                 <div class="table-responsive">

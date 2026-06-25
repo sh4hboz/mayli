@@ -34,18 +34,42 @@
                 <form method="post" enctype="multipart/form-data" novalidate>
                     {% csrf_token %}
 
-                    <!-- Asosiy maydonlar -->
-                    <div class="row g-3 mb-4">
-                        <div class="col-md-6">
-                            <label class="form-label">{{ form.categories.label }}<span class="text-danger">*</span></label>
-                            <div class="dish-categories-box">{{ form.categories }}</div>
-                            <small class="form-text text-muted">{{ form.categories.help_text }}</small>
-                            {% if form.categories.errors %}<div class="invalid-feedback d-block">{% for e in form.categories.errors %}{{ e }}{% endfor %}</div>{% endif %}
+                    <!-- Kategoriyalar (tugmalar — bir nechta tanlanadi) -->
+                    <div class="mb-4">
+                        <label class="form-label d-block">{{ form.categories.label }}<span class="text-danger">*</span>
+                            <small class="text-muted fw-normal">— bir nechta tanlash mumkin</small></label>
+                        <div class="d-flex flex-wrap gap-2">
+                            {% for choice in form.categories %}
+                            <input type="checkbox" class="btn-check" name="{{ form.categories.html_name }}"
+                                   value="{{ choice.data.value }}" id="{{ choice.id_for_label }}"
+                                   autocomplete="off"{% if choice.data.selected %} checked{% endif %}>
+                            <label class="btn btn-sm btn-outline-primary" for="{{ choice.id_for_label }}">{{ choice.choice_label }}</label>
+                            {% endfor %}
                         </div>
-                        <div class="col-md-6">
+                        {% if form.categories.errors %}<div class="invalid-feedback d-block">{% for e in form.categories.errors %}{{ e }}{% endfor %}</div>{% endif %}
+                    </div>
+
+                    <!-- Narx va sozlamalar -->
+                    <div class="row g-3 mb-4 align-items-end">
+                        <div class="col-md-3 col-6">
                             <label class="form-label">{{ form.price.label }}<span class="text-danger">*</span></label>
                             {{ form.price }}
                             {% if form.price.errors %}<div class="invalid-feedback d-block">{% for e in form.price.errors %}{{ e }}{% endfor %}</div>{% endif %}
+                        </div>
+                        <div class="col-md-3 col-6">
+                            <label class="form-label">{{ form.prep_time.label }}</label>
+                            {{ form.prep_time }}
+                            {% if form.prep_time.errors %}<div class="invalid-feedback d-block">{% for e in form.prep_time.errors %}{{ e }}{% endfor %}</div>{% endif %}
+                        </div>
+                        <div class="col-md-6 d-flex gap-4 pb-2">
+                            <div class="form-check">
+                                {{ form.is_available }}
+                                <label class="form-check-label" for="{{ form.is_available.id_for_label }}">{{ form.is_available.label }}</label>
+                            </div>
+                            <div class="form-check">
+                                {{ form.is_active }}
+                                <label class="form-check-label" for="{{ form.is_active.id_for_label }}">{{ form.is_active.label }}</label>
+                            </div>
                         </div>
                     </div>
 
@@ -89,13 +113,18 @@
                         </div>
                     </div>
 
-                    <!-- Rasm va boshqa -->
+                    <!-- Rasm -->
                     <div class="row g-3 mb-4">
-                        <div class="col-md-6">
+                        <h6 class="col-12 text-muted">Rasm</h6>
+                        {% if object.image %}
+                        <div class="col-md-3">
+                            <img src="{{ object.image.url }}" class="dish-thumb" alt="{{ object.name_uz }}">
+                        </div>
+                        {% endif %}
+                        <div class="col-md-9">
                             <label class="form-label">{{ form.image.label }}</label>
                             {{ form.image }}
                             {% if form.image.errors %}<div class="invalid-feedback d-block">{% for e in form.image.errors %}{{ e }}{% endfor %}</div>{% endif %}
-                            {% if object.image %}<div class="mt-2"><img src="{{ object.image.url }}" class="thumb-img" alt=""></div>{% endif %}
                             {% if form.convert_webp %}
                             <div class="form-check mt-2">
                                 {{ form.convert_webp }}
@@ -103,21 +132,6 @@
                                 <div class="form-text">{{ form.convert_webp.help_text }}</div>
                             </div>
                             {% endif %}
-                        </div>
-                        <div class="col-md-3">
-                            <label class="form-label">{{ form.prep_time.label }}</label>
-                            {{ form.prep_time }}
-                            {% if form.prep_time.errors %}<div class="invalid-feedback d-block">{% for e in form.prep_time.errors %}{{ e }}{% endfor %}</div>{% endif %}
-                        </div>
-                        <div class="col-md-3 d-flex align-items-end gap-3 pb-2">
-                            <div class="form-check">
-                                {{ form.is_available }}
-                                <label class="form-check-label">{{ form.is_available.label }}</label>
-                            </div>
-                            <div class="form-check">
-                                {{ form.is_active }}
-                                <label class="form-check-label">{{ form.is_active.label }}</label>
-                            </div>
                         </div>
                     </div>
 
