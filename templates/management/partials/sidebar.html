@@ -50,7 +50,6 @@
         <div id="sidenav-menu">
             <ul class="side-nav">
                 <!-- Dashboard -->
-                <li class="side-nav-title mt-2">Asosiy</li>
                 <li class="side-nav-item">
                     <a href="{% url 'dashboard_home' %}" class="side-nav-link">
                         <span class="menu-icon"><i class="ti ti-dashboard"></i></span>
@@ -59,7 +58,7 @@
                 </li>
 
                 <!-- Buyurtma & Menyu (kunlik ish) -->
-                <li class="side-nav-title mt-2">Buyurtma & Menyu</li>
+                <li class="side-nav-divider"><hr class="my-2 mx-3 opacity-50"></li>
                 <li class="side-nav-item">
                     <a href="{% url 'dashboard_order_list' %}" class="side-nav-link">
                         <span class="menu-icon"><i class="ti ti-shopping-cart"></i></span>
@@ -80,7 +79,7 @@
                 </li>
 
                 <!-- CRM / Mijozlar (mijoz bilan ishlash) -->
-                <li class="side-nav-title mt-2">CRM / Mijozlar</li>
+                <li class="side-nav-divider"><hr class="my-2 mx-3 opacity-50"></li>
                 <li class="side-nav-item">
                     <a href="{% url 'dashboard_customer_list' %}" class="side-nav-link">
                         <span class="menu-icon"><i class="ti ti-users"></i></span>
@@ -113,7 +112,7 @@
                 </li>
 
                 <!-- Sayt Boshqaruvi (kamroq — kontent/sozlama) -->
-                <li class="side-nav-title mt-2">Sayt Boshqaruvi</li>
+                <li class="side-nav-divider"><hr class="my-2 mx-3 opacity-50"></li>
                 <li class="side-nav-item">
                     <a href="{% url 'dashboard_news_list' %}" class="side-nav-link">
                         <span class="menu-icon"><i class="ti ti-news"></i></span>
@@ -171,7 +170,7 @@
 
                 <!-- Tizim -->
                 {% if profile.role == 'owner' or profile.role == 'manager' or profile.role == 'admin' %}
-                <li class="side-nav-title mt-2">Tizim</li>
+                <li class="side-nav-divider"><hr class="my-2 mx-3 opacity-50"></li>
                 <li class="side-nav-item">
                     <a href="{% url 'staff_management' %}" class="side-nav-link">
                         <span class="menu-icon"><i class="ti ti-user-cog"></i></span>
