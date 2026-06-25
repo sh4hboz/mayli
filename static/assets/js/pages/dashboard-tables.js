@@ -18,19 +18,18 @@
   }
   var $ = window.jQuery;
 
-  // O'zbekcha til satrlari
+  // O'zbekcha til satrlari (DataTables 2.x format — camelCase)
   var LANG = {
-    sProcessing: "Yuklanmoqda...",
-    sLengthMenu: "_MENU_ ta ko'rsatish",
-    sZeroRecords: "Hech narsa topilmadi",
-    sEmptyTable: "Ma'lumot yo'q",
-    sInfo: "_TOTAL_ tadan _START_–_END_ ko'rsatilmoqda",
-    sInfoEmpty: "0 ta yozuv",
-    sInfoFiltered: "(_MAX_ tadan filtrlandi)",
-    sSearch: "Qidirish:",
-    sSearchPlaceholder: "yozing...",
-    oPaginate: { sFirst: "Birinchi", sLast: "Oxirgi", sNext: "Keyingi", sPrevious: "Oldingi" },
-    oAria: { sSortAscending: ": o'sish bo'yicha saralash", sSortDescending: ": kamayish bo'yicha saralash" },
+    processing: "Yuklanmoqda...",
+    lengthMenu: "_MENU_ ta ko'rsatish",
+    zeroRecords: "Hech narsa topilmadi",
+    emptyTable: "Ma'lumot yo'q",
+    info: "_TOTAL_ tadan _START_–_END_ ko'rsatilmoqda",
+    infoEmpty: "0 ta yozuv",
+    infoFiltered: "(_MAX_ tadan filtrlandi)",
+    search: "Qidirish:",
+    searchPlaceholder: "yozing...",
+    paginate: { first: "Birinchi", last: "Oxirgi", next: "Keyingi", previous: "Oldingi" },
   };
 
   function isEmptyPlaceholder(table) {
@@ -74,14 +73,10 @@
 
     var opts = {
       language: LANG,
-      responsive: true,
       pageLength: pageLen,
       lengthMenu: [10, 25, 50, 100],
       columnDefs: buildColumnDefs(table),
-      // search + length yuqorida, info + paginate pastda (bootstrap5 standart)
-      dom: "<'row mb-2'<'col-sm-6'l><'col-sm-6'f>>" +
-           "<'row'<'col-12'tr>>" +
-           "<'row mt-2'<'col-sm-5'i><'col-sm-7'p>>",
+      // Layout — DataTables 2.x standart (tema app.min.css dt-* ni stillaydi).
     };
 
     var order = parseOrder(table);

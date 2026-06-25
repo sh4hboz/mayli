@@ -1,4 +1,6 @@
-{% load static %}
-{% comment %}Universal jadval (DataTables) CSS — list shablonlarda extra_css blokiga include qilinadi.{% endcomment %}
-<link href="{% static 'assets/plugins/datatables/dataTables.bootstrap5.min.css' %}" rel="stylesheet" type="text/css" />
-<link href="{% static 'assets/plugins/datatables/responsive.bootstrap5.min.css' %}" rel="stylesheet" type="text/css" />
+{% comment %}
+Universal jadval (DataTables 2.x) CSS.
+Tema `app.min.css` allaqachon DataTables 2.x ni stillaydi (dt-paging/dt-search/dt-length/dt-info),
+shuning uchun alohida DataTables CSS YUKLANMAYDI (bootstrap5 integratsiya CSS fayli mavjud emas → 404 edi).
+Bu partial extra_css blokida include qilinadi (kelajakda kerak bo'lsa shu yerga qo'shiladi).
+{% endcomment %}
