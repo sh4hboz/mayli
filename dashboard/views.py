@@ -577,6 +577,11 @@ class CategoryUpdateView(CMSBaseMixin, SuccessMessageMixin, UpdateView):
     template_name = 'management/menu/category_form.html'
     success_url = reverse_lazy('dashboard_category_list')
 
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        ctx['category_dishes'] = self.object.dishes.all().order_by('name_uz')
+        return ctx
+
 
 class CategoryDeleteView(CMSBaseMixin, SuccessMessageMixin, DeleteView):
     model = Category
