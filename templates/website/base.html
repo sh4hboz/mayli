@@ -27,8 +27,12 @@
   <meta property="og:locale" content="{{ LANGUAGE_CODE }}">
   <meta name="twitter:card" content="summary_large_image">
 
-  <!-- Favicon -->
+  <!-- Favicon — dashboard'dan yuklangan bo'lsa o'sha, aks holda statik standart -->
+  {% if site.favicon %}
+  <link rel="icon" href="{{ site.favicon.url }}">
+  {% else %}
   <link rel="icon" href="{% static 'src/img/icons/favicon.png' %}" type="image/png">
+  {% endif %}
 
   <!-- Fonts preconnect -->
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
