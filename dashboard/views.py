@@ -27,7 +27,7 @@ from .forms import (
     SiteSettingsHomeContentForm, SiteSettingsSeoForm,
     NewsForm, PromotionForm, GalleryItemForm, PartnerForm, VacancyForm, CategoryForm,
     DishForm, CustomerForm, CampaignForm, FeatureForm, StatItemForm, OrderSettingsForm,
-    LoyaltySettingsForm, SmsCampaignForm,
+    LoyaltySettingsForm, SmsCampaignForm, TagForm,
 )
 from .search import global_search, CMS_ROLES
 
@@ -722,6 +722,36 @@ class CustomerDeleteView(CMSBaseMixin, SuccessMessageMixin, DeleteView):
     model = Customer
     template_name = 'management/confirm_delete.html'
     success_url = reverse_lazy('dashboard_customer_list')
+
+
+# --- Teglar (mijoz segmentlari) ---
+class TagListView(CMSBaseMixin, ListView):
+    model = Tag
+    template_name = 'management/crm/tag_list.html'
+    context_object_name = 'tag_list'
+
+    def get_queryset(self):
+        return super().get_queryset().annotate(customer_count=Count('customers'))
+
+
+class TagCreateView(CMSBaseMixin, SuccessMessageMixin, CreateView):
+    model = Tag
+    form_class = TagForm
+    template_name = 'management/crm/tag_form.html'
+    success_url = reverse_lazy('dashboard_tag_list')
+
+
+class TagUpdateView(CMSBaseMixin, SuccessMessageMixin, UpdateView):
+    model = Tag
+    form_class = TagForm
+    template_name = 'management/crm/tag_form.html'
+    success_url = reverse_lazy('dashboard_tag_list')
+
+
+class TagDeleteView(CMSBaseMixin, SuccessMessageMixin, DeleteView):
+    model = Tag
+    template_name = 'management/confirm_delete.html'
+    success_url = reverse_lazy('dashboard_tag_list')
 
 
 # --- Kampaniyalar (Campaigns) ---

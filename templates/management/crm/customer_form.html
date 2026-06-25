@@ -1,4 +1,5 @@
 {% extends 'management/base.html' %}
+{% load static %}
 {% block title %}{% if object %}Mijozni tahrirlash{% else %}Mijoz qo'shish{% endif %} | Mayli Restobar{% endblock %}
 {% block content %}
 <div class="row">
@@ -98,17 +99,9 @@
                         </div>
                         <div class="col-md-6">
                             <label class="form-label d-block">Reklama roziligi</label>
-                            <div class="form-check form-check-inline">
+                            <div class="form-check">
                                 {{ form.sms_consent }}
-                                <label class="form-check-label" for="{{ form.sms_consent.id_for_label }}">SMS</label>
-                            </div>
-                            <div class="form-check form-check-inline">
-                                {{ form.email_consent }}
-                                <label class="form-check-label" for="{{ form.email_consent.id_for_label }}">Email</label>
-                            </div>
-                            <div class="form-check form-check-inline">
-                                {{ form.telegram_consent }}
-                                <label class="form-check-label" for="{{ form.telegram_consent.id_for_label }}">Telegram</label>
+                                <label class="form-check-label" for="{{ form.sms_consent.id_for_label }}">SMS xabarlarini qabul qilishga rozi</label>
                             </div>
                         </div>
                     </div>
@@ -138,4 +131,9 @@
         </div>
     </div>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'src/libs/imask.js' %}"></script>
+<script src="{% static 'assets/js/pages/phone-mask.js' %}?v=1.0"></script>
 {% endblock %}

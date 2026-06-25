@@ -32,77 +32,79 @@ class CampaignSendService:
         Returns:
             dict: {'sent': int, 'failed': int, 'errors': []}
         """
+        from crm.integrations.textup import normalize_phone
+
         try:
             campaign = Campaign.objects.get(pk=campaign_id)
         except Campaign.DoesNotExist:
             logger.error(f"Kampaniya topilmadi: {campaign_id}")
             return {'sent': 0, 'failed': 0, 'errors': ['Kampaniya topilmadi']}
 
-        # Qo'lda raqamlar kiritilgan bo'lsa — to'g'ridan-to'g'ri shu raqamlarga (mijoz bazasisiz).
-        if (campaign.recipients_raw or '').strip():
-            return CampaignSendService._send_to_numbers(campaign)
-
-        # Mijozlarni filtrlash
-        customers = CampaignSendService._get_target_customers(campaign)
-
-        if not customers.exists():
-            logger.warning(f"Kampaniya {campaign.id} uchun mijozlar topilmadi")
-            return {'sent': 0, 'failed': 0, 'errors': ['Mijozlar topilmadi']}
-
-        # Provider qo'lga olish
-        provider = get_provider(campaign.channel)
-        if not provider:
-            logger.error(f"Provider topilmadi: {campaign.channel}")
-            return {'sent': 0, 'failed': 0, 'errors': [f'Kanal topilmadi: {campaign.channel}']}
-
-        # Jo'natish logikasi
         sent_count = 0
         failed_count = 0
         errors = []
+        sent_phones = set()  # normalize qilingan — qo'lda raqamlar bilan takrorlanmaslik uchun
 
-        for customer in customers:
-            try:
-                # Shablon variable'larini almashtirish
-                message_text = render_template(campaign.template, customer)
+        # 1) Mijoz bazasidan: "barcha mijozlar" yoki tanlangan guruh(lar).
+        include_customers = campaign.send_to_all_customers or campaign.tags.exists()
+        if include_customers:
+            provider = get_provider(campaign.channel)
+            if not provider:
+                logger.error(f"Provider topilmadi: {campaign.channel}")
+                return {'sent': 0, 'failed': 0, 'errors': [f'Kanal topilmadi: {campaign.channel}']}
 
-                # Jo'natish
-                result = provider.send(customer, message_text, template_id=campaign.sms_template_id)
+            for customer in CampaignSendService._get_target_customers(campaign):
+                try:
+                    message_text = render_template(campaign.template, customer)
+                    result = provider.send(customer, message_text, template_id=campaign.sms_template_id)
 
-                # Log yaratish
-                with transaction.atomic():
-                    log = CampaignLog.objects.update_or_create(
-                        campaign=campaign,
-                        customer=customer,
-                        defaults={
-                            'status': CampaignLogStatus.SENT if result['success'] else CampaignLogStatus.FAILED,
-                            'message_text': message_text,
-                            'error_message': result.get('error') or '',
-                            'sent_at': timezone.now() if result['success'] else None,
-                        }
-                    )
+                    with transaction.atomic():
+                        CampaignLog.objects.update_or_create(
+                            campaign=campaign,
+                            customer=customer,
+                            defaults={
+                                'status': CampaignLogStatus.SENT if result['success'] else CampaignLogStatus.FAILED,
+                                'message_text': message_text,
+                                'error_message': result.get('error') or '',
+                                'sent_at': timezone.now() if result['success'] else None,
+                            }
+                        )
 
-                if result['success']:
-                    sent_count += 1
-                else:
+                    if result['success']:
+                        sent_count += 1
+                        norm = normalize_phone(customer.phone)
+                        if norm:
+                            sent_phones.add(norm)
+                    else:
+                        failed_count += 1
+                        errors.append(f"{customer.phone}: {result.get('error', 'Noma\'lum xato')}")
+
+                except Exception as e:
+                    error_msg = str(e)
+                    logger.error(f"Kampaniya jo'natish xatosi ({customer.phone}): {error_msg}")
                     failed_count += 1
-                    errors.append(f"{customer.phone}: {result.get('error', 'Noma\'lum xato')}")
+                    errors.append(f"{customer.phone}: {error_msg}")
 
-            except Exception as e:
-                error_msg = str(e)
-                logger.error(f"Kampaniya jo'natish xatosi ({customer.phone}): {error_msg}")
-                failed_count += 1
-                errors.append(f"{customer.phone}: {error_msg}")
+                    with transaction.atomic():
+                        CampaignLog.objects.update_or_create(
+                            campaign=campaign,
+                            customer=customer,
+                            defaults={
+                                'status': CampaignLogStatus.FAILED,
+                                'error_message': error_msg,
+                            }
+                        )
 
-                # Log yaratish (xato uchun)
-                with transaction.atomic():
-                    CampaignLog.objects.update_or_create(
-                        campaign=campaign,
-                        customer=customer,
-                        defaults={
-                            'status': CampaignLogStatus.FAILED,
-                            'error_message': error_msg,
-                        }
-                    )
+        # 2) Qo'lda kiritilgan raqamlar (mijoz bazasida yuborilganlar takrorlanmaydi).
+        if (campaign.recipients_raw or '').strip():
+            num_res = CampaignSendService._send_to_numbers(campaign, exclude=sent_phones)
+            sent_count += num_res['sent']
+            failed_count += num_res['failed']
+            errors.extend(num_res['errors'])
+
+        if not include_customers and not (campaign.recipients_raw or '').strip():
+            logger.warning(f"Kampaniya {campaign.id} uchun qabul qiluvchi tanlanmagan")
+            return {'sent': 0, 'failed': 0, 'errors': ['Qabul qiluvchilar tanlanmagan']}
 
         # Campaign statistika yangilash
         campaign.sent_count = sent_count
@@ -123,19 +125,25 @@ class CampaignSendService:
         }
 
     @staticmethod
-    def _send_to_numbers(campaign):
-        """Qo'lda kiritilgan raqamlarga SMS (TextUp) — bitta so'rovda hammasiga."""
+    def _send_to_numbers(campaign, exclude=None):
+        """Qo'lda kiritilgan raqamlarga SMS (TextUp) — bitta so'rovda hammasiga.
+
+        exclude: normalize qilingan raqamlar to'plami (mijoz bazasida allaqachon
+        yuborilganlar) — takror SMS yubormaslik uchun chiqarib tashlanadi.
+        Campaign hisoblagichlarini o'zgartirmaydi — faqat natijani qaytaradi.
+        """
         import re
         from crm.integrations.textup import TextUpClient, normalize_phone
+        exclude = exclude or set()
         parts = re.split(r'[\s,;]+', (campaign.recipients_raw or '').strip())
         phones, seen = [], set()
         for p in parts:
             n = normalize_phone(p)
-            if n and n not in seen:
+            if n and n not in seen and n not in exclude:
                 seen.add(n)
                 phones.append(n)
         if not phones:
-            return {'sent': 0, 'failed': 0, 'errors': ["Yaroqli telefon raqami yo'q"]}
+            return {'sent': 0, 'failed': 0, 'errors': []}
 
         try:
             res = TextUpClient().send_sms(
@@ -146,15 +154,11 @@ class CampaignSendService:
             res = {'success': False, 'error': str(e)}
 
         ok = bool(res.get('success'))
-        campaign.sent_count = len(phones) if ok else 0
-        campaign.failed_count = 0 if ok else len(phones)
-        campaign.status = CampaignStatus.SENT
-        campaign.save(update_fields=['sent_count', 'failed_count', 'status'])
         logger.info("SMS (qo'lda) kampaniya=%s raqamlar=%s ok=%s", campaign.pk, len(phones), ok)
         return {
-            'sent': campaign.sent_count, 'failed': campaign.failed_count,
+            'sent': len(phones) if ok else 0,
+            'failed': 0 if ok else len(phones),
             'errors': [] if ok else [res.get('error', 'xato')],
-            'campaign_id': campaign.id,
         }
 
     @staticmethod
@@ -178,8 +182,8 @@ class CampaignSendService:
                 telegram_user_id__isnull=False
             ).exclude(telegram_user_id='')
 
-        # Teglar bo'yicha filtr
-        if campaign.tags.exists():
+        # Guruh (teg) bo'yicha filtr — "barcha mijozlar" belgilanmagan bo'lsa.
+        if not campaign.send_to_all_customers and campaign.tags.exists():
             customers = customers.filter(tags__in=campaign.tags.all()).distinct()
 
         return customers.select_related()

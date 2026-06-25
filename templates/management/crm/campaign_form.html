@@ -63,10 +63,44 @@
                 </div>
             </div>
 
-            <!-- 3. Raqamlar -->
+            <!-- 3. Kimga yuborilsin -->
             <div class="card mb-3">
                 <div class="card-body">
-                    <label for="{{ form.recipients_raw.id_for_label }}" class="form-label fw-semibold">3. Telefon raqamlar <small class="text-muted fw-normal">(har qatorda bittadan yoki vergul bilan)</small></label>
+                    <label class="form-label fw-semibold">3. Kimga yuborilsin? <small class="text-muted fw-normal">(bir nechtasini birga tanlash mumkin)</small></label>
+
+                    <!-- 3a. Barcha mijozlar -->
+                    <div class="form-check mb-3">
+                        {{ form.send_to_all_customers }}
+                        <label class="form-check-label fw-semibold" for="{{ form.send_to_all_customers.id_for_label }}">
+                            Barcha mijozlar
+                        </label>
+                        <div class="text-muted fs-xs">Bazadagi barcha faol, SMS rozilik bergan mijozlar.</div>
+                    </div>
+
+                    <!-- 3b. Guruhlar (teglar) -->
+                    <div id="sms-tags-wrap">
+                        <label class="form-label text-muted fs-xs mb-1">Guruh(lar)ni tanlash:</label>
+                        {% if form.tags.field.queryset %}
+                        <div class="d-flex flex-wrap gap-3 mb-3">
+                            {% for cb in form.tags %}
+                            <div class="form-check">
+                                {{ cb.tag }}
+                                <label class="form-check-label" for="{{ cb.id_for_label }}">{{ cb.choice_label }}</label>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        {% else %}
+                        <div class="text-muted fs-xs mb-3">Hali guruh (teg) yaratilmagan.</div>
+                        {% endif %}
+                    </div>
+
+                    <!-- 3c. Qo'lda raqamlar -->
+                    <label class="form-label text-muted fs-xs mb-1" for="sms-num-input">Qo'lda raqam qo'shish (bittadan):</label>
+                    <div class="input-group mb-2">
+                        <input type="tel" class="form-control" id="sms-num-input" placeholder="+998 90 111 22 33">
+                        <button type="button" class="btn btn-outline-primary" id="sms-num-add"><i class="ti ti-plus me-1"></i>Qo'shish</button>
+                    </div>
+                    <div class="d-flex flex-wrap gap-2 mb-2" id="sms-num-chips"></div>
                     {{ form.recipients_raw }}
                     {% if form.recipients_raw.errors %}<div class="invalid-feedback d-block">{% for e in form.recipients_raw.errors %}{{ e }}{% endfor %}</div>{% endif %}
                 </div>
@@ -102,5 +136,7 @@
 {% endblock %}
 
 {% block extra_js %}
-<script src="{% static 'assets/js/pages/sms-campaign.js' %}?v=1.0"></script>
+<script src="{% static 'src/libs/imask.js' %}"></script>
+<script src="{% static 'assets/js/pages/phone-mask.js' %}?v=1.1"></script>
+<script src="{% static 'assets/js/pages/sms-campaign.js' %}?v=1.2"></script>
 {% endblock %}

@@ -72,6 +72,12 @@ urlpatterns = [
     # Sodiqlik dasturi sozlamalari
     path('loyalty/settings/', views.LoyaltySettingsView.as_view(), name='dashboard_loyalty_settings'),
 
+    # Teglar (mijoz segmentlari)
+    path('tags/', views.TagListView.as_view(), name='dashboard_tag_list'),
+    path('tags/add/', views.TagCreateView.as_view(), name='dashboard_tag_create'),
+    path('tags/<int:pk>/edit/', views.TagUpdateView.as_view(), name='dashboard_tag_edit'),
+    path('tags/<int:pk>/delete/', views.TagDeleteView.as_view(), name='dashboard_tag_delete'),
+
     # Kampaniyalar (CRM Marketing)
     path('campaigns/', views.CampaignListView.as_view(), name='dashboard_campaign_list'),
     path('campaigns/add/', views.CampaignCreateView.as_view(), name='dashboard_campaign_create'),

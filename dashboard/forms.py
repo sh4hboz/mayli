@@ -1,7 +1,7 @@
 from django import forms
 from website.models import SiteSettings, News, Promotion, GalleryItem, Partner, Vacancy, Feature, StatItem
 from menu.models import Category, Dish
-from crm.models import Customer, Campaign
+from crm.models import Customer, Campaign, Tag
 from orders.models import OrderSettings
 from crm.models import LoyaltySettings
 from .image_utils import convert_image_to_webp
@@ -303,13 +303,23 @@ class CustomerForm(BootstrapModelForm):
             'first_name', 'last_name', 'phone', 'birth_date', 'gender',
             'email', 'telegram_username',
             'source', 'tags',
-            'sms_consent', 'email_consent', 'telegram_consent',
+            'sms_consent',
             'notes', 'is_active',
         ]
         widgets = {
+            'phone': forms.TextInput(attrs={'type': 'tel', 'placeholder': '+998 (90) 123-45-67'}),
             'birth_date': forms.DateInput(attrs={'type': 'date'}, format='%Y-%m-%d'),
             'notes': forms.Textarea(attrs={'rows': 3}),
         }
+
+    def clean_phone(self):
+        # Mask belgilarini tozalab E.164 (+998XXXXXXXXX) ga keltiramiz (saytdagi kabi).
+        from crm.integrations.textup import normalize_phone
+        raw = (self.cleaned_data.get('phone') or '').strip()
+        norm = normalize_phone(raw)
+        if not norm:
+            raise forms.ValidationError("Telefon raqami noto'g'ri. Masalan: +998 90 123-45-67")
+        return norm
 
 
 class CampaignForm(BootstrapModelForm):
@@ -330,8 +340,21 @@ class CampaignForm(BootstrapModelForm):
         }
 
 
+class TagForm(BootstrapModelForm):
+    """Mijoz segmenti (teg) — nom + rang."""
+    COLOR_CHOICES = [
+        ('primary', "Ko'k"), ('success', "Yashil"), ('danger', "Qizil"),
+        ('warning', "Sariq"), ('info', "Moviy"), ('secondary', "Kulrang"), ('dark', "Qora"),
+    ]
+    color = forms.ChoiceField(label="Rang", choices=COLOR_CHOICES, initial='secondary')
+
+    class Meta:
+        model = Tag
+        fields = ['name', 'color']
+
+
 class SmsCampaignForm(BootstrapModelForm):
-    """Soddalashtirilgan SMS yuborgich — nom + shablon (tugma) + qo'lda raqamlar + vaqt."""
+    """SMS yuborgich — nom + shablon + qabul qiluvchilar (barcha / guruh / qo'lda) + vaqt."""
     WHEN_NOW = 'now'
     WHEN_SCHEDULE = 'schedule'
     when = forms.ChoiceField(
@@ -342,30 +365,54 @@ class SmsCampaignForm(BootstrapModelForm):
 
     class Meta:
         model = Campaign
-        fields = ['name', 'sms_template_id', 'template', 'recipients_raw', 'scheduled_at']
+        fields = [
+            'name', 'sms_template_id', 'template',
+            'send_to_all_customers', 'tags', 'recipients_raw', 'scheduled_at',
+        ]
         widgets = {
             'sms_template_id': forms.HiddenInput(),
             'template': forms.Textarea(attrs={
                 'rows': 3, 'readonly': True,
                 'placeholder': "Shablon tanlang — matni shu yerda ko'rinadi",
             }),
+            'tags': forms.CheckboxSelectMultiple(),
             'recipients_raw': forms.Textarea(attrs={
-                'rows': 4, 'placeholder': "+998901112233\n+998935556677",
+                'rows': 3, 'placeholder': "+998901112233\n+998935556677",
             }),
             'scheduled_at': forms.DateTimeInput(attrs={'type': 'datetime-local'}),
         }
         labels = {
             'name': "Nomi (ichki belgi)",
             'template': "Shablon matni",
-            'recipients_raw': "Telefon raqamlar",
+            'send_to_all_customers': "Barcha mijozlarga",
+            'recipients_raw': "Qo'lda raqamlar",
         }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Guruhlar (teglar) ro'yxati: har biriga SMS yetib boradigan mijozlar soni bilan.
+        from django.db.models import Count, Q
+        from crm.models import Tag
+        self.fields['tags'].required = False
+        self.fields['tags'].queryset = Tag.objects.annotate(
+            sms_count=Count('customers', filter=Q(
+                customers__is_active=True, customers__sms_consent=True,
+            )),
+        ).order_by('name')
+        self.fields['tags'].label_from_instance = (
+            lambda t: f"{t.name} ({getattr(t, 'sms_count', 0)})"
+        )
 
     def clean(self):
         cleaned = super().clean()
         if not (cleaned.get('sms_template_id') or '').strip():
             self.add_error(None, "Shablon tanlang.")
-        if not (cleaned.get('recipients_raw') or '').strip():
-            self.add_error('recipients_raw', "Kamida bitta telefon raqam kiriting.")
+        has_all = bool(cleaned.get('send_to_all_customers'))
+        has_tags = bool(cleaned.get('tags'))
+        has_manual = bool((cleaned.get('recipients_raw') or '').strip())
+        if not (has_all or has_tags or has_manual):
+            self.add_error(None, "Kamida bitta qabul qiluvchi tanlang: "
+                                 "barcha mijozlar, guruh yoki qo'lda raqam.")
         if cleaned.get('when') == self.WHEN_SCHEDULE and not cleaned.get('scheduled_at'):
             self.add_error('scheduled_at', "Vaqtni tanlang yoki 'Hozir yuborish'ni belgilang.")
         return cleaned

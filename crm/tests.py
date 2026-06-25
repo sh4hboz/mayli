@@ -139,6 +139,7 @@ class CampaignServiceTests(TestCase):
         )
         self.campaign = Campaign.objects.create(
             name='Test SMS', channel='sms', template='Salom {{first_name}}',
+            send_to_all_customers=True,
         )
 
     def test_target_customers_filtered(self):
@@ -177,9 +178,27 @@ class CampaignServiceTests(TestCase):
         Customer.objects.create(
             first_name='NoTag', phone='+998901110009', sms_consent=True, is_active=True,
         )
+        # Guruh tanlanganda "barcha mijozlar" o'chiriladi.
+        self.campaign.send_to_all_customers = False
+        self.campaign.save(update_fields=['send_to_all_customers'])
         self.campaign.tags.add(self.tag_vip)
         result = CampaignSendService.send_campaign(self.campaign.pk)
         self.assertEqual(result['sent'], 1)  # faqat VIP tegli c1
+
+    @patch('crm.services.CampaignSendService._send_to_numbers')
+    @patch('crm.services.get_provider')
+    def test_manual_numbers_combined_and_deduped(self, mock_get_provider, mock_send_numbers):
+        """Barcha mijozlar + qo'lda raqamlar birga; mijoz raqami takror yuborilmaydi."""
+        mock_get_provider.return_value.send.return_value = {'success': True, 'error': None}
+        mock_send_numbers.return_value = {'sent': 1, 'failed': 0, 'errors': []}
+        # c1 raqami (allaqachon mijozga yuboriladi) + yangi raqam
+        self.campaign.recipients_raw = '+998901110001\n+998905550000'
+        self.campaign.save(update_fields=['recipients_raw'])
+        result = CampaignSendService.send_campaign(self.campaign.pk)
+        self.assertEqual(result['sent'], 2)  # 1 mijoz + 1 qo'lda raqam
+        # _send_to_numbers'ga c1 raqami exclude qilib uzatilgan
+        _, kwargs = mock_send_numbers.call_args
+        self.assertIn('+998901110001', kwargs['exclude'])
 
     @patch('crm.services.get_provider')
     def test_test_send_single(self, mock_get_provider):

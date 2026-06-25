@@ -158,14 +158,18 @@ class Campaign(TimeStampedModel):
         help_text=_('Faqat SMS uchun: TextUp kabinetida tasdiqlangan shablonning templateId\'si. '
                     'Bo\'sh bo\'lsa, matn TextUp moderatsiyasidan o\'tmasa rad etilishi mumkin.'),
     )
+    send_to_all_customers = models.BooleanField(
+        _('Barcha mijozlarga'), default=False,
+        help_text=_('Belgilansa — barcha faol, rozilik bergan mijozlarga yuboriladi (guruh tanlovi e\'tiborsiz qoladi).'),
+    )
     tags = models.ManyToManyField(
-        Tag, blank=True, related_name='campaigns', verbose_name=_('Teglar (filtr)'),
-        help_text=_('Bo\'sh bo\'lsa — barcha mijozlarga'),
+        Tag, blank=True, related_name='campaigns', verbose_name=_('Guruhlar (teglar)'),
+        help_text=_('Tanlangan guruh(lar)dagi mijozlarga yuboriladi.'),
     )
     recipients_raw = models.TextField(
         _('Qo\'lda raqamlar'), blank=True,
-        help_text=_('Har qatorda yoki vergul bilan telefon raqamlar. To\'ldirilsa — SMS faqat shu '
-                    'raqamlarga yuboriladi (teg/mijoz bazasi ishlatilmaydi).'),
+        help_text=_('Har qatorda yoki vergul bilan telefon raqamlar. Guruh/barcha mijozlar bilan '
+                    'birga ishlatilsa — bu raqamlar ham qo\'shiladi (takrorlanadiganlari chiqarib tashlanadi).'),
     )
     status = models.CharField(
         _('Holat'), max_length=20, choices=CampaignStatus.choices,

@@ -339,6 +339,7 @@ class CampaignSendViewTests(TestCase):
         )
         self.campaign = Campaign.objects.create(
             name='SMS test', channel='sms', template='Salom {{first_name}}',
+            send_to_all_customers=True,
         )
 
     @patch('crm.services.get_provider')

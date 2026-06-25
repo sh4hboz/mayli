@@ -1,0 +1,55 @@
+{% extends 'management/base.html' %}
+{% block title %}Teglar | Mayli Restobar{% endblock %}
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="page-title-box d-flex align-items-center justify-content-between">
+            <h4 class="page-title">Teglar (mijoz segmentlari)</h4>
+            <ol class="breadcrumb m-0">
+                <li class="breadcrumb-item"><a href="{% url 'dashboard_home' %}">Dashboard</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'dashboard_customer_list' %}">Mijozlar</a></li>
+                <li class="breadcrumb-item active">Teglar</li>
+            </ol>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header d-flex align-items-center justify-content-between">
+                <h5 class="card-title mb-0">Barcha teglar ({{ tag_list.count }})</h5>
+                <a href="{% url 'dashboard_tag_create' %}" class="btn btn-primary btn-sm"><i class="ti ti-plus me-1"></i>Teg qo'shish</a>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
+                            <tr><th>#</th><th>Teg</th><th>Mijozlar soni</th><th>Amallar</th></tr>
+                        </thead>
+                        <tbody>
+                            {% for t in tag_list %}
+                            <tr>
+                                <td>{{ forloop.counter }}</td>
+                                <td><span class="badge bg-{{ t.color|default:'secondary' }}">{{ t.name }}</span></td>
+                                <td>{{ t.customer_count }}</td>
+                                <td>
+                                    <div class="d-flex gap-1">
+                                        <a href="{% url 'dashboard_tag_edit' t.pk %}" class="btn btn-sm btn-warning"><i class="ti ti-edit"></i></a>
+                                        <form method="post" action="{% url 'dashboard_tag_delete' t.pk %}" class="d-inline">
+                                            {% csrf_token %}
+                                            <button type="submit" class="btn btn-sm btn-danger" data-confirm="Tegni o'chirasizmi? (mijozlardan ham olib tashlanadi)"><i class="ti ti-trash"></i></button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr><td colspan="4" class="text-center text-muted py-4">Hali teg yo'q. "Teg qo'shish" bilan yarating.</td></tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

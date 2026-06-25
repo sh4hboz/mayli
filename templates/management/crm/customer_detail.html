@@ -44,10 +44,8 @@
                         <table class="table table-borderless mb-0">
                             <tr><th class="text-muted th-40">Email</th><td>{{ customer.email|default:"—" }}</td></tr>
                             <tr><th class="text-muted">Telegram</th><td>{{ customer.telegram_username|default:"—" }}</td></tr>
-                            <tr><th class="text-muted">Reklama roziligi</th><td>
-                                <span class="badge bg-{% if customer.sms_consent %}success{% else %}secondary{% endif %}-subtle text-{% if customer.sms_consent %}success{% else %}secondary{% endif %}">SMS</span>
-                                <span class="badge bg-{% if customer.email_consent %}success{% else %}secondary{% endif %}-subtle text-{% if customer.email_consent %}success{% else %}secondary{% endif %}">Email</span>
-                                <span class="badge bg-{% if customer.telegram_consent %}success{% else %}secondary{% endif %}-subtle text-{% if customer.telegram_consent %}success{% else %}secondary{% endif %}">Telegram</span>
+                            <tr><th class="text-muted">Reklama roziligi (SMS)</th><td>
+                                {% if customer.sms_consent %}<span class="badge bg-success-subtle text-success">Rozi</span>{% else %}<span class="badge bg-secondary-subtle text-secondary">Yo'q</span>{% endif %}
                             </td></tr>
                             <tr><th class="text-muted">Qo'shilgan</th><td>{{ customer.created_at|date:"d.m.Y H:i" }}{% if customer.created_by %} · {{ customer.created_by.full_name|default:customer.created_by.username }}{% endif %}</td></tr>
                             <tr><th class="text-muted">Akkaunt</th><td>{% if customer.user %}{{ customer.user.username }}{% else %}—{% endif %}</td></tr>
