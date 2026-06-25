@@ -43,6 +43,8 @@ def site_settings(request):
 
     # Add to site object
     site.social_links = social_links
+    # JSON-LD sameAs uchun faol ijtimoiy tarmoq URL'lari (qidiruv tizimi entity grafi).
+    site.seo_same_as = [v['url'] for v in social_links.values()]
 
     # Ommaviy sayt URL'i (dashboard manage subdomenidan "Saytni ko'rish" uchun).
     # PUBLIC_SITE_URL berilsa — o'shani; aks holda DASHBOARD_HOST'dan apex domenni

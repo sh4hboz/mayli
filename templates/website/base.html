@@ -70,7 +70,12 @@
       "longitude": {{ site.longitude|stringformat:"f" }}
     },
     "openingHours": "Mo-Su 00:00-23:59",
-    "servesCuisine": "Uzbek, European",
+    "servesCuisine": ["Uzbek", "European"],
+    "priceRange": "$$",
+    "acceptsReservations": true,
+    "hasMenu": "{{ request.scheme }}://{{ request.get_host }}/menu/",
+    "image": "{{ request.scheme }}://{{ request.get_host }}{% if site.logo %}{{ site.logo.url }}{% else %}{% static 'src/img/icons/logo-black.png' %}{% endif %}",{% if site.seo_same_as %}
+    "sameAs": [{% for u in site.seo_same_as %}"{{ u|escapejs }}"{% if not forloop.last %}, {% endif %}{% endfor %}],{% endif %}
     "inLanguage": ["uz", "ru", "en"]
   }
   {% endautoescape %}

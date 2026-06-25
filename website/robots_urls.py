@@ -13,6 +13,9 @@ def robots_txt(request):
         'Disallow: /admin/',
         'Disallow: /dashboard/',
         'Disallow: /api/',
+        'Disallow: /cart/',
+        'Disallow: /orders/',
+        'Disallow: /i18n/',
         '',
         f'Sitemap: {scheme}://{host}/sitemap.xml',
     ]
