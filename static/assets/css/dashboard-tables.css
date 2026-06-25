@@ -1,0 +1,44 @@
+/* ==========================================================================
+   dashboard-tables.css — DataTables (dashboard jadvallari) stil tuzatishlari
+   _datatable_css.html orqali faqat jadval-ro'yxat sahifalarida yuklanadi.
+   ========================================================================== */
+
+/* Jadval bloki tepasida bo'shliq (card-header'dan keyin) */
+.card-body .table-responsive { padding-top: 30px; }
+
+/* "N ta ko'rsatish" length select — chiroyli ko'rinish */
+.dt-length select {
+  display: inline-block;
+  width: auto;
+  padding: .3rem 1.6rem .3rem .6rem;
+  margin: 0 .4rem;
+  border: 1px solid var(--bs-border-color, #dee2e6);
+  border-radius: .375rem;
+  background-color: var(--bs-body-bg, #fff);
+  color: inherit;
+  cursor: pointer;
+}
+
+/* Ustun-filtr qatori (thead ichidagi inputlar) bir oz bo'shliq */
+.dt-filter-row th { padding-top: .35rem; padding-bottom: .55rem; }
+
+/* Pagination tugmalari — Bootstrap'simon */
+.dt-paging { display: flex; justify-content: flex-end; flex-wrap: wrap; gap: 4px; margin-top: .5rem; }
+.dt-paging .dt-paging-button {
+  min-width: 36px;
+  padding: .35rem .65rem;
+  border: 1px solid var(--bs-border-color, #dee2e6);
+  border-radius: .375rem;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+}
+.dt-paging .dt-paging-button:hover:not(.disabled):not(.current) {
+  background: var(--bs-secondary-bg, #e9ecef);
+}
+.dt-paging .dt-paging-button.current {
+  background: var(--bs-primary, #0d6efd);
+  border-color: var(--bs-primary, #0d6efd);
+  color: #fff;
+}
+.dt-paging .dt-paging-button.disabled { opacity: .45; cursor: default; }

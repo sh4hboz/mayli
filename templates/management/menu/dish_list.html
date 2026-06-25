@@ -46,7 +46,7 @@
                                 </td>
                                 <td><a href="{% url 'dashboard_dish_edit' item.pk %}" class="text-reset fw-semibold">{{ item.name_uz|truncatechars:30 }}</a></td>
                                 <td>{% for c in item.categories.all %}<span class="badge bg-light text-dark">{{ c.name_uz }}</span> {% empty %}—{% endfor %}</td>
-                                <td>{{ item.price|floatformat:0 }} so'm</td>
+                                <td data-order="{{ item.price }}">{{ item.price|floatformat:0 }} so'm</td>
                                 <td>
                                     <button class="btn btn-sm {% if item.is_available %}btn-success{% else %}btn-secondary{% endif %}"
                                             data-toggle-url="{% url 'dashboard_toggle_active' 'menu' 'dish' item.pk %}" data-field="is_available">

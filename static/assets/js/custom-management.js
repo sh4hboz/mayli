@@ -164,6 +164,21 @@
     }
   });
 
+  // --- Alert (xabar) bildirishnomalarini 5 soniyada avtomatik yopish ---
+  (function () {
+    var alerts = document.querySelectorAll(".alert-dismissible");
+    Array.prototype.forEach.call(alerts, function (el) {
+      setTimeout(function () {
+        if (window.bootstrap && bootstrap.Alert) {
+          bootstrap.Alert.getOrCreateInstance(el).close();
+        } else {
+          el.classList.remove("show");
+          setTimeout(function () { if (el.parentNode) el.parentNode.removeChild(el); }, 200);
+        }
+      }, 5000);
+    });
+  })();
+
   // --- Sayt chat (dashboard) jonli yangilanish (oddiy poll) ---
   (function () {
     var thread = document.getElementById("chat-messages");

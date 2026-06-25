@@ -1,6 +1,7 @@
+{% load static %}
 {% comment %}
-Universal jadval (DataTables 2.x) CSS.
-Tema `app.min.css` allaqachon DataTables 2.x ni stillaydi (dt-paging/dt-search/dt-length/dt-info),
-shuning uchun alohida DataTables CSS YUKLANMAYDI (bootstrap5 integratsiya CSS fayli mavjud emas → 404 edi).
-Bu partial extra_css blokida include qilinadi (kelajakda kerak bo'lsa shu yerga qo'shiladi).
+Universal jadval (DataTables 2.x) CSS — extra_css blokida include qilinadi.
+Tema `app.min.css` DataTables 2.x ni stillaydi (dt-paging/dt-search/...); quyidagi fayl
+faqat bo'shliq/length-select/pagination ko'rinishini chiroyliroq qiladi.
 {% endcomment %}
+<link href="{% static 'assets/css/dashboard-tables.css' %}?v=1.0" rel="stylesheet" type="text/css" />

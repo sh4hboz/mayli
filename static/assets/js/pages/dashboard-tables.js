@@ -71,12 +71,21 @@
     var pageLen = parseInt(table.getAttribute("data-dt-page-length"), 10);
     if (isNaN(pageLen)) pageLen = 25;
 
+    // Ustun-filtri bo'lsa global qidiruvni olib tashlaymiz (ortiqcha);
+    // bo'lmasa global qidiruv qoladi (boshqa ro'yxatlarda kerak).
+    var hasColFilter = !!table.querySelector("thead th[data-dt-filter]");
+
     var opts = {
       language: LANG,
       pageLength: pageLen,
       lengthMenu: [10, 25, 50, 100],
       columnDefs: buildColumnDefs(table),
-      // Layout — DataTables 2.x standart (tema app.min.css dt-* ni stillaydi).
+      layout: {
+        topStart: "pageLength",
+        topEnd: hasColFilter ? null : "search",
+        bottomStart: "info",
+        bottomEnd: "paging",
+      },
     };
 
     var order = parseOrder(table);
