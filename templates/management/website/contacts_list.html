@@ -19,9 +19,9 @@
             <div class="card-header"><h5 class="card-title mb-0">Barcha murojaatlar ({{ contacts_list.count }})</h5></div>
             <div class="card-body p-0">
                 <div class="table-responsive">
-                    <table class="table table-hover mb-0">
+                    <table class="table table-hover mb-0 js-datatable" data-dt-order="5:desc">
                         <thead class="table-light">
-                            <tr><th>#</th><th>Ism</th><th>Telefon</th><th>Xabar</th><th>Holat</th><th>Sana</th><th>Amallar</th></tr>
+                            <tr><th data-orderable="false" data-searchable="false">#</th><th>Ism</th><th>Telefon</th><th>Xabar</th><th>Holat</th><th>Sana</th><th data-orderable="false" data-searchable="false">Amallar</th></tr>
                         </thead>
                         <tbody>
                             {% for item in contacts_list %}
@@ -42,7 +42,7 @@
                                     <span class="badge bg-warning text-dark">Yangi</span>
                                     {% endif %}
                                 </td>
-                                <td>{{ item.created_at|date:"d.m.Y H:i" }}</td>
+                                <td data-order="{{ item.created_at|date:'YmdHis' }}">{{ item.created_at|date:"d.m.Y H:i" }}</td>
                                 <td>
                                     <div class="d-flex gap-1">
                                         <a href="{% url 'dashboard_contact_detail' item.pk %}" class="btn btn-sm btn-info"><i class="ti ti-eye"></i></a>
@@ -64,3 +64,6 @@
     </div>
 </div>
 {% endblock %}
+
+{% block extra_css %}{% include 'management/partials/_datatable_css.html' %}{% endblock %}
+{% block extra_js %}{% include 'management/partials/_datatable_js.html' %}{% endblock %}

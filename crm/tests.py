@@ -242,3 +242,63 @@ class BirthdayServiceTests(TestCase):
         self.assertIsNone(self.bday.birthday_sms_sent_year)
         # Hali pending — keyin qayta urinish mumkin
         self.assertEqual(list(BirthdayService.todays_pending()), [self.bday])
+
+
+class LoyaltyServiceTest(TestCase):
+    def setUp(self):
+        from crm.models import LoyaltySettings
+        self.settings = LoyaltySettings.get()
+        self.settings.is_enabled = True
+        self.settings.earn_percent = 5
+        self.settings.silver_threshold = 50000
+        self.settings.gold_threshold = 200000
+        self.settings.save()
+        self.customer = Customer.objects.create(first_name="Ball", phone="+998905550011")
+
+    def _order(self, total='100000'):
+        from orders.models import Order, OrderStatus
+        from decimal import Decimal
+        return Order.objects.create(
+            customer=self.customer, customer_name="Ball", phone="+998905550011",
+            total_amount=Decimal(total), status=OrderStatus.COMPLETED,
+        )
+
+    def test_award_for_order_earns_and_is_idempotent(self):
+        from crm.services import LoyaltyService
+        from crm.models import LoyaltyTransaction
+        order = self._order('100000')
+        txn = LoyaltyService.award_for_order(order)
+        self.assertIsNotNone(txn)
+        self.assertEqual(txn.points, 5000)  # 5% of 100000
+        self.customer.refresh_from_db()
+        self.assertEqual(self.customer.loyalty_points, 5000)
+        self.assertEqual(self.customer.lifetime_points, 5000)
+        # Idempotent — qayta chaqirilsa ball bermaydi
+        self.assertIsNone(LoyaltyService.award_for_order(order))
+        self.assertEqual(LoyaltyTransaction.objects.filter(order=order).count(), 1)
+
+    def test_disabled_program_no_award(self):
+        from crm.services import LoyaltyService
+        self.settings.is_enabled = False
+        self.settings.save()
+        order = self._order('100000')
+        self.assertIsNone(LoyaltyService.award_for_order(order))
+        self.customer.refresh_from_db()
+        self.assertEqual(self.customer.loyalty_points, 0)
+
+    def test_tier_thresholds(self):
+        self.assertEqual(self.settings.tier_for(0)[0], 'bronze')
+        self.assertEqual(self.settings.tier_for(50000)[0], 'silver')
+        self.assertEqual(self.settings.tier_for(250000)[0], 'gold')
+
+    def test_adjust_positive_and_cannot_go_negative(self):
+        from crm.services import LoyaltyService
+        r1 = LoyaltyService.adjust(self.customer.pk, 100, note="bonus")
+        self.assertTrue(r1['success'])
+        self.assertEqual(r1['balance'], 100)
+        # balansdan ko'p ayirib bo'lmaydi
+        r2 = LoyaltyService.adjust(self.customer.pk, -500)
+        self.assertFalse(r2['success'])
+        # qo'lda tuzatish umrlik ballga tegmaydi
+        self.customer.refresh_from_db()
+        self.assertEqual(self.customer.lifetime_points, 0)

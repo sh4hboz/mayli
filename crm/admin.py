@@ -1,6 +1,9 @@
 from django.contrib import admin
 
-from .models import Campaign, CampaignLog, Customer, Tag
+from .models import (
+    Campaign, CampaignLog, Customer, Tag,
+    LoyaltySettings, LoyaltyTransaction,
+)
 
 
 @admin.register(Tag)
@@ -56,4 +59,18 @@ class CampaignLogAdmin(admin.ModelAdmin):
     list_filter = ('campaign', 'status', 'created_at')
     search_fields = ('campaign__name', 'customer__first_name', 'customer__last_name', 'customer__phone')
     readonly_fields = ('campaign', 'customer', 'status', 'message_text', 'error_message', 'sent_at', 'created_at', 'updated_at')
+    date_hierarchy = 'created_at'
+
+
+@admin.register(LoyaltySettings)
+class LoyaltySettingsAdmin(admin.ModelAdmin):
+    list_display = ('is_enabled', 'earn_percent', 'som_per_point', 'silver_threshold', 'gold_threshold')
+
+
+@admin.register(LoyaltyTransaction)
+class LoyaltyTransactionAdmin(admin.ModelAdmin):
+    list_display = ('customer', 'kind', 'points', 'balance_after', 'order', 'created_at')
+    list_filter = ('kind', 'created_at')
+    search_fields = ('customer__first_name', 'customer__last_name', 'customer__phone', 'note')
+    readonly_fields = ('created_at', 'updated_at')
     date_hierarchy = 'created_at'

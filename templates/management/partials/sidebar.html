@@ -58,100 +58,20 @@
                     </a>
                 </li>
 
-                <!-- Website Management -->
-                <li class="side-nav-title mt-2">Sayt Boshqaruvi</li>
-
-                <!-- Sayt Sozlamalari -->
+                <!-- Buyurtma & Menyu (kunlik ish) -->
+                <li class="side-nav-title mt-2">Buyurtma & Menyu</li>
                 <li class="side-nav-item">
-                    <a href="{% url 'dashboard_settings_website' %}" class="side-nav-link">
-                        <span class="menu-icon"><i class="ti ti-settings"></i></span>
-                        <span class="menu-text">Sayt Sozlamalari</span>
+                    <a href="{% url 'dashboard_order_list' %}" class="side-nav-link">
+                        <span class="menu-icon"><i class="ti ti-shopping-cart"></i></span>
+                        <span class="menu-text">Buyurtmalar</span>
                     </a>
                 </li>
-
-                <!-- Yangiliklar -->
                 <li class="side-nav-item">
-                    <a href="{% url 'dashboard_news_list' %}" class="side-nav-link">
-                        <span class="menu-icon"><i class="ti ti-news"></i></span>
-                        <span class="menu-text">Yangiliklar</span>
+                    <a href="{% url 'dashboard_dish_list' %}" class="side-nav-link">
+                        <span class="menu-icon"><i class="ti ti-chart-donut"></i></span>
+                        <span class="menu-text">Taomlar</span>
                     </a>
                 </li>
-
-                <!-- Statistikalar -->
-                <li class="side-nav-item">
-                    <a href="{% url 'dashboard_statitem_list' %}" class="side-nav-link">
-                        <span class="menu-icon"><i class="ti ti-chart-bar"></i></span>
-                        <span class="menu-text">Statistikalar</span>
-                    </a>
-                </li>
-
-                <!-- Xususiyatlar (Nega biz?) -->
-                <li class="side-nav-item">
-                    <a href="{% url 'dashboard_feature_list' %}" class="side-nav-link">
-                        <span class="menu-icon"><i class="ti ti-star"></i></span>
-                        <span class="menu-text">Xususiyatlar</span>
-                    </a>
-                </li>
-
-                <!-- Aksiyalar -->
-                <li class="side-nav-item">
-                    <a href="{% url 'dashboard_promotion_list' %}" class="side-nav-link">
-                        <span class="menu-icon"><i class="ti ti-discount"></i></span>
-                        <span class="menu-text">Aksiyalar</span>
-                    </a>
-                </li>
-
-                <!-- Galereya -->
-                <li class="side-nav-item">
-                    <a href="{% url 'dashboard_gallery_list' %}" class="side-nav-link">
-                        <span class="menu-icon"><i class="ti ti-photo"></i></span>
-                        <span class="menu-text">Galereya</span>
-                    </a>
-                </li>
-
-                <!-- Hamkorlar -->
-                <li class="side-nav-item">
-                    <a href="{% url 'dashboard_partner_list' %}" class="side-nav-link">
-                        <span class="menu-icon"><i class="ti ti-building-store"></i></span>
-                        <span class="menu-text">Hamkorlar</span>
-                    </a>
-                </li>
-
-                <!-- Vakansiyalar -->
-                <li class="side-nav-item">
-                    <a href="{% url 'dashboard_vacancy_list' %}" class="side-nav-link">
-                        <span class="menu-icon"><i class="ti ti-briefcase"></i></span>
-                        <span class="menu-text">Vakansiyalar</span>
-                    </a>
-                </li>
-
-                <!-- Arizalar -->
-                <li class="side-nav-item">
-                    <a href="{% url 'dashboard_application_list' %}" class="side-nav-link">
-                        <span class="menu-icon"><i class="ti ti-mail"></i></span>
-                        <span class="menu-text">Arizalar</span>
-                    </a>
-                </li>
-
-                <!-- Aloqa Xabarlari -->
-                <li class="side-nav-item">
-                    <a href="{% url 'dashboard_contact_list' %}" class="side-nav-link">
-                        <span class="menu-icon"><i class="ti ti-message-circle"></i></span>
-                        <span class="menu-text">Aloqa Xabarlari</span>
-                    </a>
-                </li>
-
-                <!-- Sayt Chat -->
-                <li class="side-nav-item">
-                    <a href="{% url 'dashboard_chat_list' %}" class="side-nav-link">
-                        <span class="menu-icon"><i class="ti ti-brand-hipchat"></i></span>
-                        <span class="menu-text">Sayt Chat</span>
-                    </a>
-                </li>
-
-                <!-- Menyu Boshqaruvi -->
-                <li class="side-nav-title mt-2">Menyu Boshqaruvi</li>
-
                 <li class="side-nav-item">
                     <a href="{% url 'dashboard_category_list' %}" class="side-nav-link">
                         <span class="menu-icon"><i class="ti ti-tag"></i></span>
@@ -159,22 +79,8 @@
                     </a>
                 </li>
 
-                <li class="side-nav-item">
-                    <a href="{% url 'dashboard_dish_list' %}" class="side-nav-link">
-                        <span class="menu-icon"><i class="ti ti-chart-donut"></i></span>
-                        <span class="menu-text">Taomlar</span>
-                    </a>
-                </li>
-
-                <li class="side-nav-item">
-                    <a href="{% url 'dashboard_order_list' %}" class="side-nav-link">
-                        <span class="menu-icon"><i class="ti ti-shopping-cart"></i></span>
-                        <span class="menu-text">Buyurtmalar</span>
-                    </a>
-                </li>
-
-                <!-- CRM -->
-                <li class="side-nav-title mt-2">CRM</li>
+                <!-- CRM / Mijozlar (mijoz bilan ishlash) -->
+                <li class="side-nav-title mt-2">CRM / Mijozlar</li>
                 <li class="side-nav-item">
                     <a href="{% url 'dashboard_customer_list' %}" class="side-nav-link">
                         <span class="menu-icon"><i class="ti ti-users"></i></span>
@@ -182,9 +88,84 @@
                     </a>
                 </li>
                 <li class="side-nav-item">
+                    <a href="{% url 'dashboard_contact_list' %}" class="side-nav-link">
+                        <span class="menu-icon"><i class="ti ti-message-circle"></i></span>
+                        <span class="menu-text">Aloqa Xabarlari</span>
+                    </a>
+                </li>
+                <li class="side-nav-item">
+                    <a href="{% url 'dashboard_chat_list' %}" class="side-nav-link">
+                        <span class="menu-icon"><i class="ti ti-brand-hipchat"></i></span>
+                        <span class="menu-text">Sayt Chat</span>
+                    </a>
+                </li>
+                <li class="side-nav-item">
                     <a href="{% url 'dashboard_campaign_list' %}" class="side-nav-link">
                         <span class="menu-icon"><i class="ti ti-send"></i></span>
                         <span class="menu-text">Kampaniyalar</span>
+                    </a>
+                </li>
+                <li class="side-nav-item">
+                    <a href="{% url 'dashboard_loyalty_settings' %}" class="side-nav-link">
+                        <span class="menu-icon"><i class="ti ti-award"></i></span>
+                        <span class="menu-text">Sodiqlik</span>
+                    </a>
+                </li>
+
+                <!-- Sayt Boshqaruvi (kamroq — kontent/sozlama) -->
+                <li class="side-nav-title mt-2">Sayt Boshqaruvi</li>
+                <li class="side-nav-item">
+                    <a href="{% url 'dashboard_news_list' %}" class="side-nav-link">
+                        <span class="menu-icon"><i class="ti ti-news"></i></span>
+                        <span class="menu-text">Yangiliklar</span>
+                    </a>
+                </li>
+                <li class="side-nav-item">
+                    <a href="{% url 'dashboard_promotion_list' %}" class="side-nav-link">
+                        <span class="menu-icon"><i class="ti ti-discount"></i></span>
+                        <span class="menu-text">Aksiyalar</span>
+                    </a>
+                </li>
+                <li class="side-nav-item">
+                    <a href="{% url 'dashboard_application_list' %}" class="side-nav-link">
+                        <span class="menu-icon"><i class="ti ti-mail"></i></span>
+                        <span class="menu-text">Arizalar</span>
+                    </a>
+                </li>
+                <li class="side-nav-item">
+                    <a href="{% url 'dashboard_vacancy_list' %}" class="side-nav-link">
+                        <span class="menu-icon"><i class="ti ti-briefcase"></i></span>
+                        <span class="menu-text">Vakansiyalar</span>
+                    </a>
+                </li>
+                <li class="side-nav-item">
+                    <a href="{% url 'dashboard_gallery_list' %}" class="side-nav-link">
+                        <span class="menu-icon"><i class="ti ti-photo"></i></span>
+                        <span class="menu-text">Galereya</span>
+                    </a>
+                </li>
+                <li class="side-nav-item">
+                    <a href="{% url 'dashboard_partner_list' %}" class="side-nav-link">
+                        <span class="menu-icon"><i class="ti ti-building-store"></i></span>
+                        <span class="menu-text">Hamkorlar</span>
+                    </a>
+                </li>
+                <li class="side-nav-item">
+                    <a href="{% url 'dashboard_feature_list' %}" class="side-nav-link">
+                        <span class="menu-icon"><i class="ti ti-star"></i></span>
+                        <span class="menu-text">Xususiyatlar</span>
+                    </a>
+                </li>
+                <li class="side-nav-item">
+                    <a href="{% url 'dashboard_statitem_list' %}" class="side-nav-link">
+                        <span class="menu-icon"><i class="ti ti-chart-bar"></i></span>
+                        <span class="menu-text">Statistikalar</span>
+                    </a>
+                </li>
+                <li class="side-nav-item">
+                    <a href="{% url 'dashboard_settings_website' %}" class="side-nav-link">
+                        <span class="menu-icon"><i class="ti ti-settings"></i></span>
+                        <span class="menu-text">Sayt Sozlamalari</span>
                     </a>
                 </li>
 

@@ -116,6 +116,22 @@
             </div>
         </div>
 
+        <!-- Buyurtma analitikasi -->
+        <div class="row g-3 mb-3">
+            <div class="col-lg-7">
+                <div class="card h-100">
+                    <div class="card-header"><h5 class="card-title mb-0">Buyurtma dinamikasi va daromad</h5></div>
+                    <div class="card-body"><div id="chartOrders"></div></div>
+                </div>
+            </div>
+            <div class="col-lg-5">
+                <div class="card h-100">
+                    <div class="card-header"><h5 class="card-title mb-0">Buyurtma holatlari</h5></div>
+                    <div class="card-body"><div id="chartOrderStatuses"></div></div>
+                </div>
+            </div>
+        </div>
+
         <div class="row g-3 mb-3">
             <div class="col-lg-7">
                 <div class="card h-100">
@@ -276,5 +292,5 @@
 {% block extra_js %}
 {{ analytics|json_script:"dashboard-analytics-data" }}
 <script src="{% static 'assets/plugins/apexcharts/apexcharts.min.js' %}"></script>
-<script src="{% static 'assets/js/pages/dashboard-home.js' %}"></script>
+<script src="{% static 'assets/js/pages/dashboard-home.js' %}?v=1.1"></script>
 {% endblock %}

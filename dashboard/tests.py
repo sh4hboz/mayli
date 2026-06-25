@@ -1,7 +1,6 @@
 import tempfile
 from io import BytesIO
 from datetime import date
-from unittest import skip
 
 from django.test import TestCase, RequestFactory, override_settings, Client
 from django.urls import reverse
@@ -21,6 +20,7 @@ from website.models import (
 from menu.models import Category, Dish
 from crm.models import Customer, Campaign
 from notifications.models import ChatSession, ChatMessage
+from orders.models import Order
 
 User = get_user_model()
 
@@ -65,19 +65,6 @@ class CMSPermissionsTests(TestCase):
         request.user = self.waiter
         with self.assertRaises(PermissionDenied):
             NewsListView.as_view()(request)
-
-    @skip("Permission modeli (rol-asosli vs permission-asosli CMS kirish) keyinga qoldirildi — loyiha kattalashganda hal qilinadi. Hozir DashboardBaseView faqat OWNER/MANAGER/ADMIN'ga ruxsat beradi.")
-    def test_waiter_with_permission_can_access(self):
-        view_news_perm = Permission.objects.get(codename='view_news', content_type__app_label='website')
-        self.waiter.user_permissions.add(view_news_perm)
-        request = self.factory.get('/dashboard/website/news/')
-        request.user = self.waiter
-        response = NewsListView.as_view()(request)
-        self.assertEqual(response.status_code, 200)
-
-    @skip("Permission modeli (rol-asosli vs permission-asosli CMS kirish) keyinga qoldirildi — loyiha kattalashganda hal qilinadi. Hozir DashboardBaseView faqat OWNER/MANAGER/ADMIN'ga ruxsat beradi.")
-    def test_accountant_read_only_restriction(self):
-        pass
 
     def test_superadmin_can_manage_staff_permissions(self):
         view_news_perm = Permission.objects.get(codename='view_news', content_type__app_label='website')
@@ -761,3 +748,90 @@ class ChatDashboardTests(TestCase):
         resp = c.post(reverse('dashboard_chat_reply', args=[self.session.pk]), {'text': 'x'})
         self.assertEqual(resp.status_code, 403)
         self.assertFalse(self.session.messages.filter(direction=ChatMessage.OUT).exists())
+
+
+# ════════════════════════════════════════════════════════════════════
+# Topbar global qidiruv (dashboard/search.py + dashboard_search view)
+# ════════════════════════════════════════════════════════════════════
+class GlobalSearchTests(TestCase):
+    """Topilish (telefon/ism/#id/matn), rol filtri, limit va auth."""
+
+    def setUp(self):
+        self.owner = User.objects.create_user(
+            username='search_owner', password='pw12345', role=Role.OWNER, full_name='Owner S',
+        )
+        self.waiter = User.objects.create_user(
+            username='search_waiter', password='pw12345', role=Role.WAITER, full_name='Waiter S',
+        )
+        self.url = reverse('dashboard_search')
+
+        self.order = Order.objects.create(
+            customer_name='Alisher Karimov', phone='+998901234567', total_amount=50000,
+        )
+        Customer.objects.create(first_name='Bobur', last_name='Aliyev', phone='+998901112233')
+        Dish.objects.create(name='Osh palov', price=30000)
+        Campaign.objects.create(name='Yangi yil aksiya', channel='sms', template='Salom')
+        ContactMessage.objects.create(
+            name='Sardor Test', phone='+998905556677', message='Salom murojaat',
+        )
+        session = ChatSession.objects.create(visitor_id='visitor-abc-123')
+        ChatMessage.objects.create(
+            session=session, direction=ChatMessage.IN, text='qachon ochiqsiz',
+        )
+
+    def _login_owner(self):
+        self.client.login(username='search_owner', password='pw12345')
+
+    def _labels(self, resp):
+        return [g['label'] for g in resp.json()['results']]
+
+    def test_requires_login(self):
+        """Login'siz → 302/403."""
+        resp = self.client.get(self.url, {'q': 'Ali'})
+        self.assertIn(resp.status_code, (302, 403))
+
+    def test_waiter_forbidden(self):
+        """Ruxsatsiz rol (ofitsiant) → 403."""
+        self.client.login(username='search_waiter', password='pw12345')
+        resp = self.client.get(self.url, {'q': 'Ali'})
+        self.assertEqual(resp.status_code, 403)
+
+    def test_phone_finds_order(self):
+        self._login_owner()
+        resp = self.client.get(self.url, {'q': '9012345'})
+        self.assertIn('Buyurtmalar', self._labels(resp))
+
+    def test_name_finds_customer_and_dish(self):
+        self._login_owner()
+        self.assertIn('Mijozlar', self._labels(self.client.get(self.url, {'q': 'Bobur'})))
+        self.assertIn('Taomlar', self._labels(self.client.get(self.url, {'q': 'palov'})))
+
+    def test_contact_and_chat(self):
+        self._login_owner()
+        self.assertIn('Murojaatlar', self._labels(self.client.get(self.url, {'q': 'murojaat'})))
+        self.assertIn('Chat', self._labels(self.client.get(self.url, {'q': 'qachon'})))
+
+    def test_search_by_id(self):
+        self._login_owner()
+        resp = self.client.get(self.url, {'q': '#%d' % self.order.pk})
+        groups = {g['label']: g for g in resp.json()['results']}
+        self.assertIn('Buyurtmalar', groups)
+        urls = [it['url'] for it in groups['Buyurtmalar']['items']]
+        self.assertIn(reverse('dashboard_order_detail', args=[self.order.pk]), urls)
+
+    def test_short_query_returns_empty(self):
+        self._login_owner()
+        resp = self.client.get(self.url, {'q': 'a'})
+        self.assertEqual(resp.json()['results'], [])
+
+    def test_limit_per_model(self):
+        for i in range(8):
+            Order.objects.create(
+                customer_name='LimitTest case %d' % i,
+                phone='+9989000000%02d' % i, total_amount=1,
+            )
+        self._login_owner()
+        resp = self.client.get(self.url, {'q': 'LimitTest'})
+        groups = {g['label']: g for g in resp.json()['results']}
+        self.assertIn('Buyurtmalar', groups)
+        self.assertLessEqual(len(groups['Buyurtmalar']['items']), 5)

@@ -22,9 +22,9 @@
             </div>
             <div class="card-body p-0">
                 <div class="table-responsive">
-                    <table class="table table-hover table-nowrap mb-0">
+                    <table class="table table-hover table-nowrap mb-0 js-datatable" data-dt-order="2:asc">
                         <thead class="table-light">
-                            <tr><th>#</th><th>Rasm</th><th>Nomi (UZ)</th><th>Kategoriya</th><th>Narxi</th><th>Mavjud</th><th>Faol</th><th>Amallar</th></tr>
+                            <tr><th data-orderable="false" data-searchable="false">#</th><th data-orderable="false" data-searchable="false">Rasm</th><th>Nomi (UZ)</th><th>Kategoriya</th><th>Narxi</th><th>Mavjud</th><th>Faol</th><th data-orderable="false" data-searchable="false">Amallar</th></tr>
                         </thead>
                         <tbody>
                             {% for item in dish_list %}
@@ -71,3 +71,6 @@
     </div>
 </div>
 {% endblock %}
+
+{% block extra_css %}{% include 'management/partials/_datatable_css.html' %}{% endblock %}
+{% block extra_js %}{% include 'management/partials/_datatable_js.html' %}{% endblock %}

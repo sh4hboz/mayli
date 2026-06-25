@@ -1,0 +1,64 @@
+{% extends 'management/base.html' %}
+{% load static %}
+{% block title %}Sodiqlik dasturi | Mayli Restobar{% endblock %}
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="page-title-box d-flex align-items-center justify-content-between">
+            <h4 class="page-title">Sodiqlik dasturi sozlamalari</h4>
+            <ol class="breadcrumb m-0">
+                <li class="breadcrumb-item"><a href="{% url 'dashboard_home' %}">Dashboard</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'dashboard_customer_list' %}">Mijozlar</a></li>
+                <li class="breadcrumb-item active">Sodiqlik</li>
+            </ol>
+        </div>
+    </div>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-lg-7">
+        <form method="post">
+            {% csrf_token %}
+            <div class="card">
+                <div class="card-body">
+                    <div class="form-check form-switch mb-3">
+                        {{ form.is_enabled }}
+                        <label class="form-check-label" for="{{ form.is_enabled.id_for_label }}">{{ form.is_enabled.label }}</label>
+                        <div class="text-muted fs-13">{{ form.is_enabled.help_text }}</div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" for="{{ form.earn_percent.id_for_label }}">{{ form.earn_percent.label }}</label>
+                        {{ form.earn_percent }}
+                        <div class="text-muted fs-13">{{ form.earn_percent.help_text }}</div>
+                        {% for error in form.earn_percent.errors %}<div class="text-danger fs-13">{{ error }}</div>{% endfor %}
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" for="{{ form.som_per_point.id_for_label }}">{{ form.som_per_point.label }}</label>
+                        {{ form.som_per_point }}
+                        <div class="text-muted fs-13">{{ form.som_per_point.help_text }}</div>
+                        {% for error in form.som_per_point.errors %}<div class="text-danger fs-13">{{ error }}</div>{% endfor %}
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-2">
+                            <label class="form-label" for="{{ form.silver_threshold.id_for_label }}">{{ form.silver_threshold.label }}</label>
+                            {{ form.silver_threshold }}
+                            <div class="text-muted fs-13">{{ form.silver_threshold.help_text }}</div>
+                            {% for error in form.silver_threshold.errors %}<div class="text-danger fs-13">{{ error }}</div>{% endfor %}
+                        </div>
+                        <div class="col-md-6 mb-2">
+                            <label class="form-label" for="{{ form.gold_threshold.id_for_label }}">{{ form.gold_threshold.label }}</label>
+                            {{ form.gold_threshold }}
+                            <div class="text-muted fs-13">{{ form.gold_threshold.help_text }}</div>
+                            {% for error in form.gold_threshold.errors %}<div class="text-danger fs-13">{{ error }}</div>{% endfor %}
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer d-flex gap-2">
+                    <button type="submit" class="btn btn-primary"><i class="ti ti-device-floppy me-1"></i>Saqlash</button>
+                    <a href="{% url 'dashboard_customer_list' %}" class="btn btn-secondary"><i class="ti ti-arrow-left me-1"></i>Orqaga</a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

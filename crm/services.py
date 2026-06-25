@@ -7,7 +7,10 @@ from django.conf import settings
 from django.db import transaction
 from django.utils import timezone
 
-from .models import Campaign, CampaignLog, CampaignLogStatus, CampaignStatus, Customer
+from .models import (
+    Campaign, CampaignLog, CampaignLogStatus, CampaignStatus, Customer,
+    LoyaltySettings, LoyaltyTransaction, LoyaltyKind,
+)
 from .providers import get_provider, render_template
 
 import logging
@@ -253,3 +256,72 @@ class BirthdayService:
 
         logger.info("Tug'ilgan kun tabriklari: yuborildi=%s, xato=%s", sent, failed)
         return {'sent': sent, 'failed': failed, 'errors': errors}
+
+
+class LoyaltyService:
+    """Sodiqlik dasturi — ball to'plash / sarflash / qo'lda tuzatish.
+
+    Ballar buyurtma "Yetkazildi" bo'lganda beriladi (idempotent — har buyurtma
+    uchun bir marta). Umrlik ball (lifetime_points) faqat ball to'planganda oshadi
+    va daraja shu bo'yicha hisoblanadi; sarflash/manfiy tuzatish darajani kamaytirmaydi.
+    """
+
+    @staticmethod
+    @transaction.atomic
+    def award_for_order(order):
+        """Yetkazilgan buyurtma uchun ball beradi. Idempotent.
+
+        Returns: yaratilgan LoyaltyTransaction yoki None (o'tkazib yuborilgan).
+        """
+        settings_obj = LoyaltySettings.get()
+        if not settings_obj.is_enabled:
+            return None
+        if order is None or order.customer_id is None:
+            return None
+        # Faqat shu buyurtma uchun hali ball berilmagan bo'lsa.
+        if LoyaltyTransaction.objects.filter(order=order, kind=LoyaltyKind.EARN).exists():
+            return None
+
+        points = settings_obj.points_for_amount(order.total_amount)
+        if points <= 0:
+            return None
+
+        customer = Customer.objects.select_for_update().get(pk=order.customer_id)
+        customer.loyalty_points += points
+        customer.lifetime_points += points
+        customer.save(update_fields=['loyalty_points', 'lifetime_points'])
+
+        txn = LoyaltyTransaction.objects.create(
+            customer=customer, order=order, kind=LoyaltyKind.EARN,
+            points=points, balance_after=customer.loyalty_points,
+            note=f"Buyurtma #{order.pk} uchun",
+        )
+        logger.info("Loyalty: mijoz=%s buyurtma=#%s +%s ball", customer.pk, order.pk, points)
+        return txn
+
+    @staticmethod
+    @transaction.atomic
+    def adjust(customer_id, points, note='', user=None):
+        """Ballni qo'lda o'zgartiradi (+/-). Umrlik ballga TEGMAYDI (faqat balans).
+
+        Balansdan ko'p ayirib bo'lmaydi (manfiyga tushmaydi).
+        Returns: dict {'success': bool, 'error'/'balance'}.
+        """
+        points = int(points)
+        if points == 0:
+            return {'success': False, 'error': "Ball 0 bo'lishi mumkin emas."}
+
+        customer = Customer.objects.select_for_update().get(pk=customer_id)
+        if customer.loyalty_points + points < 0:
+            return {'success': False, 'error': "Balansdan ko'p ball ayirib bo'lmaydi."}
+
+        customer.loyalty_points += points
+        customer.save(update_fields=['loyalty_points'])
+
+        kind = LoyaltyKind.ADJUST if points > 0 else LoyaltyKind.REDEEM
+        LoyaltyTransaction.objects.create(
+            customer=customer, kind=kind, points=points,
+            balance_after=customer.loyalty_points,
+            note=(note or '')[:255], created_by=user,
+        )
+        return {'success': True, 'balance': customer.loyalty_points}

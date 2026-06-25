@@ -7,6 +7,8 @@ Bu papkada productionga deploy qilish uchun konfiguratsiya fayllari:
 | `gunicorn.service` | systemd xizmati — gunicorn WSGI serverini ishga tushiradi |
 | `nginx-maylirestobar.conf` | nginx server block — HTTPS + statik fayllar + gunicorn proxy |
 | `env.prod.example` | Production `.env` namunasi |
+| `mayli-campaigns.{service,timer}` | Rejalashtirilgan kampaniyalarni har 5 daqiqada yuboradi |
+| `mayli-birthday.{service,timer}` | Tug'ilgan kun SMS tabriklarini har kuni ertalab yuboradi |
 
 **Arxitektura:** `nginx (443, SSL) → unix socket → gunicorn → Django (config.wsgi)`.
 WebSocket ishlatilmaydi, shuning uchun WSGI (gunicorn) yetarli.
@@ -172,4 +174,34 @@ sudo systemctl restart gunicorn
 
 ```bash
 python manage.py set_webhook https://maylirestobar.uz
+```
+
+## Avtomatlashtirish — systemd timer'lar (kampaniya + tug'ilgan kun)
+
+Ikki davriy vazifa systemd timer orqali ishlaydi (alohida cron kerak emas):
+- **kampaniya yuborish** — har 5 daqiqada `send_campaigns` (rejalashtirilgan, vaqti kelganlarini yuboradi);
+- **tug'ilgan kun tabriklari** — har kuni 09:00 da `send_birthday_greetings`.
+
+```bash
+sudo cp deploy/mayli-campaigns.service /etc/systemd/system/
+sudo cp deploy/mayli-campaigns.timer   /etc/systemd/system/
+sudo cp deploy/mayli-birthday.service  /etc/systemd/system/
+sudo cp deploy/mayli-birthday.timer    /etc/systemd/system/
+
+sudo systemctl daemon-reload
+sudo systemctl enable --now mayli-campaigns.timer mayli-birthday.timer
+
+systemctl list-timers 'mayli-*'        # keyingi ishga tushish vaqtini ko'rsatadi
+```
+
+> ⚠️ Tug'ilgan kun timer'i mahalliy vaqtga bog'liq — server vaqt mintaqasi
+> `Asia/Tashkent` ekanini tekshiring: `timedatectl set-timezone Asia/Tashkent`.
+> SMS chinakam yuborilishi uchun `.env` da `TEXTUP_*` + tegishli template ID
+> (`BIRTHDAY_SMS_TEMPLATE_ID`) sozlangan bo'lishi kerak; aks holda yuborish
+> xato qaytaradi, lekin timer xavfsiz ishlayveradi.
+
+Qo'lda sinash:
+```bash
+python manage.py send_birthday_greetings --dry-run   # bugun kim tabriklanadi
+python manage.py send_campaigns                       # rejalashtirilganlarni darhol
 ```

@@ -7,6 +7,7 @@ agar mijozning tizimda akkaunti bo'lsa, `user` orqali ixtiyoriy bog'lanadi.
 """
 
 from datetime import date
+from decimal import Decimal
 
 from django.conf import settings
 from django.db import models
@@ -80,6 +81,16 @@ class Customer(TimeStampedModel):
     notes = models.TextField(_('Izoh'), blank=True)
     is_active = models.BooleanField(_('Faol'), default=True)
 
+    # Sodiqlik dasturi (loyalty)
+    loyalty_points = models.IntegerField(
+        _('Joriy ballar'), default=0,
+        help_text=_('Mavjud (sarflanmagan) ball balansi.'),
+    )
+    lifetime_points = models.IntegerField(
+        _('Umrlik ballar'), default=0,
+        help_text=_('Jami to\'plangan ball (daraja shu bo\'yicha hisoblanadi; sarflasa kamaymaydi).'),
+    )
+
     # Bog'lanishlar
     user = models.OneToOneField(
         settings.AUTH_USER_MODEL, on_delete=models.SET_NULL,
@@ -115,6 +126,11 @@ class Customer(TimeStampedModel):
         return today.year - self.birth_date.year - (
             (today.month, today.day) < (self.birth_date.month, self.birth_date.day)
         )
+
+    @property
+    def loyalty_tier(self):
+        """Mijoz darajasi (umrlik ball bo'yicha) — (kod, nom)."""
+        return LoyaltySettings.get().tier_for(self.lifetime_points)
 
 
 class CampaignChannel(models.TextChoices):
@@ -207,3 +223,99 @@ class CampaignLog(TimeStampedModel):
 
     def __str__(self):
         return f"{self.campaign.name} → {self.customer.full_name}"
+
+
+# ── Sodiqlik dasturi (loyalty) ──────────────────────────────────────────────
+
+class LoyaltyTier(models.TextChoices):
+    BRONZE = 'bronze', _('Bronza')
+    SILVER = 'silver', _('Kumush')
+    GOLD = 'gold', _('Oltin')
+
+
+class LoyaltySettings(models.Model):
+    """Sodiqlik dasturi sozlamalari (singleton, pk=1)."""
+    is_enabled = models.BooleanField(
+        _('Sodiqlik dasturi yoqilgan'), default=True,
+        help_text=_("O'chirilsa — buyurtmalardan ball berilmaydi."),
+    )
+    earn_percent = models.DecimalField(
+        _('Ball foizi (%)'), max_digits=5, decimal_places=2, default=Decimal('5'),
+        help_text=_('Yetkazilgan buyurtma summasining shu foizi ball sifatida beriladi.'),
+    )
+    som_per_point = models.DecimalField(
+        _("1 ball qiymati (so'm)"), max_digits=8, decimal_places=2, default=Decimal('1'),
+        help_text=_('Ball chegirmaga aylantirilganda: 1 ball necha so\'m (kelajakda checkout uchun).'),
+    )
+    silver_threshold = models.IntegerField(
+        _('Kumush daraja (umrlik ball)'), default=50000,
+        help_text=_('Shu umrlik balldan boshlab — Kumush daraja.'),
+    )
+    gold_threshold = models.IntegerField(
+        _('Oltin daraja (umrlik ball)'), default=200000,
+        help_text=_('Shu umrlik balldan boshlab — Oltin daraja.'),
+    )
+
+    class Meta:
+        verbose_name = _('Sodiqlik sozlamalari')
+        verbose_name_plural = _('Sodiqlik sozlamalari')
+
+    def __str__(self):
+        return 'Sodiqlik sozlamalari'
+
+    @classmethod
+    def get(cls):
+        obj, _created = cls.objects.get_or_create(pk=1)
+        return obj
+
+    def tier_for(self, lifetime_points):
+        """Umrlik ball bo'yicha daraja — (kod, nom)."""
+        if lifetime_points >= self.gold_threshold:
+            return (LoyaltyTier.GOLD, LoyaltyTier.GOLD.label)
+        if lifetime_points >= self.silver_threshold:
+            return (LoyaltyTier.SILVER, LoyaltyTier.SILVER.label)
+        return (LoyaltyTier.BRONZE, LoyaltyTier.BRONZE.label)
+
+    def points_for_amount(self, amount):
+        """Buyurtma summasidan beriladigan ball (butun son)."""
+        return int((Decimal(amount) * self.earn_percent) / Decimal('100'))
+
+
+class LoyaltyKind(models.TextChoices):
+    EARN = 'earn', _('Ball to\'plandi')
+    REDEEM = 'redeem', _('Ball sarflandi')
+    ADJUST = 'adjust', _('Qo\'lda tuzatish')
+
+
+class LoyaltyTransaction(TimeStampedModel):
+    """Ball harakatlari jurnali (to'plash / sarflash / qo'lda tuzatish)."""
+    customer = models.ForeignKey(
+        Customer, on_delete=models.CASCADE, related_name='loyalty_transactions',
+        verbose_name=_('Mijoz'),
+    )
+    order = models.ForeignKey(
+        'orders.Order', on_delete=models.SET_NULL, null=True, blank=True,
+        related_name='loyalty_transactions', verbose_name=_('Buyurtma'),
+    )
+    kind = models.CharField(_('Turi'), max_length=10, choices=LoyaltyKind.choices)
+    points = models.IntegerField(
+        _('Ball'), help_text=_('Musbat — qo\'shildi, manfiy — ayrildi.'),
+    )
+    balance_after = models.IntegerField(_('Keyingi balans'), default=0)
+    note = models.CharField(_('Izoh'), max_length=255, blank=True)
+    created_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True,
+        related_name='loyalty_transactions', verbose_name=_('Kim'),
+    )
+
+    class Meta:
+        verbose_name = _('Ball harakati')
+        verbose_name_plural = _('Ball harakatlari')
+        ordering = ['-created_at']
+        indexes = [
+            models.Index(fields=['customer', '-created_at']),
+            models.Index(fields=['order']),
+        ]
+
+    def __str__(self):
+        return f"{self.customer} — {self.points:+d} ({self.get_kind_display()})"

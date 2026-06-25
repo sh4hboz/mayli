@@ -1,0 +1,10 @@
+[Unit]
+Description=Mayli Restobar — har kuni ertalab tug'ilgan kun tabriklari
+
+[Timer]
+# Har kuni mahalliy vaqt bilan 09:00 da (server vaqt mintaqasi Asia/Tashkent bo'lsin).
+OnCalendar=*-*-* 09:00:00
+Persistent=true
+
+[Install]
+WantedBy=timers.target

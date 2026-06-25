@@ -36,9 +36,13 @@
                 <i class="ti ti-menu-4"></i>
             </button>
 
-            <div id="search-box-rounded" class="app-search d-none d-xl-flex">
-                <input type="search" class="form-control rounded-pill topbar-search" name="search" placeholder="Quick Search..." />
+            <div id="search-box-rounded" class="app-search d-none d-xl-flex position-relative">
+                <input type="search" id="global-search-input" name="search" autocomplete="off"
+                       class="form-control rounded-pill topbar-search"
+                       placeholder="Qidirish: buyurtma, mijoz, taom..."
+                       data-search-url="{% url 'dashboard_search' %}" />
                 <i class="ti ti-search app-search-icon text-muted"></i>
+                <div id="global-search-results" class="dropdown-menu shadow global-search-results" role="listbox" hidden></div>
             </div>
 
         </div>

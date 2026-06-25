@@ -52,4 +52,40 @@
       grid: { borderColor: 'rgba(128,128,128,0.15)' }
     }).render();
   }
+
+  // 4) Buyurtma dinamikasi va daromad — bar (soni) + line (daromad), 2 o'q
+  var o = data.orders;
+  if (o && o.labels && o.labels.length && document.querySelector('#chartOrders')) {
+    new ApexCharts(document.querySelector('#chartOrders'), {
+      chart: { height: 300, type: 'line', stacked: false, toolbar: { show: false } },
+      series: [
+        { name: 'Buyurtmalar', type: 'column', data: o.counts },
+        { name: "Daromad (so'm)", type: 'line', data: o.revenue }
+      ],
+      stroke: { width: [0, 3], curve: 'smooth' },
+      plotOptions: { bar: { columnWidth: '45%', borderRadius: 3 } },
+      dataLabels: { enabled: false },
+      xaxis: { categories: o.labels },
+      yaxis: [
+        { title: { text: 'Buyurtmalar' }, labels: { formatter: function (v) { return Math.round(v); } } },
+        { opposite: true, title: { text: 'Daromad' }, labels: { formatter: function (v) { return Math.round(v).toLocaleString('ru-RU'); } } }
+      ],
+      legend: { position: 'top' },
+      colors: ['#ea6900', '#22c55e'],
+      grid: { borderColor: 'rgba(128,128,128,0.15)' }
+    }).render();
+  }
+
+  // 5) Buyurtma holatlari — donut
+  var os = data.order_statuses;
+  if (os && os.data && os.data.length && document.querySelector('#chartOrderStatuses')) {
+    new ApexCharts(document.querySelector('#chartOrderStatuses'), {
+      chart: { type: 'donut', height: 300 },
+      series: os.data,
+      labels: os.labels,
+      legend: { position: 'bottom' },
+      dataLabels: { enabled: true },
+      colors: ['#3b82f6', '#eab308', '#22c55e', '#ef4444', '#64748b']
+    }).render();
+  }
 })();

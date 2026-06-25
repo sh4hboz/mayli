@@ -24,17 +24,17 @@
             </div>
             <div class="card-body p-0">
                 <div class="table-responsive">
-                    <table class="table table-hover table-nowrap mb-0">
+                    <table class="table table-hover table-nowrap mb-0 js-datatable" data-dt-order="5:asc">
                         <thead class="table-light">
                             <tr>
-                                <th>#</th>
+                                <th data-orderable="false" data-searchable="false">#</th>
                                 <th>Qiymat</th>
                                 <th>Yorliq (UZ)</th>
                                 <th>Yorliq (RU)</th>
                                 <th>Joylashuv</th>
                                 <th>Tartib</th>
                                 <th>Holat</th>
-                                <th>Amallar</th>
+                                <th data-orderable="false" data-searchable="false">Amallar</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -78,3 +78,6 @@
     </div>
 </div>
 {% endblock %}
+
+{% block extra_css %}{% include 'management/partials/_datatable_css.html' %}{% endblock %}
+{% block extra_js %}{% include 'management/partials/_datatable_js.html' %}{% endblock %}

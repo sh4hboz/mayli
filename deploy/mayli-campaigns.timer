@@ -1,0 +1,11 @@
+[Unit]
+Description=Mayli Restobar — kampaniya yuborishni har 5 daqiqada tekshiradi
+
+[Timer]
+# Yuklamadan 1 daqiqa keyin va keyin har 5 daqiqada.
+OnBootSec=1min
+OnUnitActiveSec=5min
+Persistent=true
+
+[Install]
+WantedBy=timers.target

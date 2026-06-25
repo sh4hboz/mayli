@@ -3,6 +3,7 @@ from website.models import SiteSettings, News, Promotion, GalleryItem, Partner, 
 from menu.models import Category, Dish
 from crm.models import Customer, Campaign
 from orders.models import OrderSettings
+from crm.models import LoyaltySettings
 from .image_utils import convert_image_to_webp
 
 
@@ -351,6 +352,16 @@ class OrderSettingsForm(BootstrapModelForm):
         help_texts = {
             'min_order_amount': "Shu summadan kam buyurtma qabul qilinmaydi (0 — cheklov yo'q).",
         }
+
+
+class LoyaltySettingsForm(BootstrapModelForm):
+    """Sodiqlik dasturi sozlamalari."""
+    class Meta:
+        model = LoyaltySettings
+        fields = [
+            'is_enabled', 'earn_percent', 'som_per_point',
+            'silver_threshold', 'gold_threshold',
+        ]
 
 
 class FeatureForm(BootstrapModelForm):

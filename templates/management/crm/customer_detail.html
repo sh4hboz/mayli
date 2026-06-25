@@ -63,4 +63,136 @@
         </div>
     </div>
 </div>
+
+<!-- Buyurtma analitikasi (CRM) -->
+<div class="row justify-content-center">
+    <div class="col-lg-9">
+        <div class="row g-3 mb-3">
+            <div class="col-6 col-md-3">
+                <div class="card h-100 mb-0">
+                    <div class="card-body text-center">
+                        <p class="text-muted text-uppercase fs-xs fw-semibold mb-1">Buyurtmalar</p>
+                        <h3 class="mb-0">{{ order_stats.total }}</h3>
+                        <small class="text-muted">{{ order_stats.done }} muvaffaqiyatli</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="card h-100 mb-0">
+                    <div class="card-body text-center">
+                        <p class="text-muted text-uppercase fs-xs fw-semibold mb-1">Jami xarid (LTV)</p>
+                        <h3 class="mb-0">{{ order_stats.ltv|floatformat:0 }}</h3>
+                        <small class="text-muted">so'm</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="card h-100 mb-0">
+                    <div class="card-body text-center">
+                        <p class="text-muted text-uppercase fs-xs fw-semibold mb-1">O'rtacha chek</p>
+                        <h3 class="mb-0">{{ order_stats.avg_check|floatformat:0 }}</h3>
+                        <small class="text-muted">so'm</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="card h-100 mb-0">
+                    <div class="card-body text-center">
+                        <p class="text-muted text-uppercase fs-xs fw-semibold mb-1">Oxirgi buyurtma</p>
+                        <h3 class="mb-0 fs-5">{% if order_stats.last_order %}{{ order_stats.last_order|date:"d.m.Y" }}{% else %}—{% endif %}</h3>
+                        <small class="text-muted">{% if order_stats.last_order %}{{ order_stats.last_order|timesince }} oldin{% endif %}</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {% if recent_orders %}
+        <div class="card">
+            <div class="card-header"><h5 class="card-title mb-0">So'nggi buyurtmalar</h5></div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover table-nowrap mb-0">
+                        <thead class="table-light">
+                            <tr><th>#</th><th>Sana</th><th>Summa</th><th>To'lov</th><th>Holat</th></tr>
+                        </thead>
+                        <tbody>
+                            {% for o in recent_orders %}
+                            <tr>
+                                <td><a href="{% url 'dashboard_order_detail' o.pk %}" class="text-reset fw-semibold">#{{ o.pk }}</a></td>
+                                <td>{{ o.created_at|date:"d.m.Y H:i" }}</td>
+                                <td>{{ o.total_amount|floatformat:0 }} so'm</td>
+                                <td>{{ o.get_payment_method_display }}</td>
+                                <td>
+                                    {% if o.status == STATUS.NEW %}<span class="badge bg-warning text-dark">{{ o.get_status_display }}</span>
+                                    {% elif o.status == STATUS.ACCEPTED %}<span class="badge bg-info">{{ o.get_status_display }}</span>
+                                    {% elif o.status == STATUS.COMPLETED %}<span class="badge bg-success">{{ o.get_status_display }}</span>
+                                    {% else %}<span class="badge bg-danger">{{ o.get_status_display }}</span>{% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Sodiqlik dasturi -->
+        <div class="card">
+            <div class="card-header d-flex align-items-center justify-content-between">
+                <h5 class="card-title mb-0"><i class="ti ti-award me-1"></i>Sodiqlik</h5>
+                {% if not loyalty_enabled %}<span class="badge bg-secondary">Dastur o'chirilgan</span>{% endif %}
+            </div>
+            <div class="card-body">
+                <div class="row g-3 align-items-center mb-3">
+                    <div class="col-6 col-md-3 text-center">
+                        <p class="text-muted text-uppercase fs-xs fw-semibold mb-1">Joriy ball</p>
+                        <h3 class="mb-0">{{ customer.loyalty_points }}</h3>
+                    </div>
+                    <div class="col-6 col-md-3 text-center">
+                        <p class="text-muted text-uppercase fs-xs fw-semibold mb-1">Umrlik ball</p>
+                        <h3 class="mb-0">{{ customer.lifetime_points }}</h3>
+                    </div>
+                    <div class="col-6 col-md-3 text-center">
+                        <p class="text-muted text-uppercase fs-xs fw-semibold mb-1">Daraja</p>
+                        <h3 class="mb-0 fs-5"><span class="badge bg-dark">{{ loyalty_tier.1 }}</span></h3>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <form method="post" action="{% url 'dashboard_customer_loyalty_adjust' customer.pk %}" class="d-flex flex-column gap-1">
+                            {% csrf_token %}
+                            <div class="input-group input-group-sm">
+                                <input type="number" name="points" class="form-control" placeholder="+/- ball" required>
+                                <button type="submit" class="btn btn-outline-primary" data-confirm="Ballni o'zgartirasizmi?">OK</button>
+                            </div>
+                            <input type="text" name="note" class="form-control form-control-sm" placeholder="Izoh (ixtiyoriy)">
+                        </form>
+                    </div>
+                </div>
+
+                {% if loyalty_txns %}
+                <div class="table-responsive">
+                    <table class="table table-sm table-hover mb-0">
+                        <thead class="table-light">
+                            <tr><th>Sana</th><th>Turi</th><th class="text-end">Ball</th><th class="text-end">Balans</th><th>Izoh</th></tr>
+                        </thead>
+                        <tbody>
+                            {% for t in loyalty_txns %}
+                            <tr>
+                                <td>{{ t.created_at|date:"d.m.Y H:i" }}</td>
+                                <td>{{ t.get_kind_display }}</td>
+                                <td class="text-end {% if t.points > 0 %}text-success{% else %}text-danger{% endif %} fw-semibold">{{ t.points|stringformat:"+d" }}</td>
+                                <td class="text-end">{{ t.balance_after }}</td>
+                                <td class="text-muted">{{ t.note|default:"—" }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <p class="text-muted mb-0">Hali ball harakati yo'q.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}

@@ -1,4 +1,5 @@
 import os
+from decimal import Decimal
 
 from django.conf import settings
 from django.shortcuts import render, redirect
@@ -10,15 +11,15 @@ from django.shortcuts import get_object_or_404
 from django.http import JsonResponse
 from django.contrib import messages
 from django.core.exceptions import PermissionDenied
-from django.db.models import Q, Count
-from django.db.models.functions import TruncMonth, ExtractDay
+from django.db.models import Q, Count, Sum, Avg, Max, DecimalField
+from django.db.models.functions import TruncMonth, ExtractDay, Coalesce
 from django.utils import timezone
 from datetime import date
 
 from accounts.models import Role
 from website.models import SiteSettings, News, Promotion, GalleryItem, Partner, Vacancy, JobApplication, ContactMessage, Feature, StatItem
 from menu.models import Category, Dish
-from crm.models import Customer, Tag, Gender, CustomerSource, Campaign, CampaignLog
+from crm.models import Customer, Tag, Gender, CustomerSource, Campaign, CampaignLog, LoyaltySettings, LoyaltyTransaction
 from notifications.models import ChatSession, ChatMessage
 from orders.models import Order, OrderStatus, OrderSettings
 from .forms import (
@@ -26,7 +27,9 @@ from .forms import (
     SiteSettingsHomeContentForm, SiteSettingsSeoForm,
     NewsForm, PromotionForm, GalleryItemForm, PartnerForm, VacancyForm, CategoryForm,
     DishForm, CustomerForm, CampaignForm, FeatureForm, StatItemForm, OrderSettingsForm,
+    LoyaltySettingsForm,
 )
+from .search import global_search, CMS_ROLES
 
 
 @login_required(login_url='/login/')
@@ -87,7 +90,42 @@ def dashboard_home(request):
         'failed': [c.failed_count for c in camp_qs],
     }
 
-    analytics = {'monthly': monthly, 'sources': sources, 'campaigns': campaigns}
+    # 4) Buyurtma dinamikasi — oxirgi 6 oy (soni + daromad)
+    revenue_statuses = (OrderStatus.ACCEPTED, OrderStatus.COMPLETED)
+    orders_monthly_raw = (
+        Order.objects
+        .filter(created_at__date__gte=date(start_y, start_m, 1))
+        .annotate(mon=TruncMonth('created_at'))
+        .values('mon')
+        .annotate(
+            cnt=Count('id'),
+            revenue=Coalesce(
+                Sum('total_amount', filter=Q(status__in=revenue_statuses)),
+                Decimal('0'),
+                output_field=DecimalField(max_digits=14, decimal_places=2),
+            ),
+        )
+    )
+    om_cnt = {(r['mon'].year, r['mon'].month): r['cnt'] for r in orders_monthly_raw}
+    om_rev = {(r['mon'].year, r['mon'].month): float(r['revenue']) for r in orders_monthly_raw}
+    orders_monthly = {
+        'labels': [f"{uz_months[m - 1]} {y}" for (y, m) in months],
+        'counts': [om_cnt.get((y, m), 0) for (y, m) in months],
+        'revenue': [round(om_rev.get((y, m), 0)) for (y, m) in months],
+    }
+
+    # 5) Buyurtma holatlari taqsimoti (faqat mavjud holatlar)
+    status_labels = dict(OrderStatus.choices)
+    ostat_map = {r['status']: r['c'] for r in Order.objects.values('status').annotate(c=Count('id'))}
+    order_statuses = {
+        'labels': [str(status_labels[s]) for s, _ in OrderStatus.choices if ostat_map.get(s)],
+        'data': [ostat_map[s] for s, _ in OrderStatus.choices if ostat_map.get(s)],
+    }
+
+    analytics = {
+        'monthly': monthly, 'sources': sources, 'campaigns': campaigns,
+        'orders': orders_monthly, 'order_statuses': order_statuses,
+    }
 
     # 4) Shu oyda tug'ilgan mijozlar
     birthdays = (
@@ -489,7 +527,7 @@ class ContactMessageDeleteView(CMSBaseMixin, SuccessMessageMixin, DeleteView):
 
 
 from django.apps import apps
-from django.views.decorators.http import require_POST
+from django.views.decorators.http import require_POST, require_GET
 
 @login_required(login_url='/login/')
 @require_POST
@@ -624,6 +662,27 @@ class CustomerDetailView(CMSBaseMixin, DetailView):
     model = Customer
     template_name = 'management/crm/customer_detail.html'
     context_object_name = 'customer'
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        orders = self.object.orders.all()
+        # LTV / o'rtacha chek — faqat "muvaffaqiyatli" buyurtmalar (qabul + yetkazildi)
+        done = orders.filter(status__in=(OrderStatus.ACCEPTED, OrderStatus.COMPLETED))
+        agg = done.aggregate(ltv=Sum('total_amount'), avg=Avg('total_amount'), cnt=Count('id'))
+        ctx['order_stats'] = {
+            'total': orders.count(),
+            'done': agg['cnt'] or 0,
+            'ltv': agg['ltv'] or 0,
+            'avg_check': agg['avg'] or 0,
+            'last_order': orders.aggregate(m=Max('created_at'))['m'],
+        }
+        ctx['recent_orders'] = orders.order_by('-created_at')[:10]
+        ctx['STATUS'] = OrderStatus
+        # Sodiqlik
+        ctx['loyalty_enabled'] = LoyaltySettings.get().is_enabled
+        ctx['loyalty_tier'] = self.object.loyalty_tier
+        ctx['loyalty_txns'] = self.object.loyalty_transactions.select_related('order')[:10]
+        return ctx
 
 
 class CustomerCreateView(CMSBaseMixin, SuccessMessageMixin, CreateView):
@@ -858,6 +917,11 @@ def dashboard_order_status(request, pk):
         order.handled_by = request.user
         order.save(update_fields=['status', 'handled_by', 'updated_at'])
         messages.success(request, f"Buyurtma #{order.pk} yetkazildi deb belgilandi.")
+        # Sodiqlik: yetkazilgan buyurtma uchun ball (idempotent)
+        from crm.services import LoyaltyService
+        txn = LoyaltyService.award_for_order(order)
+        if txn:
+            messages.info(request, f"Mijozga {txn.points} sodiqlik balli berildi.")
     return redirect('dashboard_order_detail', pk=pk)
 
 
@@ -874,6 +938,43 @@ class OrderSettingsView(CMSBaseMixin, SuccessMessageMixin, UpdateView):
 
     def get_success_message(self, cleaned_data=None):
         return self.success_message_update
+
+
+# --- Sodiqlik dasturi (loyalty) ---
+class LoyaltySettingsView(CMSBaseMixin, SuccessMessageMixin, UpdateView):
+    """Sodiqlik dasturi sozlamalari (singleton)."""
+    model = LoyaltySettings
+    form_class = LoyaltySettingsForm
+    template_name = 'management/crm/loyalty_settings.html'
+    success_url = reverse_lazy('dashboard_loyalty_settings')
+    success_message_update = "Sodiqlik sozlamalari saqlandi."
+
+    def get_object(self, queryset=None):
+        return LoyaltySettings.get()
+
+    def get_success_message(self, cleaned_data=None):
+        return self.success_message_update
+
+
+@login_required(login_url='/login/')
+@require_POST
+def dashboard_customer_loyalty_adjust(request, pk):
+    """Mijoz balliga qo'lda +/- tuzatish (faqat OWNER/MANAGER/ADMIN)."""
+    from crm.services import LoyaltyService
+    if request.user.role not in (Role.OWNER, Role.MANAGER, Role.ADMIN):
+        raise PermissionDenied("Ruxsat yo'q!")
+    customer = get_object_or_404(Customer, pk=pk)
+    try:
+        points = int(request.POST.get('points', '0'))
+    except (TypeError, ValueError):
+        points = 0
+    note = (request.POST.get('note') or '').strip()
+    result = LoyaltyService.adjust(customer.pk, points, note=note, user=request.user)
+    if result.get('success'):
+        messages.success(request, f"Ball yangilandi. Yangi balans: {result['balance']}.")
+    else:
+        messages.error(request, result.get('error', "Ballni o'zgartirib bo'lmadi."))
+    return redirect('dashboard_customer_detail', pk=pk)
 
 
 # --- Topbar bildirishnomalari (AJAX) ---
@@ -1079,3 +1180,18 @@ def dashboard_chat_messages(request, pk):
         'is_auto': m.is_auto,
     } for m in qs]
     return JsonResponse({'messages': data})
+
+
+# ── Global topbar qidiruv (AJAX) ────────────────────────────────────────────
+@login_required(login_url='/login/')
+@require_GET
+def dashboard_search(request):
+    """Topbar global qidiruvi — rolga mos guruhlangan natija (JSON).
+
+    Natija faqat foydalanuvchi roli ko'ra oladigan modellardan keladi
+    (ruxsat filtri `dashboard/search.py` ichida). Qarang: SEARCH_REGISTRY.
+    """
+    if request.user.role not in CMS_ROLES:
+        raise PermissionDenied("Ruxsat yo'q!")
+    results = global_search(request.user, request.GET.get('q', ''))
+    return JsonResponse({'results': results})

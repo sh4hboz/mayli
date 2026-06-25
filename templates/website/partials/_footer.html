@@ -32,6 +32,10 @@
       <p><i class="fa fa-phone"></i> <a href="tel:{{ site.phone_main }}">{{ site.phone_main }}</a></p>
       {% endif %}
 
+      {% if site.email %}
+      <p><i class="fa fa-envelope"></i> <a href="mailto:{{ site.email }}">{{ site.email }}</a></p>
+      {% endif %}
+
       {% if site.address %}
       <p><i class="fa fa-map-marker"></i> <a href="https://yandex.uz/maps/-/CPtG7YIO" target="_blank" rel="noopener">{{ site.address }}</a></p>
       {% endif %}

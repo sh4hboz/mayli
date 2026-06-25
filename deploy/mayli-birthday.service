@@ -1,0 +1,11 @@
+[Unit]
+Description=Mayli Restobar — tug'ilgan kun SMS tabriklarini yuborish
+After=network.target
+
+[Service]
+Type=oneshot
+User=www-data
+Group=www-data
+WorkingDirectory=/var/www/mayli
+Environment=DJANGO_SETTINGS_MODULE=config.settings.prod
+ExecStart=/var/www/mayli/venv/bin/python manage.py send_birthday_greetings

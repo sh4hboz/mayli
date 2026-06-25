@@ -67,6 +67,10 @@ urlpatterns = [
     path('customers/<int:pk>/', views.CustomerDetailView.as_view(), name='dashboard_customer_detail'),
     path('customers/<int:pk>/edit/', views.CustomerUpdateView.as_view(), name='dashboard_customer_edit'),
     path('customers/<int:pk>/delete/', views.CustomerDeleteView.as_view(), name='dashboard_customer_delete'),
+    path('customers/<int:pk>/loyalty-adjust/', views.dashboard_customer_loyalty_adjust, name='dashboard_customer_loyalty_adjust'),
+
+    # Sodiqlik dasturi sozlamalari
+    path('loyalty/settings/', views.LoyaltySettingsView.as_view(), name='dashboard_loyalty_settings'),
 
     # Kampaniyalar (CRM Marketing)
     path('campaigns/', views.CampaignListView.as_view(), name='dashboard_campaign_list'),
@@ -83,6 +87,9 @@ urlpatterns = [
     # Topbar bildirishnomalari (AJAX)
     path('notifications/count/', views.dashboard_notifications_count, name='dashboard_notifications_count'),
     path('notifications/mark-all-read/', views.dashboard_notifications_mark_all_read, name='dashboard_notifications_mark_all_read'),
+
+    # Topbar global qidiruv (AJAX)
+    path('search/', views.dashboard_search, name='dashboard_search'),
 
     # Statistika
     path('website/stats/', views.StatItemListView.as_view(), name='dashboard_statitem_list'),
